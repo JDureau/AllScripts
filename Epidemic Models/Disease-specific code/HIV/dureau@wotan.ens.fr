@@ -1,0 +1,100 @@
+function [] = PostTreating()
+
+
+
+Resss = {};
+
+MeanErrors = [];
+Errors = [];
+amplin = [];
+amplout = [];
+slope = [];
+inflptin = [];
+inflptout = [];
+corrs = [];
+baselinein = [];
+baselineout = [];
+endlinein = [];
+endlineout = [];
+sigmsin = [];
+sigmsout = [];
+propaftintin = [];
+propaftintout = [];
+for BigInd = 1:2
+    for SmallInd = 1:20
+        try
+            load(['VIH_PlayingWithSigm_RightPriors' num2str(BigInd) '_' num2str(SmallInd) '.mat'])
+            for j = 1:length(Ress)
+                Res = Ress{j};
+                Parameters = Res.Parameters;
+                j
+                try
+                    if and(Res.AccRate > 0.18, Res.AccRate < 0.30)
+                        tmp = diff(Res.Data.Fts);
+                        [b,ind] = max(tmp);
+                        if b<0.1*Parameters.ComputationTStep
+                            tmp = squeeze(Res.Paths(50:end,3,:));
+                            tmp = exp(tmp)./(1+exp(tmp));
+                            if max(mean(tmp))-min(mean(tmp))>0.9
+                                die
+                            end
+%                             Pars = FitSigmoids((tmp),Res.Parameters);
+                            
+                            Pars = FitSigmoid(mean(tmp),Res.Parameters);
+                            amplin(end+1) = Res.Data.Fts(585)-Res.Data.Fts(1)   ;
+                            amplout(end+1) = Pars.Ampl;           
+                            inflptin(end+1) = ind;
+                            baselineout(end+1) = Pars.Baseline;
+                            baselinein(end+1) = Res.Data.Fts(1);
+                            endlinein(end+1) = Res.Data.Fts(585);
+                            endlineout(end+1) = Pars.Endline;
+                            [b,indmed] = min(abs(Pars.Sigm-(Pars.Sigm(585)+Pars.Sigm(1))/2));
+                            inflptout(end+1) = indmed;
+                            sigmsin(end+1,:) = Res.Data.Fts;
+                            sigmsout(end+1,:) = Pars.Sigm;
+                            partfter = Res.Data.Fts(585)-Res.Data.Fts(456);
+                            propaftintin(end+1) = partfter/(Res.Data.Fts(585)-Res.Data.Fts(1));
+                            partfter = Pars.Sigm(585)-Pars.Sigm(456);
+                            propaftintout(end+1) = partfter/(Pars.Sigm(585)-Pars.Sigm(1));
+                            Res.Parameters.TypeWork='Boston Examples HIV2';
+                            Res.Parameters.Sigm = Pars.Sigm; 
+                            %PlotResHIV(Res,Res.Parameters,Res.Data.Fts)
+                            %title(num2str(length(inflptout)))
+                            %pause(0.01)
+%                             saveas(gcf,[SavePath 'randomplot' num2str(rand(1,1)*10000,4) '.eps'], 'psc2')
+    %             end
+                        end
+                    end
+                end
+            end
+        end
+        length(inflptout)
+    end
+end
+% 
+% BigInd = 1;
+% SmallInd = 4;
+% SavePath = '/Users/dureaujoseph/Documents/Taf/These/Results/Avahan/';
+% load([SavePath 'VIH_PlayingWithSigm_RightPriors' num2str(BigInd) '_' num2str(SmallInd) '.mat'])
+% j = 2;     
+% Res = Ress{j};
+% Res.Parameters.TypeWork='Boston Examples HIV2';
+% PlotResHIV(Res,Res.Parameters)
+
+
+Res = struct();
+Res.amplin = amplin;
+Res.amplout = amplout;
+Res.inflptin = inflptin;
+Res.inflptout = inflptout;
+Res.baselinein = baselinein;
+Res.baselineout = baselineout;
+Res.endlinein = endlinein;
+Res.endlineout = endlineout;
+Res.sigmsin = sigmsin;
+Res.sigmsout = sigmsout;
+Res.propaftintin = propaftintin;
+Res.propaftintout = propaftintout;
+
+
+save(['TreatedRessRightPriors.mat'],'Res')

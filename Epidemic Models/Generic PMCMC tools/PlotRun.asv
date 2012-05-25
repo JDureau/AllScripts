@@ -1,0 +1,95 @@
+function [] = PlotRun(Res)
+
+maxind = max(Res.CompInds);
+
+figure(1)
+if Parmameters.EstimatedVariables.Beta
+    subplot(Parameters.NbParsEstimated*5+1,1,(Parameters.BetaIndex-1)*5+1:(Parameters.BetaIndex)*5)
+    plot(Res.Pars(:,Parameters.BetaIndex),'k')
+    hold on
+    plot(Res.ProposedPars(:,Parameters.BetaIndex),'g')
+    plot(Res.Mus(:,Parameters.BetaIndex))
+    plot(Res.Mus(:,Parameters.BetaIndex) + sqrt(Res.SamplCovs(:,Parameters.BetaIndex,Parameters.BetaIndex)),'r')
+    plot(Res.Mus(:,Parameters.BetaIndex) - sqrt(Res.SamplCovs(:,Parameters.BetaIndex,Parameters.BetaIndex)),'r')
+    hold off
+    ylim([min(Res.Pars(:,Parameters.BetaIndex))-2*std(Res.Pars(:,Parameters.BetaIndex)) max(Res.Pars(:,Parameters.BetaIndex))+2*std(Res.Pars(:,Parameters.BetaIndex))])
+    title('Log plots')
+end
+
+if Parmameters.EstimatedVariables.Gamma
+    subplot(Parameters.NbParsEstimated*5+1,1,(Parameters.GammaIndex-1)*5+1:(Parameters.GammaIndex)*5)
+    plot(Res.Pars(:,Parameters.GammaIndex),'k')
+    hold on
+    plot(Res.ProposedPars(:,Parameters.GammaIndex),'g')
+    plot(Res.Mus(:,Parameters.GammaIndex))
+    plot(Res.Mus(:,Parameters.GammaIndex) + sqrt(Res.SamplCovs(:,Parameters.GammaIndex,Parameters.GammaIndex)),'r')
+    plot(Res.Mus(:,Parameters.GammaIndex) - sqrt(Res.SamplCovs(:,Parameters.GammaIndex,Parameters.GammaIndex)),'r')
+    hold off
+    ylim([min(Res.Pars(:,Parameters.GammaIndex))-2*std(Res.Pars(:,Parameters.GammaIndex)) max(Res.Pars(:,Parameters.GammaIndex))+2*std(Res.Pars(:,Parameters.GammaIndex))])
+end
+
+if Parmameters.EstimatedVariables.SigmaRW
+    subplot(Parameters.NbParsEstimated*5+1,1,(Parameters.GammaIndex-1)*5+1:(Parameters.GammaIndex)*5)
+    plot(Res.Pars(:,Parameters.GammaIndex),'k')
+    hold on
+    plot(Res.ProposedPars(:,Parameters.GammaIndex),'g')
+    plot(Res.Mus(:,Parameters.GammaIndex))
+    plot(Res.Mus(:,Parameters.GammaIndex) + sqrt(Res.SamplCovs(:,Parameters.GammaIndex,Parameters.GammaIndex)),'r')
+    plot(Res.Mus(:,Parameters.GammaIndex) - sqrt(Res.SamplCovs(:,Parameters.GammaIndex,Parameters.GammaIndex)),'r')
+    hold off
+    ylim([min(Res.Pars(:,Parameters.GammaIndex))-2*std(Res.Pars(:,Parameters.GammaIndex)) max(Res.Pars(:,Parameters.GammaIndex))+2*std(Res.Pars(:,Parameters.GammaIndex))])
+end
+
+
+subplot(16,1,16)
+plot(1,0,'o','MarkerFaceColor',[Res.CompInds(1)/maxind,0,0])
+hold on
+for i = 1:size(Res.Mus,1)
+    plot(i,0,'o','MarkerFaceColor',[Res.CompInds(i)/maxind,0,0],'MarkerEdgeColor',[Res.CompInds(i)/maxind,0,0])
+end
+hold off
+set(gca,'YTickLabel',{''})
+set(gca,'XTickLabel',{''})
+
+
+figure(2)
+subplot(16,1,1:5)
+plot(exp(Res.Pars(:,1)),'k')
+hold on
+plot(exp(Res.ProposedPars(:,1)),'g')
+plot(exp(Res.Mus(:,1)))
+plot(exp(Res.Mus(:,1) + sqrt(Res.SamplCovs(:,1,1))),'r')
+plot(exp(Res.Mus(:,1) - sqrt(Res.SamplCovs(:,1,1))),'r')
+hold off
+ylim([min(exp(Res.Pars(:,1)))-2*std(exp(Res.Pars(:,1))) max(exp(Res.Pars(:,1)))+2*std(exp(Res.Pars(:,1)))])
+title('Natural scale plots')
+
+subplot(16,1,6:10)
+plot(exp(Res.Pars(:,2)),'k')
+hold on
+plot(exp(Res.ProposedPars(:,2)),'g')
+plot(exp(Res.Mus(:,2)))
+plot(exp(Res.Mus(:,2) + sqrt(Res.SamplCovs(:,2,2))),'r')
+plot(exp(Res.Mus(:,2) - sqrt(Res.SamplCovs(:,2,2))),'r')
+hold off
+ylim([min(exp(Res.Pars(:,2)))-2*std(exp(Res.Pars(:,2))) max(exp(Res.Pars(:,2)))+2*std(exp(Res.Pars(:,2)))])
+
+
+subplot(16,1,11:15)
+plot(exp(Res.Pars(:,3)),'k')
+hold on
+plot(exp(Res.ProposedPars(:,3)),'g')
+plot(exp(Res.Mus(:,3)))
+plot(exp(Res.Mus(:,3) + sqrt(Res.SamplCovs(:,3,3))),'r')
+plot(exp(Res.Mus(:,3) - sqrt(Res.SamplCovs(:,3,3))),'r')
+hold off
+ylim([min(exp(Res.Pars(:,3)))-2*std(exp(Res.Pars(:,3))) max(exp(Res.Pars(:,3)))+2*std(exp(Res.Pars(:,3)))])
+subplot(16,1,16)
+plot(1,0,'o','MarkerFaceColor',[Res.CompInds(1)/maxind,0,0])
+hold on
+for i = 1:size(Res.Mus,1)
+    plot(i,0,'o','MarkerFaceColor',[Res.CompInds(i)/maxind,0,0],'MarkerEdgeColor',[Res.CompInds(i)/maxind,0,0])
+end
+hold off
+set(gca,'YTickLabel',{''})
+set(gca,'XTickLabel',{''})

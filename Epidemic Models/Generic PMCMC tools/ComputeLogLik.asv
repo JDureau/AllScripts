@@ -1,0 +1,6 @@
+function LogLik = SEIR_ComputeLogLik(Data,Model,Parameters)
+
+
+Parameters.LengthPaths = si;
+    TempPath = Parameters.Pars(1:n);
+Temp = SEIR_PathLik(Data, Model,Parameters);

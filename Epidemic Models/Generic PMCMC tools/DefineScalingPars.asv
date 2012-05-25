@@ -1,0 +1,4 @@
+function Parameters = DefineScalingPars(ThetasSamples, Parameters)
+
+Parameters.ScalingMeans = mean(ThetasSamples');
+Parameters.ScalingStds = std(ThetasSamples' - mean(ThetasSamples')*ones(size(ThetasSamples')));

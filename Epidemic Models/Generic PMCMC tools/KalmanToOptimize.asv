@@ -1,0 +1,11 @@
+function mLogLik = KalmanToOptimize(Pars,Data,Parameters)
+
+
+Names = Parameters.EstimatedParameterNames;
+for i = 1:length(Names)
+    Parameters.(['Log' Names{i}]) = Pars(Parameters.([Names{i} 'Index']));
+end
+
+Parameters = UpdateParsLogToNoLog(Parameters);
+Temp = EstimationEKF(Data, Parameters);
+mLogLik = -Temp.LogLik;

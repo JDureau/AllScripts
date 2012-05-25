@@ -1,0 +1,13 @@
+function prior = NormalLogitPrior(Name,Parameters,TransfValues,Values)
+
+
+if nargin == 2
+    prior = exp(Parameters.(Name).TransfValue)/((1+exp(Parameters.(Name).TransfValue)^2)*normpdf(Parameters.(Name).Value,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+    if or(isnan(prior),isinf(prior))
+        prior = 1/((1+exp(-Parameters.(Name).TransfValue))^2)*normpdf(Parameters.(Name).Value,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+    end
+else 
+    prior = exp(TransfValues)./((ones(size(TransfValues))+exp(TransfValues)).^2).*normpdf(Values,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+    inds = find(isnan(prior));
+    prior(inds) = 1./((1+exp(-TransfValues(inds))).^2).*normpdf(Values(inds),Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+end

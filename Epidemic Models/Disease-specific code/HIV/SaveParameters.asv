@@ -1,0 +1,592 @@
+%% Saving priors
+
+%% Mysore
+
+% SavePath = '/Users/dureaujoseph/Documents/Taf/These/Results/Avahan';
+SavePath = 'S:\Results';
+% 
+% load([SavePath '/ForCovForHIVTransfTetas.mat'])
+% Cov = cov(ResRW.TransfThetas');
+
+
+Parameters = struct();
+
+% Initializing all model parameters
+% Parameters.CovInit = Cov;
+Parameters.TotalFSW.Value = 2144;
+Parameters.TotalFSW.Min = 804;
+Parameters.TotalFSW.Max = 3752;
+Parameters.TotalFSW.Estimates = 0;
+Parameters.TotalFSW.TransfType = 'Log';
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.DerInitialFt.TransfType = 'Logit';
+Parameters.DerInitialFt.Init = 1;
+Parameters.InitialFt.Value = 0.5;
+Parameters.InitialFt.Min = -10^14;
+Parameters.InitialFt.Max = 10^14;
+Parameters.InitialFt.MaxLim = 0.95;
+Parameters.InitialFt.MinLim = 0.05;
+Parameters.InitialFt.Estimated = 1;
+Parameters.InitialFt.TransfType = 'Logit';
+Parameters.InitialFt.Init = 1;
+Parameters.SecondFt.Value = 0.5;
+Parameters.SecondFt.Min = -10^14;
+Parameters.SecondFt.Max = 10^14;
+Parameters.SecondFt.MaxLim = 0.97;
+Parameters.SecondFt.MinLim = 0.03;
+Parameters.SecondFt.Estimated = 0;
+Parameters.SecondFt.TransfType = 'Logit';
+Parameters.ThirdFt.Value = 0.5;
+Parameters.ThirdFt.Min = -10^14;
+Parameters.ThirdFt.Max = 10^14;
+Parameters.ThirdFt.MaxLim = 0.97;
+Parameters.ThirdFt.MinLim = 0.03;
+Parameters.ThirdFt.Estimated = 0;
+Parameters.ThirdFt.TransfType = 'Logit';
+Parameters.FourthFt.Value = 0.5;
+Parameters.FourthFt.Min = -10^14;
+Parameters.FourthFt.Max = 10^14;
+Parameters.FourthFt.MaxLim = 0.97;
+Parameters.FourthFt.MinLim = 0.03;
+Parameters.FourthFt.Estimated = 0;
+Parameters.FourthFt.TransfType = 'Logit';
+Parameters.FifthFt.Value = 0.5;
+Parameters.FifthFt.Min = -10^14;
+Parameters.FifthFt.Max = 10^14;
+Parameters.FifthFt.MaxLim = 0.97;
+Parameters.FifthFt.MinLim = 0.03;
+Parameters.FifthFt.Estimated = 0;
+Parameters.FifthFt.TransfType = 'Logit';
+Parameters.SixthFt.Value = 0.5;
+Parameters.SixthFt.Min = -10^14;
+Parameters.SixthFt.Max = 10^14;
+Parameters.SixthFt.MaxLim = 0.97;
+Parameters.SixthFt.MinLim = 0.03;
+Parameters.SixthFt.Estimated = 0;
+Parameters.SixthFt.TransfType = 'Logit';
+Parameters.SeventhFt.Value = 0.7;
+Parameters.SeventhFt.Min = -10^14;
+Parameters.SeventhFt.Max = 10^14;
+Parameters.SeventhFt.MaxLim = 0.96;
+Parameters.SeventhFt.MinLim = 0.03;
+Parameters.SeventhFt.Estimated = 0;
+Parameters.SeventhFt.TransfType = 'Logit';
+Parameters.EigthFt.Value = 0.7;
+Parameters.EigthFt.Min = -10^14;
+Parameters.EigthFt.Max = 10^14;
+Parameters.EigthFt.MaxLim = 0.96;
+Parameters.EigthFt.MinLim = 0.03;
+Parameters.EigthFt.Estimated = 0;
+Parameters.EigthFt.TransfType = 'Logit';
+Parameters.NinethFt.Value = 0.7;
+Parameters.NinethFt.Min = -10^14;
+Parameters.NinethFt.Max = 10^14;
+Parameters.NinethFt.MaxLim = 0.96;
+Parameters.NinethFt.MinLim = 0.03;
+Parameters.NinethFt.Estimated = 0;
+Parameters.NinethFt.TransfType = 'Logit';
+Parameters.TenthFt.Value = 0.7;
+Parameters.TenthFt.Min = -10^14;
+Parameters.TenthFt.Max = 10^14;
+Parameters.TenthFt.MaxLim = 0.96;
+Parameters.TenthFt.MinLim = 0.03;
+Parameters.TenthFt.Estimated = 0;
+Parameters.TenthFt.TransfType = 'Logit';
+Parameters.InitialIPropF.Value = 0.002;
+% Parameters.InitialIPropF.Min = 0;
+% Parameters.InitialIPropF.Max = 0.04;
+Parameters.InitialIPropF.Min = -10^14;
+Parameters.InitialIPropF.Max =  10^14;
+Parameters.InitialIPropF.MaxLim = 0.10;
+Parameters.InitialIPropF.MinLim = 0;
+Parameters.InitialIPropF.Estimated = 1;
+Parameters.InitialIPropF.TransfType = 'Logit';
+Parameters.InitialIPropF.Init = 1;
+Parameters.InitialIPropM.Value = 0.002;
+% Parameters.InitialIPropM.Min = 0;
+% Parameters.InitialIPropM.Max = 0.02;
+Parameters.InitialIPropM.Min = -10^14;
+Parameters.InitialIPropM.Max =  10^14;
+Parameters.InitialIPropM.MaxLim = 0.1;
+Parameters.InitialIPropM.MinLim = 0;
+Parameters.InitialIPropM.Estimated = 1;
+Parameters.InitialIPropM.TransfType = 'Logit';
+Parameters.InitialIPropM.Init = 1;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotMFactor.Value = 12.3;
+Parameters.TotMFactor.Min = -10^14;
+Parameters.TotMFactor.Max = 10^14;
+Parameters.TotMFactor.MinLim = 7;
+Parameters.TotMFactor.MaxLim = 19;
+Parameters.TotMFactor.Estimated = 1;
+Parameters.TotMFactor.TransfType = 'Logit';
+Parameters.TotMFactor.Init = 1;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.Alpham1.Value = 93;
+Parameters.Alpham1.Min = -10^14;
+Parameters.Alpham1.Max = 10^14;
+Parameters.Alpham1.MinLim = 87; % was 92
+Parameters.Alpham1.MaxLim = 138.5;
+Parameters.Alpham1.Estimated = 1;
+Parameters.Alpham1.TransfType = 'Logit';
+Parameters.Alpham1.PlotInv = 1;
+Parameters.MuFm1.Value = 50;
+Parameters.MuFm1.Min = -10^14;
+Parameters.MuFm1.Max =  10^14;
+Parameters.MuFm1.MinLim = 45.4588; % was 53 switched to 45 (street based might lower the average)
+Parameters.MuFm1.MaxLim = 53.67;
+Parameters.MuFm1.Estimated = 1;
+Parameters.MuFm1.TransfType = 'Logit';
+Parameters.MuFm1.PlotInv = 1;
+Parameters.MuMm1.Value = 170;
+Parameters.MuMm1.Min = -10^14;
+Parameters.MuMm1.Max = 10^14;
+Parameters.MuMm1.MinLim = 154.3;
+Parameters.MuMm1.MaxLim = 191.32;
+Parameters.MuMm1.Estimated = 1;
+Parameters.MuMm1.PlotInv = 1;
+Parameters.MuMm1.TransfType = 'Logit';
+Parameters.BetaMFPerAct.Value = 0.0032;
+Parameters.BetaMFPerAct.Min = -10^14;
+Parameters.BetaMFPerAct.Max =  10^14;
+Parameters.BetaMFPerAct.MinLim = 0.0006*1;
+Parameters.BetaMFPerAct.MaxLim = 0.0011*5;
+Parameters.BetaMFPerAct.Estimated = 1;
+Parameters.BetaMFPerAct.TransfType = 'Logit';
+Parameters.BetaFMPerAct.Value = 0.0048;
+Parameters.BetaFMPerAct.Min = -10^14;
+Parameters.BetaFMPerAct.Max =  10^14;
+Parameters.BetaFMPerAct.MinLim = 0.0001*1;
+Parameters.BetaFMPerAct.MaxLim = 0.0014*5;
+Parameters.BetaFMPerAct.Estimated = 1;
+Parameters.BetaFMPerAct.TransfType = 'Logit';
+Parameters.NumberActsPerClient.Value = 1.7;
+Parameters.NumberActsPerClient.Min = -10^14;
+Parameters.NumberActsPerClient.Max =  10^14;
+Parameters.NumberActsPerClient.MinLim = 1;
+Parameters.NumberActsPerClient.MaxLim = 2;
+Parameters.NumberActsPerClient.Estimated = 1;
+Parameters.NumberActsPerClient.TransfType = 'Logit';
+Parameters.BetaFM.Value = 1-(1-Parameters.BetaFMPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.BetaMF.Value = 1-(1-Parameters.BetaMFPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.eHIV.Value = 0.86;
+Parameters.eHIV.Min = -10^14;
+Parameters.eHIV.Max =  10^14;
+Parameters.eHIV.MaxLim = 0.95;
+Parameters.eHIV.MinLim = 0.8;
+Parameters.eHIV.Estimated = 1;
+Parameters.eHIV.TransfType = 'Logit';
+Parameters.CF1.Value = 21;
+Parameters.CF1.Min = -10^14;
+Parameters.CF1.Max =  10^14;
+Parameters.CF1.MinLim = 19.9;
+Parameters.CF1.MaxLim = 23.7;
+Parameters.CF1.Estimated = 1;
+Parameters.CF1.TransfType = 'Logit';
+Parameters.CF2.Value = 51;
+Parameters.CF2.Min = -10^14;
+Parameters.CF2.Max = 10^14;
+Parameters.CF2.MinLim = 46.3;
+Parameters.CF2.MaxLim =  54.0;
+Parameters.CF2.Estimated = 1;
+Parameters.CF2.TransfType = 'Logit';
+Parameters.SigmaRW.Value = 0.1;
+Parameters.SigmaRW.Min = -10^14;
+Parameters.SigmaRW.Max = 10^14;
+Parameters.SigmaRW.MinLim = 0;
+Parameters.SigmaRW.MaxLim = 0.4;
+Parameters.SigmaRW.Estimated = 1;
+Parameters.SigmaRW.TransfType = 'Logit';
+Parameters.SigmaOU.Value = 0.1;
+Parameters.SigmaOU.Min = -10^14;
+Parameters.SigmaOU.Max = 10^14;
+Parameters.SigmaOU.MinLim = 0;
+Parameters.SigmaOU.MaxLim = 50;
+Parameters.SigmaOU.Estimated = 0;
+Parameters.SigmaOU.TransfType = 'Log';
+Parameters.KappaOU.Value = 0.1;
+Parameters.KappaOU.Min = -10^14;
+Parameters.KappaOU.Max = 10^14;
+Parameters.KappaOU.MinLim = 0;
+Parameters.KappaOU.MaxLim = 50;
+Parameters.KappaOU.Estimated = 0;
+Parameters.KappaOU.TransfType = 'Log';
+Parameters.MuOU.Value = 0;
+Parameters.MuOU.Min = -10^14;
+Parameters.MuOU.Max = 10^14;
+Parameters.MuOU.MinLim = 0;
+Parameters.MuOU.MaxLim = 1;
+Parameters.MuOU.Estimated = 0;
+Parameters.MuOU.TransfType = 'Logit';
+Parameters.InitialDeriv = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters.StableCUseConstraint = 0;
+TellParsValues(Parameters)
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersMysore.mat'],'Parameters') 
+
+
+
+
+%% Belgaum
+
+
+Parameters = struct();
+
+% Initializing all model parameters
+% Parameters.CovInit = Cov;
+Parameters.TotalFSW.Value = 1742;
+Parameters.TotalFSW.Min = 804;
+Parameters.TotalFSW.Max = 3752;
+Parameters.TotalFSW.Estimates = 0;
+Parameters.TotalFSW.TransfType = 'Log';
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialFt.Value = 0.08;
+Parameters.InitialFt.Min = -10^14;
+Parameters.InitialFt.Max = 10^14;
+Parameters.InitialFt.MaxLim = 0.9;
+Parameters.InitialFt.MinLim = 0.03;
+Parameters.InitialFt.Estimated = 1;
+Parameters.InitialFt.TransfType = 'Logit';
+Parameters.SecondFt.Value = 0.08;
+Parameters.SecondFt.Min = -10^14;
+Parameters.SecondFt.Max = 10^14;
+Parameters.SecondFt.MaxLim = 0.9;
+Parameters.SecondFt.MinLim = 0.03;
+Parameters.SecondFt.Estimated = 1;
+Parameters.SecondFt.TransfType = 'Logit';
+Parameters.ThirdFt.Value = 0.08;
+Parameters.ThirdFt.Min = -10^14;
+Parameters.ThirdFt.Max = 10^14;
+Parameters.ThirdFt.MaxLim = 0.96;
+Parameters.ThirdFt.MinLim = 0.03;
+Parameters.ThirdFt.Estimated = 1;
+Parameters.ThirdFt.TransfType = 'Logit';
+Parameters.FourthFt.Value = 0.7;
+Parameters.FourthFt.Min = -10^14;
+Parameters.FourthFt.Max = 10^14;
+Parameters.FourthFt.MaxLim = 0.96;
+Parameters.FourthFt.MinLim = 0.03;
+Parameters.FourthFt.Estimated = 1;
+Parameters.FourthFt.TransfType = 'Logit';
+Parameters.FifthFt.Value = 0.7;
+Parameters.FifthFt.Min = -10^14;
+Parameters.FifthFt.Max = 10^14;
+Parameters.FifthFt.MaxLim = 0.96;
+Parameters.FifthFt.MinLim = 0.03;
+Parameters.FifthFt.Estimated = 1;
+Parameters.FifthFt.TransfType = 'Logit';
+Parameters.SixthFt.Value = 0.7;
+Parameters.SixthFt.Min = -10^14;
+Parameters.SixthFt.Max = 10^14;
+Parameters.SixthFt.MaxLim = 0.96;
+Parameters.SixthFt.MinLim = 0.03;
+Parameters.SixthFt.Estimated = 1;
+Parameters.SixthFt.TransfType = 'Logit';
+Parameters.InitialIPropF.Value = 0.02;
+Parameters.InitialIPropF.Min = 0;
+Parameters.InitialIPropF.Max = 0.04;
+Parameters.InitialIPropF.MaxLim = 0.10;
+Parameters.InitialIPropF.MinLim = 0;
+Parameters.InitialIPropF.Estimated = 1;
+Parameters.InitialIPropF.TransfType = 'Logit';
+Parameters.InitialIPropM.Value = 0.001;
+Parameters.InitialIPropM.Min = 0;
+Parameters.InitialIPropM.Max = 0.02;
+Parameters.InitialIPropM.MaxLim = 0.1;
+Parameters.InitialIPropM.MinLim = 0;
+Parameters.InitialIPropM.Estimated = 1;
+Parameters.InitialIPropM.TransfType = 'Logit';
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotMFactor.Value = 12;
+Parameters.TotMFactor.Min = -10^14;
+Parameters.TotMFactor.Max = 10^14;
+Parameters.TotMFactor.MinLim = 7;
+Parameters.TotMFactor.MaxLim = 35;
+Parameters.TotMFactor.Estimated = 1;
+Parameters.TotMFactor.TransfType = 'Logit';
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.Alpham1.Value = 110;
+Parameters.Alpham1.Min = -10^14;
+Parameters.Alpham1.Max = 10^14;
+Parameters.Alpham1.MinLim = 92;
+Parameters.Alpham1.MaxLim = 138.5;
+Parameters.Alpham1.Estimated = 1;
+Parameters.Alpham1.TransfType = 'Logit';
+Parameters.Alpham1.PlotInv = 1;
+Parameters.MuFm1.Value = 140;
+Parameters.MuFm1.Min = -10^14;
+Parameters.MuFm1.Max =  10^14;
+Parameters.MuFm1.MinLim = 128.35; 
+Parameters.MuFm1.MaxLim = 157.5175;
+Parameters.MuFm1.Estimated = 1;
+Parameters.MuFm1.TransfType = 'Logit';
+Parameters.MuFm1.PlotInv = 1;
+Parameters.MuMm1.Value = 110;
+Parameters.MuMm1.Min = -10^14;
+Parameters.MuMm1.Max = 10^14;
+Parameters.MuMm1.MinLim = 102.7177;
+Parameters.MuMm1.MaxLim = 124.1259;
+Parameters.MuMm1.Estimated = 1;
+Parameters.MuMm1.PlotInv = 1;
+Parameters.MuMm1.TransfType = 'Logit';
+Parameters.BetaMFPerAct.Value = 0.0029;
+Parameters.BetaMFPerAct.Min = -10^14;
+Parameters.BetaMFPerAct.Max =  10^14;
+Parameters.BetaMFPerAct.MinLim = 0.0006*1;
+Parameters.BetaMFPerAct.MaxLim = 0.0011*5;
+Parameters.BetaMFPerAct.Estimated = 1;
+Parameters.BetaMFPerAct.TransfType = 'Logit';
+Parameters.BetaFMPerAct.Value = 0.0048;
+Parameters.BetaFMPerAct.Min = -10^14;
+Parameters.BetaFMPerAct.Max =  10^14;
+Parameters.BetaFMPerAct.MinLim = 0.0001*1;
+Parameters.BetaFMPerAct.MaxLim = 0.0014*5;
+Parameters.BetaFMPerAct.Estimated = 1;
+Parameters.BetaFMPerAct.TransfType = 'Logit';
+Parameters.NumberActsPerClient.Value = 1.7;
+Parameters.NumberActsPerClient.Min = -10^14;
+Parameters.NumberActsPerClient.Max =  10^14;
+Parameters.NumberActsPerClient.MinLim = 1;
+Parameters.NumberActsPerClient.MaxLim = 2;
+Parameters.NumberActsPerClient.Estimated = 1;
+Parameters.NumberActsPerClient.TransfType = 'Logit';
+Parameters.BetaFM.Value = 1-(1-Parameters.BetaFMPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.BetaMF.Value = 1-(1-Parameters.BetaMFPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.eHIV.Value = 0.86;
+Parameters.eHIV.Min = -10^14;
+Parameters.eHIV.Max =  10^14;
+Parameters.eHIV.MaxLim = 0.95;
+Parameters.eHIV.MinLim = 0.8;
+Parameters.eHIV.Estimated = 1;
+Parameters.eHIV.TransfType = 'Logit';
+Parameters.CF1.Value = 23;
+Parameters.CF1.Min = -10^14;
+Parameters.CF1.Max =  10^14;
+Parameters.CF1.MinLim = 22.12;
+Parameters.CF1.MaxLim = 25.82;
+Parameters.CF1.Estimated = 1;
+Parameters.CF1.TransfType = 'Logit';
+Parameters.CF2.Value = 95;
+Parameters.CF2.Min = -10^14;
+Parameters.CF2.Max = 10^14;
+Parameters.CF2.MinLim = 84.82;
+Parameters.CF2.MaxLim =  103.8;
+Parameters.CF2.Estimated = 1;
+Parameters.CF2.TransfType = 'Logit';
+Parameters.SigmaRW.Value = 0.1;
+Parameters.SigmaRW.Min = -10^14;
+Parameters.SigmaRW.Max = 10^14;
+Parameters.SigmaRW.MinLim = 0;
+Parameters.SigmaRW.MaxLim = 0.4;
+Parameters.SigmaRW.Estimated = 1;
+Parameters.SigmaRW.TransfType = 'Logit';
+Parameters.InitialDeriv = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters.StableCUseConstraint = 0;
+TellParsValues(Parameters)
+ParametersBelgaum = Parameters;
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersBelgaum.mat'],'Parameters') 
+
+
+
+
+
+%% Bellary
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 105;
+Parameters.MuFm1.MinLim = 98.7; 
+Parameters.MuFm1.MaxLim = 118.35;
+Parameters.MuMm1.Value = 110;
+Parameters.MuMm1.MinLim = 105.602;
+Parameters.MuMm1.MaxLim = 127.77;
+Parameters.CF1.Value = 18;
+Parameters.CF1.MinLim = 16.52;
+Parameters.CF1.MaxLim = 20.08;
+Parameters.CF2.Value = 110;
+Parameters.CF2.MinLim = 81.18;
+Parameters.CF2.MaxLim =  122.08;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersBellary.mat'],'Parameters') 
+
+
+%% EastGodavry
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 100;
+Parameters.MuFm1.MinLim = 88.86; 
+Parameters.MuFm1.MaxLim = 106.14;
+Parameters.MuMm1.Value = 150;
+Parameters.MuMm1.MinLim = 138.3;
+Parameters.MuMm1.MaxLim = 170.3916;
+Parameters.CF1.Value = 23;
+Parameters.CF1.MinLim = 21.91;
+Parameters.CF1.MaxLim = 24.99;
+Parameters.CF2.Value = 85;
+Parameters.CF2.MinLim = 77.35;
+Parameters.CF2.MaxLim =  91.17;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersEastGodavry.mat'],'Parameters') 
+
+
+%% Guntur
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 72;
+Parameters.MuFm1.MinLim = 67.026; 
+Parameters.MuFm1.MaxLim = 79.54;
+Parameters.MuMm1.Value = 230;
+Parameters.MuMm1.MinLim = 208.57;
+Parameters.MuMm1.MaxLim = 269.844;
+Parameters.CF1.Value = 35;
+Parameters.CF1.MinLim = 33;
+Parameters.CF1.MaxLim = 37.1;
+Parameters.CF2.Value = 110;
+Parameters.CF2.MinLim = 99.9;
+Parameters.CF2.MaxLim =  120;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersGuntur.mat'],'Parameters') 
+
+
+
+%% Hyderabad
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 55;
+Parameters.MuFm1.MinLim = 49.907; 
+Parameters.MuFm1.MaxLim = 59.23147;
+Parameters.MuMm1.Value = 165;
+Parameters.MuMm1.MinLim = 147.1255;
+Parameters.MuMm1.MaxLim = 181.9588;
+Parameters.CF1.Value = 13;
+Parameters.CF1.MinLim = 12.4;
+Parameters.CF1.MaxLim = 13.8;
+Parameters.CF2.Value = 50;
+Parameters.CF2.MinLim = 44.47;
+Parameters.CF2.MaxLim =  52.94;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersHyderabad.mat'],'Parameters') 
+
+
+%% Visag
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 70;
+Parameters.MuFm1.MinLim = 64.2; 
+Parameters.MuFm1.MaxLim = 74.3;
+Parameters.MuMm1.Value = 92;
+Parameters.MuMm1.MinLim = 87.8;
+Parameters.MuMm1.MaxLim = 99.7;
+Parameters.CF1.Value = 35;
+Parameters.CF1.MinLim = 33.14;
+Parameters.CF1.MaxLim = 37.1;
+Parameters.CF2.Value = 92;
+Parameters.CF2.MinLim = 88.3;
+Parameters.CF2.MaxLim =  96.7;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersVisag.mat'],'Parameters') 
+
+
+%% Warangal
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 80;
+Parameters.MuFm1.MinLim = 73.2; 
+Parameters.MuFm1.MaxLim = 84.3;
+Parameters.MuMm1.Value = 92;
+Parameters.MuMm1.MinLim = 86.4;
+Parameters.MuMm1.MaxLim = 99.6;
+Parameters.CF1.Value = 21;
+Parameters.CF1.MinLim = 20.56;
+Parameters.CF1.MaxLim = 22.83;
+Parameters.CF2.Value = 75;
+Parameters.CF2.MinLim = 64.15;
+Parameters.CF2.MaxLim =  90.15;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersWarangal.mat'],'Parameters') 
+
+
+%% Yevatmal
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 45;
+Parameters.MuFm1.MinLim = 41.24; 
+Parameters.MuFm1.MaxLim = 54.40;
+Parameters.MuMm1.Value = 100;
+Parameters.MuMm1.MinLim = 91.47;
+Parameters.MuMm1.MaxLim = 110.116;
+Parameters.CF1.Value = 45;
+Parameters.CF1.MinLim = 39.84;
+Parameters.CF1.MaxLim = 51.37;
+Parameters.CF2.Value = 150;
+Parameters.CF2.MinLim = 125.73;
+Parameters.CF2.MaxLim =  217.88;
+% 
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersYevatmal.mat'],'Parameters') 
+
+
+%% Shimoga
+
+Parameters = ParametersBelgaum;
+
+
+Parameters.MuFm1.Value = 60;
+Parameters.MuFm1.MinLim = 57.13; 
+Parameters.MuFm1.MaxLim = 67.89;
+Parameters.MuMm1.Value = 140;
+Parameters.MuMm1.MinLim = 127.69;
+Parameters.MuMm1.MaxLim = 155.9;
+Parameters.CF1.Value = 9.7;
+Parameters.CF1.MinLim = 9.3;
+Parameters.CF1.MaxLim = 10.91;
+Parameters.CF2.Value = 50;
+Parameters.CF2.MinLim = 44.8;
+Parameters.CF2.MaxLim =  54.01;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersShimoga.mat'],'Parameters') 
+

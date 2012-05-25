@@ -1,0 +1,10 @@
+function [] = TellParsValues(Parameters)
+
+Names = Parameters.Names.Estimated;
+for i = 1:length(Names)
+    try
+        disp([Names{i} ': ' num2str(Parameters.(Names{i}).Value) ' (' num2str((Parameters.(Names{i}).Value-Parameters.(Names{i}).Min)/(Parameters.(Names{i}).Max-Parameters.(Names{i}).Min)*100,2) '%)'])
+    catch
+        disp([Names{i} ': ' num2str(Parameters.(Names{i}).Value)])
+    end
+end

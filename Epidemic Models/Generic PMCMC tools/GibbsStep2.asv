@@ -1,0 +1,51 @@
+function  TempPar = GibbsStep(Data, Model,Parameters, TempPar)
+
+% Theta given beta
+Names = Parameters.Names.Estimated;
+
+for i = 1:length(Names)
+    Parameters.CurrentPaths = TempPar.Paths;
+    Parameters.(Names{i}).TransfValue = TempPar.(Names{i}).TransfValue;
+    Parameters = UpdateParsTransfToNoTransf(Parameters);
+end
+
+for i = 1:length(Names)
+    Parameters.CurrentPaths = TempPar.Paths;
+    ParametersStar = Parameters;
+    StarPar = TempPar;
+    StarPar.(Names{i}).TransfValue = TempPar.(Names{i}).TransfValue + randn(1,1)*Parameters.GibbsEpsils(Parameters.(Names{i}).Index)*Parameters.(Names{i}).GibbsSigma;
+    ParametersStar.(Names{i}).TransfValue = StarPar.(Names{i}).TransfValue;
+    ParametersStar = UpdateParsTransfToNoTransf(ParametersStar);
+    if or(strcmp(Names{i},'SigmaRW'),strcmp(Names{i},'betainit'))
+        ParametersStar.CurrentPaths(1,:) = ParametersStar.betainit.Value + (Parameters.CurrentPaths(1,:) - Parameters.betainit.Value)/Parameters.SigmaRW.Value*ParametersStar.SigmaRW.Value;
+        StarPar.Paths = ParametersStar.CurrentPaths;
+    end
+    
+    Temp = DObs_PathLik(Data, Model,Parameters);
+    TempStar =  DObs_PathLik(Data, Model,ParametersStar);
+    LogPrior = log(Parameters.(Names{i}).Prior(Names{i},Parameters));
+    LogPriorStar = log(Parameters.(Names{i}).Prior(Names{i},ParametersStar));
+    LogCorr = log(Parameters.(Names{i}).CorrFunct(Names{i},Parameters));
+    LogCorrStar = log(Parameters.(Names{i}).CorrFunct(Names{i},ParametersStar));
+
+    plot(ParametersStar.CurrentPaths(1,:))
+    hold on
+    plot(Parameters.CurrentPaths(1,:),'g')
+    hold off
+    ylim([-1 1])
+    pause(0.01)
+    AccRate = TempStar.LogLik + LogPriorStar - LogCorrStar - (Temp.LogLik + LogPrior - LogCorr);
+    if log(rand(1,1))<AccRate
+        TempPar = StarPar;
+        Parameters = ParametersStar;
+    end
+end
+
+% beta given Theta
+Parameters.ForceTraj = 1;
+Parameters.ForcedTraj = squeeze(TempPar.Paths);
+Temp = EstimationSMCsmoothGen(Data,Model,Parameters);
+ind = ceil(rand(1,1)*Parameters.NbParticules);
+TempPar.Paths = squeeze(Temp.CompletePaths(ind,:,:));
+TempPar.LogLik = Temp.LogLik;
+

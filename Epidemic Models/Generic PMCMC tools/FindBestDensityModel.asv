@@ -1,0 +1,100 @@
+function DensityModel = FindBestDensityModel(Data,Parameters,ind)
+
+temps = {};
+BICs = [];
+if nargin ==2
+    for k = 1:20
+        try
+            temps{k} = gmdistribution.fit(Data,k);
+            BICs(k) = temps{k}.BIC;
+        catch
+            temps{k} = temps{k-1};
+            BICs(k) = Inf;
+        end
+    end
+    [b,ind] = min(BICs);
+else
+    ind;
+    temps{ind} = gmdistribution.fit(Data,ind);
+end
+
+if size(Data,2) == 2
+    scattercloud(Data(:,Parameters.BetaIndex),Data(:,Parameters.SigmaRWIndex))
+    hold on
+    ezcontour(@(x,y)pdf(temps{ind},[x,y]),[min(Data(:,1)) max(Data(:,1)), min(Data(:,2)), max(Data(:,2))]);
+    hold off
+    title(ind)
+    disp(['k is ' num2str(ind)])
+    DensityModel = temps{ind};
+elseif size(Data,2) == 3
+    figure()
+    scattercloud(Data(:,Parameters.BetaIndex),Data(:,Parameters.SigmaRWIndex))
+    hold on
+    gamma = mean(Data(:,Parameters.GammaIndex));
+    ezcontour(@(x,y)pdf(temps{ind},[x,gamma,y]),[min(Data(:,1)) max(Data(:,1)), min(Data(:,2)), max(Data(:,2))]);
+    hold off
+    title(ind)
+    disp(['k is ' num2str(ind)])
+    DensityModel = temps{ind};
+    title('\beta vs \sigma_{\lambda}') 
+    figure()
+    scattercloud(Data(:,Parameters.BetaIndex),Data(:,Parameters.GammaIndex))
+    hold on
+    sigmaRW = mean(Data(:,Parameters.SigmaRWIndex));
+    ezcontour(@(x,y)pdf(temps{ind},[x,y,sigmaRW]),[min(Data(:,1)) max(Data(:,1)), min(Data(:,3)), max(Data(:,3))]);
+    hold off
+    title(ind)
+    disp(['k is ' num2str(ind)])
+    DensityModel = temps{ind};
+    title('\beta vs \gamma')
+    figure()
+    scattercloud(Data(:,Parameters.GammaIndex),Data(:,Parameters.SigmaRWIndex))
+    hold on
+    beta = mean(Data(:,Parameters.BetaIndex));
+    ezcontour(@(x,y)pdf(temps{ind},[beta,x,y]),[min(Data(:,2)) max(Data(:,2)), min(Data(:,3)), max(Data(:,3))]);
+    hold off
+    title(ind)
+    disp(['k is ' num2str(ind)])
+    DensityModel = temps{ind};
+    title('\gamma vs \sigma_{\lambda}')
+else
+    Names = Parameters.EstimatedParameterNames;
+    k = length(Names);
+    clf
+    for i = 1:k
+        subplot(k,k,(i-1)*k + i)
+        hist(Data(:,i))
+        hold on
+        
+    end
+    for i = 1:k-1
+        for j = i+1:k
+            subplot(k,k,(i-1)*k + j)
+            scattercloud(exp(Data(:,j)),exp(Data(:,i)))
+        end
+    end
+    for i = 2:k
+        for j = 1:i-1
+            subplot(k,k,(i-1)*k + j)
+            scattercloud(Data(:,i),Data(:,j))
+            hold on
+            indi = Parameters.([Names{i} 'Index']);
+            indj = Parameters.([Names{j} 'Index']);            
+            mus = temps{ind}.mu(:,[indi indj]) ;
+            sigmas = temps{ind}.Sigma([indi indj],[indi indj],:);
+            weigths = temps{ind}.PComponents;
+            Dens = gmdistribution(mus,sigmas,weigths);
+            ezcontour(@(x,y)pdf(Dens,[x,y]),[min(Data(:,indi)) max(Data(:,indi)), min(Data(:,indj)), max(Data(:,indj))]);
+            hold off
+        end
+    end
+    for i = 1:k
+        subplot(k,k,i)
+        title(Names{i})
+    end
+    for i = 1:k
+        subplot(k,k,(i-1)*k+1)
+        ylabel(Names{i})
+    end
+end
+DensityModel = temps{ind};

@@ -1,0 +1,222 @@
+function ResultSMC = EstimationSMCsmoothAndGrad(Data, Parameters)
+
+
+NbResampling = Parameters.NbParticules;
+
+% Parameters
+Beta = Parameters.Beta;
+Gamma = Parameters.Gamma;
+SigmaObs = Parameters.SigmaObs;
+if Parameters.DiffusionType == 'Add'
+    SigmaLambda = Parameters.SigmaRW;
+elseif Parameters.DiffusionType == 'OUD'
+    SigmaLambda = Parameters.SigmaOU;
+    Kappa = Parameters.KappaOU;
+    Mu = Parameters.MuOU;
+end
+
+ind = 1;
+if Parameters.EstimatedVariables.Beta
+    Parameters.BetaInd = ind;
+    ind = ind+1;
+elseif Parameters.EstimatedVariables.Gamma
+    Parameters.GammaInd = ind;
+    ind = ind+1;
+elseif Parameters.EstimatedVariables.SigmaObs
+    Parameters.SigmaObsInd = ind;
+    ind = ind+1;
+elseif Parameters.DiffusionType == 'Add'
+    if Parameters.EstimatedVariables.SigmaRW
+        Parameters.SigmaRWInd = ind;
+        ind = ind+1;
+    end
+elseif Parameters.DiffusionType == 'OUD'
+    if Parameters.EstimatedVariables.SigmaOU
+        Parameters.SigmaOUInd = ind;
+        ind = ind+1;
+    elseif Parameters.EstimatedVariables.KappaOU
+        Parameters.SigmaOUInd = ind;
+        ind = ind+1;
+    elseif Parameters.EstimatedVariables.MuOU
+        Parameters.MuOUInd = ind;
+        ind = ind+1;
+    end
+end
+Grads = zeros(NbResampling,ind-1);
+Hesss = zeros(NbResampling,ind-1,ind-1);
+    
+NbVarsTot = size(Data.RealData,1);
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+ObservedVariables = Parameters.ObservedVariables;
+
+% Verifications
+if std(diff(ObservationInstants))>mean(diff(ObservationInstants))/100000
+    disp('Attention: IrregularTSteps')
+    die % For the moment, we don't deal with this. 
+    pause(2)
+end
+ObservationTStep = mean(diff(ObservationInstants));
+ComputationTStep = Parameters.ComputationTStep;
+if ComputationTStep>ObservationTStep
+    disp('Problem: CTStep>OTStep')
+    ComputationTStep = min(ComputationTStep,ObservationTStep);
+end
+
+NbTSteps = ceil(ObservationTStep/ComputationTStep);
+PotentialStatesCellVect = ones(NbResampling,NbVarsTot);
+InitialState = Data.RealData(:,1);
+PreviousState = InitialState;
+PosteriorMeansRecord = diag(InitialState)*ones(NbVarsTot,length(ObservationInstants));
+NbKeptSamples = NbResampling*ones(1,length(ObservationInstants));
+ProportionKept = [];
+
+ResampledParticules = zeros(length(ObservationInstants),4,NbResampling);
+for IndTime = 1:length(ObservationInstants)
+    ResampledParticules(IndTime,:,:) = diag(PreviousState)*ones(length(PreviousState),NbResampling);
+end
+
+CompleteLambdas = zeros(NbResampling,NbTSteps*(length(ObservationInstants)-1));
+
+for IndResampling = 1:NbResampling
+    PotentialStatesCellVect(IndResampling,:)=PreviousState;
+    CompleteLambdas(IndResampling,1) = PreviousState(4);
+    CompleteLambdas2(IndResampling,1) = PreviousState(4);
+end
+CumWeigths=(1:NbResampling)/NbResampling;
+
+
+Liks = ones(1,length(ObservationInstants));
+LogLik = 0;
+FathersTab = [];
+
+
+for IndTime = 2:length(ObservationInstants)
+    
+    RandU1 = rand(1,1)/NbResampling;
+    KeptSamples = zeros(1,NbResampling);
+    
+    Current = 1;
+    for IndResampling = 1:NbResampling
+        while CumWeigths(Current)<=RandU1+(IndResampling-1)/NbResampling
+            Current = Current+1;
+        end
+        KeptSamples(IndResampling) = Current;
+    end
+
+    
+    NewPotentialStatesCellVect = PotentialStatesCellVect(KeptSamples,:);
+    ResampledParticules = ResampledParticules(:,:,KeptSamples);
+    FathersTab(:,IndTime-1) = KeptSamples;
+       
+    rands = randn(NbResampling,NbTSteps);
+    tempNewPotentialStatesCellVect = NewPotentialStatesCellVect ;
+    for IndDiscr = 1:NbTSteps
+        tempNewPotentialStatesCellVect(:,1) = tempNewPotentialStatesCellVect(:,1) + (-NewPotentialStatesCellVect(:,4).*NewPotentialStatesCellVect(:,1).*NewPotentialStatesCellVect(:,2)+Beta*NewPotentialStatesCellVect(:,3))*ComputationTStep ;% + sqrt(ComputationTStep)*Parameters.SigmaDiffusion(1)*rands(:,IndDiscr,1);
+        tempNewPotentialStatesCellVect(:,2) = tempNewPotentialStatesCellVect(:,2) + ( NewPotentialStatesCellVect(:,4).*NewPotentialStatesCellVect(:,1).*NewPotentialStatesCellVect(:,2)-Gamma*NewPotentialStatesCellVect(:,2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(2)*rands(:,IndDiscr,2);
+        tempNewPotentialStatesCellVect(:,3) = tempNewPotentialStatesCellVect(:,3) + (-beta*NewPotentialStatesCellVect(:,3) + gamma*NewPotentialStatesCellVect(:,2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(:,IndDiscr,3);
+        if Parameters.DiffusionType =='OUD'
+            tempNewPotentialStatesCellVect(:,4) = tempNewPotentialStatesCellVect(:,4) + (Mu-tempNewPotentialStatesCellVect(:,4))*Kappa*ComputationTStep + sqrt(ComputationTStep)*SigmaLambda*rands(:,IndDiscr);            
+        elseif Parameters.DiffusionType =='Add'
+            tempNewPotentialStatesCellVect(:,4) = tempNewPotentialStatesCellVect(:,4) + sqrt(ComputationTStep)*Parameters.SigmaDiffusion(4)*rands(:,IndDiscr);
+        else
+            disp('Unknown diffusion type')
+            die
+        end
+        NewPotentialStatesCellVect = tempNewPotentialStatesCellVect;
+        CompleteLambdas(:,(IndTime-2)*NbTSteps + IndDiscr) = tempNewPotentialStatesCellVect(:,4);
+    end 
+    
+        
+    Weigths = ones(NbResampling,1);
+    for IndObservedVar = 1:length(Parameters.ObservedVariables)    
+        Weigths = Weigths.*normpdf(NewPotentialStatesCellVect(:,ObservedVariables(IndObservedVar)),Observations(ObservedVariables(IndObservedVar), IndTime),Parameters.SigmaObs(ObservedVariables(IndObservedVar))*Observations(ObservedVariables(IndObservedVar),IndTime));
+    end
+
+    
+    Liks(IndTime) = (mean(Weigths));
+    LogLik = LogLik + log(mean(Weigths));
+         
+    Weigths = Weigths/sum(Weigths);
+    ResampledParticules(IndTime,:,:) = NewPotentialStatesCellVect';
+    
+    LambdaN = PotentialStatesCellVect(:,4);
+    LambdaNm1 = ResampledParticules(IndTime-1,:,4)';
+    DeltaT = ObservationTStep;
+    if Parameters.DiffusionType = 'Add'
+        if Parameters.EstimatedVariables.Sigma
+            Grads(:,Parameters.SigmaRWInd) = Grads(:,Parameters.SigmaRWInd) - 1/SigmaLambda + (LambdaN-LambdaNm1).^2/(SigmaLambda^3*DeltaT);
+        end
+    end
+    
+    PotentialStatesCellVect = NewPotentialStatesCellVect;
+       
+    CumWeigths=cumsum(Weigths)/sum(Weigths);
+    ProportionKept(IndTime) = length(unique(KeptSamples))/length(KeptSamples);
+end
+
+for var = 1:length(PreviousState)
+    PosteriorMeansRecord(var,:) = mean(ResampledParticules(:,var,:),3);
+end
+
+NbSamplesForEstimation = ones(1,length(ObservationInstants));
+for i = 1:length(ObservationInstants)
+    NbSamplesForEstimation(i) = length(unique(ResampledParticules(i,1,:)));
+end
+
+
+%Resample last step:
+Current = 1;
+for IndResampling = 1:NbResampling
+    % Resample.
+%         Ind = find(CumWeigths>RandU1+(IndResampling-1)/NbResampling,1);
+%         KeptSamples(IndResampling) = Ind;
+    while CumWeigths(Current)<=RandU1+(IndResampling-1)/NbResampling
+        Current = Current+1;
+    end
+    KeptSamples(IndResampling) = Current;
+end
+ResampledParticules = ResampledParticules(:,:,KeptSamples);
+%     CompleteLambdas2 = CompleteLambdas2(KeptSamples,:);
+
+for IndTime = 1:length(ObservationInstants)
+    for var =1:4
+        q = quantile(ResampledParticules(IndTime,var,:),[0.025,0.975]);
+        Posterior975Record(var,IndTime) = q(1);
+        Posterior225Record(var,IndTime) = q(2);
+        PosteriorMeansRecord(var,IndTime) = mean(ResampledParticules(IndTime,var,:));
+    end
+    NbKeptSamples(IndTime) = length(unique(ResampledParticules(IndTime,1,:)));
+end
+
+
+FathersTab(:,end+1) = KeptSamples;
+
+FathersTab2 = FathersTab;
+RebuiltLambdas = zeros(size(CompleteLambdas2));
+test = [];
+for i = size(FathersTab,2):-1:2
+    RebuiltLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps) = CompleteLambdas(FathersTab2(:,i),(i-2)*NbTSteps + 1: (i-1)*NbTSteps);
+    FathersTab2(:,i-1) = FathersTab2(FathersTab2(:,i),i-1);
+%     test(i) = sum(sum(RebuiltLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps) == CompleteLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps)));
+end
+
+
+
+ResultSMC.PosteriorMeansRecord = PosteriorMeansRecord;
+ResultSMC.NbKeptSamples = NbKeptSamples;
+ResultSMC.NbParticules = NbResampling;
+ResultSMC.Data = Data;
+ResultSMC.Parameters = Parameters;
+ResultSMC.Posterior975Record = Posterior975Record;
+ResultSMC.Posterior225Record = Posterior225Record;
+ResultSMC.ResampledParticules = ResampledParticules;
+ResultSMC.Likelihood = prod(Liks);
+ResultSMC.Liks = Liks;
+ResultSMC.LogLik = LogLik;
+ResultSMC.RealTime = toc;
+ResultSMC.CompleteLambdas = RebuiltLambdas;
+ResultSMC.LikelihoodsNew = LikelihoodsNew;
+ResultSMC.ProportionKept = ProportionKept;
+
+

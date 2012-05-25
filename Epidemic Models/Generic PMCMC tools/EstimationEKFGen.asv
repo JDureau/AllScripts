@@ -1,0 +1,175 @@
+ function Result = EstimationEKFGen(Data, Model, Parameters)
+
+Parameters = Model.InitializeParameters(Parameters);
+ 
+CheckParametersGen(Parameters)
+
+if not(isfield(Parameters,'RWinEKF'))
+    Parameters.RWinEKF = 0;
+end
+
+
+tic
+NbVarsTot = Parameters.NbVariables;
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+NbComputingSteps = Data.NbComputingSteps;
+Parameters.NbObs = length(ObservationInstants) ;
+
+TStep     = Parameters.ComputationTStep;
+
+InitialState = Parameters.InitialState;
+
+
+m = InitialState;
+Cov = zeros(NbVarsTot,NbVarsTot);
+try    
+    Ps = Parameters.InitialCov;
+catch
+    Ps = Cov;
+end
+Cov = Ps;
+
+Liks = 1;
+LogLik = 0;
+LiksMeanTraj = 1;
+LogLikMeanTraj = 0;
+LiksTheoret = 1;
+LogLikTheoret = 0;
+ms = m;
+Covs = [];
+Covs(1,:,:)=Cov;
+
+% disp(m(3))
+
+for IndTime = 2:length(ObservationInstants)    
+    if not(mean(Cov == Cov')==1)
+        disp('pb')
+    end
+    Res = Model.EKF_projection(Data,Model,m,Cov,NbComputingSteps(IndTime),IndTime,Parameters);
+    Model = Res.Model;
+    mpred = Res.m;
+    Cov1 = Res.Cov;
+    if not(mean(Cov1 == Cov1')==1)
+        disp('pb')
+    end
+
+    
+    
+    
+    Ck = Model.ObservationJacobian{IndTime};
+    
+    % new attempt
+    predCov = Cov1;
+    
+    try
+        coeff = Parameters.MultCoeff.Value/10;
+    catch
+        coeff = 1;
+    end
+    IndObservedVar = Data.ObservedVariables(:,IndTime);
+    ypred = mpred(IndObservedVar);
+
+    
+    vk = coeff*Observations(IndObservedVar,IndTime) - ypred; 
+   
+    Rk = Model.ObservationMeasurementNoise{IndTime}';
+    Sk = Ck*Cov1*Ck' + Rk;
+    Sk
+    if Sk<0
+        disp('stop')
+    end
+    Kk = Cov1*Ck'*Sk^-1;
+    m = mpred + Kk*vk;
+    temp = (Kk*Sk*Kk' + (Kk*Sk*Kk')')/2; 
+    Cov1 = Cov1 - temp;
+    if not(mean(Cov1 == Cov1')==1)
+        disp('pb')
+    end
+    if sum(not(isreal(Cov)))
+        disp('pb')
+    end
+    [V,D] = eig(Cov1);
+    temp = real(eig(Cov1));
+    temp = max(temp,0);
+    D = diag(temp);
+    temp = ( V*D*V' + (V*D*V')')/2;
+    Cov = temp;
+   
+     if sum(not(isreal(Cov)))
+         disp('pb')
+     end
+   
+     
+    disp(m(8))
+    disp(mpred(6)/Parameters.TotM.Value*100)
+    die
+     
+    ms(:,IndTime) = m;
+    Covs(IndTime,:,:) = Cov;
+    
+    if isnan(Sk)
+        disp('oups')
+    end
+    
+    try
+        if strcmp(Parameters.DiffusionType,'AffineAdd')
+            if Parameters.RWinEKF
+                t = sum(log(normpdf(Res.deltabetas,0,sqrt(Parameters.ComputationTStep)*Parameters.SigmaRW.Value)));
+            else 
+                t = 0;
+            end
+            tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
+        elseif strcmp(Parameters.DiffusionType,'AffineInt')
+            t = 0;%sum(log(normpdf(diff(Res.deltabetas)/Parameters.ComputationTStep,0,sqrt(Parameters.ComputationTStep)*max(eps,Parameters.SigmaRW.Value))));
+            tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
+        else
+            tempLogLik = log(mvnpdf(vk,zeros(size(vk)),Sk));
+        end
+    catch
+        disp('pb')
+        tempLogLik = -Inf;
+    end
+    
+    
+    Liks(IndTime) = exp(tempLogLik);
+    LogLik = LogLik + tempLogLik;
+    if isinf(LogLik)
+        disp('inf loglik')
+    end
+    
+ 
+end
+
+LogPrior = 0;
+LogCorr = 0;
+Names = Parameters.Names.Estimated;
+
+for i = 1:length(Names)
+    temp = Parameters.(Names{i}).Prior(Names{i},Parameters);
+    LogPrior = LogPrior +log(temp);
+    temp = Parameters.(Names{i}).CorrFunct(Names{i},Parameters);
+    LogCorr = LogCorr + log(temp);
+end
+Result.LogPrior = LogPrior;
+Result.LogCorr = LogCorr;
+
+Result.Data = Data;
+Result.Parameters = Parameters;
+Result.PosteriorMeans = ms;
+Result.PosteriorCovs = Covs;
+Sigmas = [];
+for i = 1:NbVarsTot
+    Sigmas(i,:) = sqrt(Covs(:,i,i));
+end
+Result.Posterior975 = ms + 2*Sigmas;
+Result.Posterior025 = ms - 2*Sigmas;
+Result.Likelihood = prod(Liks);
+Result.Liks = Liks;
+if not(isreal(LogLik))
+    LogLik = 0;
+end
+% LogLik = LogLik + log(normpdf(exp(ms(6,4))-exp(ms(6,17)),0,0.1));
+Result.LogLik = LogLik;
+% disp(Parameters.SigmaRW.Value)
+

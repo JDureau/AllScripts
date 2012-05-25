@@ -1,0 +1,85 @@
+function [] = RunOnCluster(BigInd,SmallInd,IndMode,IndDiff)
+
+cd('/users/ecologie/dureau/src/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
+
+Modes = {'','_Biased','_Restricted','_AddingObs'};
+Diffs = {'Add','Logistic'};
+
+SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
+SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
+
+
+
+load([SavePath '/VIH_PlayingWithSigm_ResGens' Modes{IndMode} '_'  num2str(BigInd) '.mat'])
+%load(['VIH_PlayingWithSigm_ResGens' num2str(BigInd) '_Restricted.mat'])
+
+inds = 10*(SmallInd-1)+1:10*(SmallInd);
+Ress = {};
+for i = inds(1):inds(end)
+    
+       
+    if or(IndMode == 1, IndMode == 4)
+        Parameters = ResGens{i}.Parameters;
+    elseif IndMode == 4
+        Parameters = ResGens{i}.BiasedParameters;
+    elseif IndMode == 3
+        Parameters = ResGens{i}.RestrictedParameters;
+    end
+
+    if IndDiff == 1
+        Parameters.DiffusionType = 'Add';
+    elseif IndDiff == 2
+        Parameters.DiffusionType = 'Logistic';
+        Parameters.CUinit.Value = 0.2;
+        Parameters.CUinit.Min = -10^14;
+        Parameters.CUinit.Max = 10^14;
+        Parameters.CUinit.MaxLim = 0.99;
+        Parameters.CUinit.MinLim = 0.01;
+        Parameters.CUinit.Estimated = 1;
+        Parameters.CUinit.TransfType = 'Logit';
+        Parameters.CUinit.Init = 1;
+        Parameters.CUdelta.Value = 0.6;
+        Parameters.CUdelta.Min = -10^14;
+        Parameters.CUdelta.Max = 10^14;
+        Parameters.CUdelta.MaxLim = 0.99;
+        Parameters.CUdelta.MinLim = 0.01;
+        Parameters.CUdelta.Estimated = 1;
+        Parameters.CUdelta.TransfType = 'Logit';
+        Parameters.CUinfl.Init = 1;
+        Parameters.CUinfl.Value = 400;
+        Parameters.CUinfl.Min = -10^14;
+        Parameters.CUinfl.Max = 10^14;
+        Parameters.CUinfl.MaxLim = 600;
+        Parameters.CUinfl.MinLim = 0;
+        Parameters.CUinfl.Estimated = 1;
+        Parameters.CUinfl.TransfType = 'Logit';
+        Parameters.CUsteepness.Init = 1;
+        Parameters.CUsteepness.Value = 400;
+        Parameters.CUsteepness.Min = -10^14;
+        Parameters.CUsteepness.Max = 10^14;
+        Parameters.CUsteepness.MaxLim = 600;
+        Parameters.CUsteepness.MinLim = 0;
+        Parameters.CUsteepness.Estimated = 0;
+        Parameters.CUsteepness.TransfType = 'Logit';
+        
+        
+
+        Parameters = DefineEstimatedParametersIndexes(Parameters);
+        Parameters = DefineTransfFunctions(Parameters);
+        Parameters = UpdateParsNoTransfToTransf(Parameters);
+        Parameters = DefinePriors(Parameters);
+    else
+        'unknown diffusion'
+        die
+    end
+    
+    Res = HIVapplyInference(ResGens{i}.Data,Parameters);
+    
+    Ress{end+1} = Res;
+    save(['VIH_PlayingWithSigm_Results' Diffs{IndDiff} '_' Modes{IndMode} '_' num2str(BigInd) '_' num2str(SmallInd) '.mat'],'Ress')
+end

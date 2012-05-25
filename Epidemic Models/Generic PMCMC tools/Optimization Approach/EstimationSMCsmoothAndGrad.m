@@ -1,0 +1,343 @@
+function ResultSMC = EstimationSMCsmoothAndGrad(Data, Parameters)
+
+CheckParameters(Parameters)
+
+NbResampling = Parameters.NbParticules;
+
+% Parameters
+Beta = Parameters.Beta;
+Gamma = Parameters.Gamma;
+SigmaObs = Parameters.SigmaObs(2);
+if Parameters.DiffusionType == 'Add'
+    SigmaLambda = exp(Parameters.LogSigmaRW);
+elseif Parameters.DiffusionType == 'OUD'
+    SigmaLambda = Parameters.SigmaOU;
+    Kappa = Parameters.KappaOU;
+    Mu = log(Parameters.ExpMuOU);
+end
+
+ind = 1;
+Pars = [];
+Names = Parameters.EstimatedParameterNames;
+k = length(Names);
+for i = 1:k
+    Parameters.([Names{i} 'Ind']) = ind;
+    Pars(ind) = Parameters.(['Log' Names{i}]);
+    ind = ind+1;
+end
+
+NbParsEst = ind - 1;
+
+Der1JointScore = zeros(NbResampling,ind-1);
+Der2JointScore = zeros(NbResampling,ind-1,ind-1);
+Der3JointScore = zeros(NbResampling,ind-1,ind-1,ind-1);
+
+    
+NbVarsTot = size(Data.RealData,1);
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+ObservedVariables = Parameters.ObservedVariables;
+
+ObservationTStep = mean(diff(ObservationInstants));
+ComputationTStep = Parameters.ComputationTStep;
+DeltaT = ObservationTStep;
+
+NbTSteps = ceil(ObservationTStep/ComputationTStep);
+Variables = ones(NbResampling,NbVarsTot);
+dVariablesOvdBeta = zeros(NbResampling,NbVarsTot);
+d2VariablesOvdBeta2 = zeros(NbResampling,NbVarsTot);
+InitialState = Data.RealData(:,1);
+PreviousState = InitialState;
+PosteriorMeansRecord = diag(InitialState)*ones(NbVarsTot,length(ObservationInstants));
+NbKeptSamples = NbResampling*ones(1,length(ObservationInstants));
+ProportionKept = [];
+
+ResampledParticules = zeros(length(ObservationInstants),NbVarsTot,NbResampling);
+Particules =  zeros(length(ObservationInstants),NbVarsTot,NbResampling);
+
+for IndTime = 1:length(ObservationInstants)
+    Particules(IndTime,:,:) = diag(PreviousState)*ones(length(PreviousState),NbResampling);
+end
+
+if not(Parameters.NoLambdas)
+    CompleteLambdas = zeros(NbResampling,NbTSteps*(length(ObservationInstants)-1));
+end
+    
+for IndResampling = 1:NbResampling
+    Variables(IndResampling,:)=PreviousState;
+    if not(Parameters.NoLambdas)
+        CompleteLambdas(IndResampling,1) = PreviousState(4);
+    end
+end
+CumWeigths=(1:NbResampling)/NbResampling;
+
+
+Liks = ones(1,length(ObservationInstants));
+LogLik = 0;
+FathersTab = zeros(NbResampling,length(ObservationInstants)-1);
+
+
+for IndTime = 2:length(ObservationInstants)
+    
+    RandU1 = rand(1,1)/NbResampling;
+    KeptSamples = zeros(1,NbResampling);
+    
+    Current = 1;
+    for IndResampling = 1:NbResampling
+        while CumWeigths(Current)<=RandU1+(IndResampling-1)/NbResampling
+            Current = Current+1;
+        end
+        KeptSamples(IndResampling) = Current;
+    end
+
+    
+    Variables = Variables(KeptSamples,:);
+    dVariablesOvdBeta = dVariablesOvdBeta(KeptSamples,:);
+    d2VariablesOvdBeta2 = d2VariablesOvdBeta2(KeptSamples,:);
+    
+    TempVariables = Variables;
+    TempdVariablesOvdBeta = dVariablesOvdBeta;
+    Tempd2VariablesOvdBeta2 = d2VariablesOvdBeta2;
+    FathersTab(:,IndTime-1) = KeptSamples;
+    Der1JointScore = Der1JointScore(KeptSamples,:);
+    Der2JointScore = Der2JointScore(KeptSamples,:,:);
+    Der3JointScore = Der3JointScore(KeptSamples,:,:,:);
+
+       
+    rands = randn(NbResampling,NbTSteps);
+    LambdaNm1 = Variables(:,4);
+    
+    for IndDiscr = 1:NbTSteps
+        
+        % Variables
+        TempVariables(:,1) = TempVariables(:,1) + (-Variables(:,4).*Variables(:,1).*Variables(:,2)+Beta*Variables(:,3))*ComputationTStep ;% + sqrt(ComputationTStep)*Parameters.SigmaDiffusion(1)*rands(:,IndDiscr,1);
+        TempVariables(:,2) = TempVariables(:,2) + ( Variables(:,4).*Variables(:,1).*Variables(:,2)-Gamma*Variables(:,2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(2)*rands(:,IndDiscr,2);
+        TempVariables(:,3) = TempVariables(:,3) + (-Beta*Variables(:,3) + Gamma*Variables(:,2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(:,IndDiscr,3);
+        if Parameters.DiffusionType =='OUD'
+            TempVariables(:,4) = TempVariables(:,4) + (Mu-Variables(:,4))*Kappa*ComputationTStep + sqrt(ComputationTStep)*SigmaLambda*rands(:,IndDiscr);            
+        elseif Parameters.DiffusionType =='Add'
+            TempVariables(:,4) = TempVariables(:,4) + sqrt(ComputationTStep)*SigmaLambda*rands(:,IndDiscr);
+        else
+            disp('Unknown diffusion type')
+            die
+        end
+        
+        if not(Parameters.NoDerivatives)
+            % First Derivatives
+            TempdVariablesOvdBeta(:,1) = dVariablesOvdBeta(:,1) + ComputationTStep*(-Variables(:,4).*Variables(:,2).*dVariablesOvdBeta(:,1) - Variables(:,4).*dVariablesOvdBeta(:,2).*Variables(:,1) + Variables(:,3) + Beta * dVariablesOvdBeta(:,3));
+            TempdVariablesOvdBeta(:,2) = dVariablesOvdBeta(:,2) + ComputationTStep*( Variables(:,4).*Variables(:,2).*dVariablesOvdBeta(:,1)+  Variables(:,4).*dVariablesOvdBeta(:,2).*Variables(:,1) - Gamma*dVariablesOvdBeta(:,2));
+            TempdVariablesOvdBeta(:,3) = dVariablesOvdBeta(:,3) + ComputationTStep*( Gamma*dVariablesOvdBeta(:,2) - Variables(:,3) - Beta* dVariablesOvdBeta(:,3));
+
+            % Second Derivatives
+            Tempd2VariablesOvdBeta2(:,1) = d2VariablesOvdBeta2(:,1) + ComputationTStep*(-Variables(:,4).*Variables(:,2).*d2VariablesOvdBeta2(:,1) - 2*Variables(:,4).*dVariablesOvdBeta(:,1).*dVariablesOvdBeta(:,2) - Variables(:,4).*Variables(:,1).*d2VariablesOvdBeta2(:,2) + 2*dVariablesOvdBeta(:,3) + Beta*d2VariablesOvdBeta2(:,3));
+            Tempd2VariablesOvdBeta2(:,2) = d2VariablesOvdBeta2(:,2) + ComputationTStep*( Variables(:,4).*Variables(:,2).*d2VariablesOvdBeta2(:,1) + 2*Variables(:,4).*dVariablesOvdBeta(:,1).*dVariablesOvdBeta(:,2) + Variables(:,4).*Variables(:,1).*d2VariablesOvdBeta2(:,2) - Gamma*d2VariablesOvdBeta2(:,2));
+            Tempd2VariablesOvdBeta2(:,3) = d2VariablesOvdBeta2(:,3) + ComputationTStep*( Gamma*d2VariablesOvdBeta2(:,2) - 2*dVariablesOvdBeta(:,3) -Beta*d2VariablesOvdBeta2(:,3));
+        end
+            
+        Variables = TempVariables;
+        dVariablesOvdBeta = TempdVariablesOvdBeta;
+        d2VariablesOvdBeta2 = Tempd2VariablesOvdBeta2;
+        if not(Parameters.NoLambdas)
+            CompleteLambdas(:,(IndTime-2)*NbTSteps + IndDiscr) = TempVariables(:,4);
+        end 
+    end
+    
+    LambdaN = Variables(:,4);
+    
+        
+    Weigths = ones(NbResampling,1);
+    for IndObservedVar = 1:length(Parameters.ObservedVariables)    
+        Weigths = Weigths.*normpdf(Variables(:,ObservedVariables(IndObservedVar)),Observations(ObservedVariables(IndObservedVar), IndTime),Parameters.SigmaObs(ObservedVariables(IndObservedVar))*Observations(ObservedVariables(IndObservedVar),IndTime));
+    end
+
+    
+    Liks(IndTime) = (mean(Weigths));
+    LogLik = LogLik + log(mean(Weigths));
+         
+    Weigths = Weigths/sum(Weigths);
+    Particules(IndTime,:,:) = Variables';
+    
+    if not(Parameters.NoDerivatives)
+        if Parameters.DiffusionType == 'Add'
+            if Parameters.EstimatedVariables.SigmaRW
+                Der1JointScore(:,Parameters.SigmaRWIndex) = Der1JointScore(:,Parameters.SigmaRWIndex) - 1/SigmaLambda*ones(NbResampling,1) + (LambdaN-LambdaNm1).^2/(SigmaLambda^3*DeltaT);
+                Der2JointScore(:,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex) = Der2JointScore(:,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex) + 1/SigmaLambda^2*ones(NbResampling,1) - 3*(LambdaN-LambdaNm1).^2/(SigmaLambda^4*DeltaT);
+                Der3JointScore(:,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex) = Der3JointScore(:,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex,Parameters.SigmaRWIndex) - 2/SigmaLambda^3*ones(NbResampling,1) + 12*(LambdaN-LambdaNm1).^2/(SigmaLambda^5*DeltaT);
+            end 
+        end
+        if Parameters.EstimatedVariables.Beta
+            Der1JointScore(:,Parameters.BetaInd) = Der1JointScore(:,Parameters.BetaIndex)- dVariablesOvdBeta(:,2).*(Variables(:,2) - Observations(2,IndTime)*ones(NbResampling,1))/(SigmaObs*Observations(2,IndTime))^2;
+            Der2JointScore(:,Parameters.BetaInd) = Der2JointScore(:,Parameters.BetaIndex)- d2VariablesOvdBeta2(:,2).*(Variables(:,2) - Observations(2,IndTime)*ones(NbResampling,1))/(SigmaObs*Observations(2,IndTime))^2  - dVariablesOvdBeta(:,2).^2/(SigmaObs*Observations(2,IndTime))^2;
+        end
+    end
+       
+    CumWeigths=cumsum(Weigths)/sum(Weigths);
+    ProportionKept(IndTime) = length(unique(KeptSamples))/length(KeptSamples);
+end
+
+% for ivar = 1:length(PreviousState)
+%     PosteriorMeansRecord(ivar,:) = mean(ResampledParticules(:,ivar,:),3);
+% end
+
+% NbSamplesForEstimation = ones(1,length(ObservationInstants));
+% for i = 1:length(ObservationInstants)
+%     NbSamplesForEstimation(i) = length(unique(ResampledParticules(i,1,:)));
+% end
+
+
+% %Resample last step:
+% Current = 1;
+% for IndResampling = 1:NbResampling
+%     while CumWeigths(Current)<=RandU1+(IndResampling-1)/NbResampling
+%         Current = Current+1;
+%     end
+%     KeptSamples(IndResampling) = Current;
+% end
+% ResampledParticules = ResampledParticules(:,:,KeptSamples);
+
+if not(Parameters.NoDerivatives)
+    Der1JointScore = Der1JointScore(KeptSamples,:);
+    Der2JointScore = Der2JointScore(KeptSamples,:,:);
+    Der3JointScore = Der3JointScore(KeptSamples,:,:,:);
+end
+
+FathersTab(:,end+1) = KeptSamples;
+
+FathersTab2 = FathersTab;
+if not(Parameters.NoLambdas)
+    RebuiltLambdas = zeros(size(CompleteLambdas));
+end
+test = [];
+for i = size(FathersTab,2):-1:2
+    if not(Parameters.NoLambdas)
+        RebuiltLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps) = CompleteLambdas(FathersTab2(:,i),(i-2)*NbTSteps + 1: (i-1)*NbTSteps);
+    end
+    ResampledParticules(i,:,:) = Particules(i,:,FathersTab2(:,i));
+    FathersTab2(:,i-1) = FathersTab2(FathersTab2(:,i),i-1);
+%     test(i) = sum(sum(RebuiltLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps) == CompleteLambdas(:,(i-2)*NbTSteps + 1: (i-1)*NbTSteps)));
+end
+ResampledParticules(1,:,:) = Particules(1,:,FathersTab2(:,1));
+
+for IndTime = 1:length(ObservationInstants)
+    for ivar =1:4
+        q = quantile(ResampledParticules(IndTime,ivar,:),[0.025,0.975]);
+        Posterior975Record(ivar,IndTime) = q(1);
+        Posterior225Record(ivar,IndTime) = q(2);
+        PosteriorMeansRecord(ivar,IndTime) = mean(ResampledParticules(IndTime,ivar,:));
+    end
+    NbKeptSamples(IndTime) = length(unique(ResampledParticules(IndTime,1,:)));
+end
+
+
+
+
+if not(Parameters.NoDerivatives)
+    NbParsEst = size(Der1JointScore,2);
+    Grad = mean(Der1JointScore);
+    Hess = [];
+    for i = 1:NbParsEst
+        for j = 1:NbParsEst
+            Hess(i,j) = mean(Der2JointScore(:,i,j)) - Grad(i)*Grad(j) + mean(Der1JointScore(:,i).*Der1JointScore(:,j));
+        end
+    end
+    G = -Hess;
+    GParDer = zeros(NbParsEst,NbParsEst,NbParsEst);
+    for i = 1:NbParsEst
+        for j = 1:NbParsEst
+            for k = 1:NbParsEst
+                GParDer(i,j,k) = -mean(Der3JointScore(:,i,j,k)) ...
+                    - mean(Der2JointScore(:,j,k).*Der1JointScore(:,i)) ...
+                    - mean(Der2JointScore(:,i,k).*Der1JointScore(:,j)) ...
+                    - mean(Der2JointScore(:,j,i).*Der1JointScore(:,k)) ...
+                    + mean(Der1JointScore(:,i))*mean(Der2JointScore(:,j,k)) ...
+                    + mean(Der1JointScore(:,j))*mean(Der2JointScore(:,i,k)) ...
+                    + mean(Der1JointScore(:,k))*mean(Der2JointScore(:,i,j)) ...
+                    + mean(Der1JointScore(:,i))*mean(Der1JointScore(:,j).*Der1JointScore(:,k)) ...
+                    + mean(Der1JointScore(:,j))*mean(Der1JointScore(:,i).*Der1JointScore(:,k)) ...
+                    + mean(Der1JointScore(:,k))*mean(Der1JointScore(:,j).*Der1JointScore(:,i)) ...
+                    - 2*mean(Der1JointScore(:,i))*mean(Der1JointScore(:,j))*mean(Der1JointScore(:,k)) ...
+                    - mean(Der1JointScore(:,i).*Der1JointScore(:,i).*Der1JointScore(:,i));
+            end
+        end
+    end
+end
+if strcmp(Parameters.MCMCType, 'Lang')
+    if strcmp(Parameters.GMeth, 'PseudoCst')
+        NbParsEst = length(Parameters.Pars);
+        Grad = ComputeFirstDerivative(Parameters);
+        G = -ComputeSecondDerivative(Parameters);
+    end
+    if strcmp(Parameters.GradMeth,'Kalman')
+        ResGrad = KalmanNumericDerivatives(Data,Parameters);
+        Grad = ResGrad.Grad;
+        if not(isreal(Grad))
+            disp('Problem: complex value')
+        end
+    end
+end
+
+
+ResultSMC.PosteriorMeansRecord = PosteriorMeansRecord;
+ResultSMC.NbKeptSamples = NbKeptSamples;
+ResultSMC.NbParticules = NbResampling;
+ResultSMC.Data = Data;
+ResultSMC.Parameters = Parameters;
+ResultSMC.Posterior975Record = Posterior975Record;
+ResultSMC.Posterior225Record = Posterior225Record;
+ResultSMC.ResampledParticules = ResampledParticules;
+ResultSMC.Likelihood = prod(Liks);
+ResultSMC.Liks = Liks;
+ResultSMC.LogLik = LogLik;
+if not(Parameters.NoLambdas)
+    ResultSMC.CompleteLambdas = RebuiltLambdas;
+end
+ResultSMC.ProportionKept = ProportionKept;
+
+try
+    ResultSMC.Grad = Grad;
+catch
+    ResultSMC.Grad = [];
+end
+try        
+    ResultSMC.Hess = Hess;
+catch
+    ResultSMC.Hess = [];
+end
+    
+    
+if strcmp(Parameters.MCMCType, 'Lang')
+    if strcmp(Parameters.GMeth, 'one')
+        ResultSMC.G = eye(NbParsEst);
+        ResultSMC.GParDer = zeros(NbParsEst,NbParsEst);
+    elseif strcmp(Parameters.GMeth, 'GMM')
+        ind = PickRandComp(Scale((Pars)',Parameters),Parameters.DensityModel,Parameters);
+        ResultSMC.G = (diag(Parameters.ScalingStds)*squeeze(Parameters.DensityModel.Sigma(:,:,ind))*diag(Parameters.ScalingStds))^-1;
+        ResultSMC.GParDer = zeros(NbParsEst,NbParsEst);
+        ResultSMC.CompInd = ind;
+    elseif strcmp(Parameters.GMeth, 'cst given')
+        ResultSMC.G = Parameters.G;
+        ResultSMC.GParDer = zeros(NbParsEst,NbParsEst);
+    elseif strcmp(Parameters.GMeth, 'ful')
+        ResultSMC.G = G;
+        ResultSMC.GParDer = GParDer;
+    elseif strcmp(Parameters.GMeth, 'PseudoCst')
+        ResultSMC.G = G;
+        ResultSMC.GParDer = zeros(NbParsEst,NbParsEst);
+    end
+else
+    ResultSMC.G = [];
+    ResultSMC.GParDer = [];
+end
+if strcmp(Parameters.MCMCType, 'Rand')
+    if strcmp(Parameters.GMeth, 'GMM')
+        ind = PickRandComp(Scale((Pars)',Parameters),Parameters.DensityModel, Parameters);
+        ResultSMC.Cov = diag(Parameters.ScalingStds)*squeeze(Parameters.DensityModel.Sigma(:,:,ind))*diag(Parameters.ScalingStds);
+        ResultSMC.CompInd = ind;
+    elseif strcmp(Parameters.GMeth, 'cst given')
+        ResultSMC.Cov = Parameters.G^-1;
+        ResultSMC.CompInd = 1;
+    end
+end
+    
+    
+    

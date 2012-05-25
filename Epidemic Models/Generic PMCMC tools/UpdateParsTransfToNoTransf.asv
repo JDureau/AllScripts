@@ -1,0 +1,27 @@
+function Output = UpdateParsTransfToNoTransf(Parameters,Thetas)
+
+Names = Parameters.Names.Estimated;
+if nargin == 1
+    for i = 1:length(Names)
+        try
+            Parameters.(Names{i}).Value = eval(Parameters.(Names{i}).InvTransf);
+        catch
+            disp('you')
+        end
+    end
+    CheckParametersGen(Parameters)
+    Output = Parameters;
+elseif nargin ==2
+    Output = zeros(size(Thetas));
+    if not(size(Thetas,2) == length(Names))
+        disp('Format Problem')
+        die
+    end
+    for i = 1:length(Names)
+        ind = Parameters.(Names{i}).Index;
+        if strcmp(Parameters.(Names{i}).InvTransf,'Log')
+            Output(:,ind) = exp(Thetas(:,ind));
+        elseif strcmp(Parameters.(Names{i}).InvTransf,'Logit')
+            Output(:,ind) = InvLogitTransf(Thetas(:,ind),Min,Max)
+        end
+end

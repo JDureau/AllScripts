@@ -1,0 +1,86 @@
+function Res = HIV_SMC_projection(Variables,IndIt,NbIts,Data,Parameters,Path)
+
+
+
+    TempVariables = Variables;
+    rands = randn(Parameters.NbParticules ,NbIts);
+
+    TStep = Parameters.ComputationTStep;
+    
+    WentOutOrNot = ones(Parameters.NbParticules,1);
+    
+    
+    for IndDiscr = 1:NbIts
+        % Variables
+        TotF1 = Parameters.TotF1.Value;
+        TotF2 = Parameters.TotF2.Value;
+        TotM  = Parameters.TotM.Value;
+        TempVariables(:,1) = TempVariables(:,1) + ( Parameters.MuF.Value*(TotF1) + Parameters.Alpha.Value*Variables(:,2) - Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,1).*Variables(:,6)./TotM-Parameters.MuF.Value*Variables(:,1))*TStep;
+        TempVariables(:,2) = TempVariables(:,2) + ( Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,1).*Variables(:,6)./TotM - (Parameters.MuF.Value + Parameters.Alpha.Value)*Variables(:,2))*TStep;
+        TempVariables(:,3) = TempVariables(:,3) + ( Parameters.MuF.Value*(TotF2) + Parameters.Alpha.Value*Variables(:,4) - Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,3).*Variables(:,6)./TotM-Parameters.MuF.Value*Variables(:,3))*TStep;
+        TempVariables(:,4) = TempVariables(:,4) + ( Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,3).*Variables(:,6)./TotM - (Parameters.MuF.Value + Parameters.Alpha.Value)*Variables(:,4))*TStep;
+        TempVariables(:,5) = TempVariables(:,5) + ( Parameters.MuM.Value*(TotM) + Parameters.Alpha.Value*Variables(:,6) - Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*Variables(:,2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*Variables(:,4)./TotF2)-Parameters.MuM.Value*Variables(:,5))*TStep;
+        TempVariables(:,6) = TempVariables(:,6) + ( Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*Variables(:,9)).*Variables(:,5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*Variables(:,2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*Variables(:,4)./TotF2) - (Parameters.MuM.Value+Parameters.Alpha.Value)*Variables(:,6))*TStep;
+        TempVariables(:,7) = (TempVariables(:,2) + TempVariables(:,4))/(TotF1+TotF2)*100; 
+        TempVariables(:,8) = (TempVariables(:,6))/(TotM)*100;         
+        TransfFt = LogitTransf(TempVariables(:,9),0,1);
+%         if or(not(Parameters.StableCUseConstraint),sum(Data.NbComputingSteps(1:IndIt-1)) + IndDiscr>204/Parameters.ComputationTStep)
+%             if Parameters.DiffusionType =='OUD'
+%                 if IndDiscr<204/Parameters.ComputationTStep
+%                     Mu = Parameters.MuOU1.TransfValue;
+%                 else
+%                     Mu = Parameters.MuOU2.TransfValue;
+%                 end
+%                 TransfFt = TransfFt + (Mu-TransfFt)*Parameters.KappaOU.Value*TStep + sqrt(TStep)*Parameters.SigmaOU.Value*rands(:,IndDiscr);            
+%             elseif Parameters.DiffusionType =='Add'
+%                 TransfFt = TransfFt + sqrt(TStep)*Parameters.SigmaRW.Value*rands(:,IndDiscr);
+%             else
+%                 disp('Unknown diffusion type')
+%                 die
+%             end
+%             try
+%                 TempVariables(:,9) = InvLogitTransf(TransfFt,0,1);
+%             catch
+%                 die
+%             end
+%         end
+        if 1
+            if strcmp(Parameters.DiffusionType,'OUD')
+                if sum(Data.NbComputingSteps(1:IndIt-1)) + IndDiscr<204/Parameters.ComputationTStep
+                    Mu = Parameters.MuOU1.Value;
+                else
+                    Mu = Parameters.MuOU2.Value;
+                end
+                TempVariables(:,9) = min(1,max(0,TempVariables(:,9) + (Mu-TempVariables(:,9))*Parameters.KappaOU.Value*TStep + sqrt(TStep)*Parameters.SigmaOU.Value*rands(:,IndDiscr)));            
+            elseif strcmp(Parameters.DiffusionType ,'Add')
+                TempVariables(:,9) = min(1,max(0,TempVariables(:,9) + sqrt(TStep)*Parameters.SigmaRW.Value*rands(:,IndDiscr)));
+            elseif strcmp(Parameters.DiffusionType ,'Int')
+                TempVariables(:,9) = min(1,max(0,TempVariables(:,9) + sqrt(TStep)*Parameters.SigmaRW.Value*rands(:,IndDiscr)));
+            else
+                disp('Unknown diffusion type')
+                die
+            end
+            WentOutOrNot = WentOutOrNot.*(TempVariables(:,9)>=0).*(TempVariables(:,9)<=1);
+        end
+        TempVariables = max(0,TempVariables);
+        
+        if or (sum(sum(isnan(TempVariables)))>0, sum(sum((TempVariables)<0))>0)
+            disp('There''s a problem...')
+            die
+        end
+            
+        Variables = TempVariables;
+        if not(Parameters.NoPaths)
+            Path(:,:,sum(Data.NbComputingSteps(1:IndIt-1)) + IndDiscr) = TempVariables(:,Parameters.PathsToKeep);
+        end 
+
+    end
+    
+    if sum(sum(isnan(Variables)))>0
+        disp('There''s a problem...')
+        die
+    end
+
+    Res.WentOutOrNot = WentOutOrNot;
+    Res.Paths = Path;
+    Res.Variables = Variables; 

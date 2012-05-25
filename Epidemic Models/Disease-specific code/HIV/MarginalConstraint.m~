@@ -1,0 +1,31 @@
+function loss = MarginalConstraint(valout,valin,amplin,amplout,objective,bootinds)
+
+
+losses = [];
+for indboot = 1:size(bootinds,1)
+    tab = zeros(2,2);
+    for i = 1:length(amplin)
+        if amplout(i)>valout
+            if amplin(i)>valin
+                tab(1,2) = tab(1,2)+1;
+            else
+                tab(1,1) = tab(1,1)+1;
+            end
+        else
+            if amplin(i)>valin
+                tab(2,2) = tab(2,2)+1;
+            else
+                tab(2,1) = tab(2,1)+1;
+            end
+        end
+    end
+    losses(indboot) = tab(2,2)/(tab(2,2)+tab(1,2)))^2 + (tab(1,1)/(tab(1,1)+tab(1,2)))^2;
+
+end
+
+loss = mean(losses)
+% loss = abs(tab(1,2)/(tab(indval,indval)+tab(1,2))*100-objective);
+% loss = (tab(2,2)/(tab(2,2)+tab(1,2)))^2 + (tab(1,1)/(tab(1,1)+tab(1,2)))^2;
+
+% loss = abs(tab(2,2)/(tab(2,2)+tab(1,2))) +
+% abs(tab(1,1)/(tab(1,1)+tab(1,2)));r

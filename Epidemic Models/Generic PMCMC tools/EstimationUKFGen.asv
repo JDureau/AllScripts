@@ -1,0 +1,144 @@
+function Result = EstimationUKFGen(Data, Model, Parameters)
+
+% refs:
+% http://www.its.caltech.edu/~jimbeck/summerlectures/references/Unscented%2
+% 0Kalman%20filter.pdf
+
+Parameters = Model.InitializeParameters(Parameters);
+ 
+CheckParametersGen(Parameters)
+    
+
+
+tic
+NbVarsTot = Parameters.NbVariables;
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+NbComputingSteps = Data.NbComputingSteps;
+Parameters.NbObs = length(ObservationInstants) ;
+
+alpha = 10^-3 ; % according to algorithm and indications given on http://cslu.cse.ogi.edu/nsel/ukf/node6.html
+L = NbVarsTot;
+kappa = 0;
+beta = 2;
+lambda = 3-L;
+mWeigths = [lambda/(L+lambda) lambda/(2*L+2*lambda)*ones(1,2*L)];
+cWeigths = [lambda/(L+lambda)+(1-alpha^2+beta) lambda/(2*L+2*lambda)*ones(1,2*L)];
+% mWeigths = mWeigths/sum(mWeigths);
+% cWeigths = cWeigths/sum(cWeigths);
+
+TStep     = Parameters.ComputationTStep;
+
+InitialState = Parameters.InitialState;
+
+
+m = InitialState;
+Rk = Model.ObservationMeasurementNoise{2}';
+IndObservedVar = Data.ObservedVariables(:,2);
+Cov = Rk/10*eye(L);
+Cov(IndObservedVar,IndObservedVar) = Rk;
+
+
+Liks = 1;
+LogLik = 0;
+LiksMeanTraj = 1;
+LogLikMeanTraj = 0;
+LiksTheoret = 1;
+LogLikTheoret = 0;
+ms = m;
+Covs = [];
+Covs(1,:,:)=Cov;
+
+
+
+for IndTime = 2:length(ObservationInstants)    
+    if not(mean(Cov == Cov')==1)
+        disp('pb')
+    end
+    sigma_ms = [m repmat(m,1,L)+chol((L+lambda)*Cov) repmat(m,1,L)-chol((L+lambda)*Cov)];
+    Res = Model.UKF_projection(sigma_ms,NbComputingSteps(IndTime),IndTime,Parameters);
+    sigma_ms  = Res.sigma_ms ;
+    
+    m = (mWeigths*sigma_ms')';
+    
+    cov = zeros(L,L);
+    for i = 1:2*L+1
+        cov = cov + cWeigths(i)*((sigma_ms(:,i)-m)*(sigma_ms(:,i)-m)');
+    end
+    
+    Ck = Model.ObservationJacobian{IndTime};
+    
+    % new attempt
+    IndObservedVar = Data.ObservedVariables(:,IndTime);
+    sigma_mpreds = sigma_ms(IndObservedVar,:);
+    mpred = mWeigths*sigma_mpreds';
+    Rk = Model.ObservationMeasurementNoise{IndTime}';
+    
+    
+    Pyy = Rk;
+    Pxy = zeros(L,1);
+    for i = 1:2*L+1
+        Pyy = Pyy + cWeigths(i)*((sigma_mpreds(:,i)-mpred)*(sigma_mpreds(:,i)-mpred)');
+        Pxy = Pxy + cWeigths(i)*((sigma_ms(:,i)-m)*(sigma_mpreds(:,i)-mpred)');
+    end
+    
+    K = Pxy*Pyy^-1;
+    
+    m = m + K*(Observations(IndObservedVar,IndTime) - mpred);
+    TestSym(Cov)
+    tmp = K*(Pyy*(K')) ;
+    Cov = cov - (tmp+tmp')/2; 
+    try
+        TestSym(Cov)
+    catch
+        die
+    end
+    
+    
+    ms(:,IndTime) = m;
+    Covs(IndTime,:,:) = Cov;
+    
+   
+    try
+        tempLogLik = mvnpdf(Observations(IndObservedVar,IndTime) - mpred,zeros(size(Rk)),Pyy+Rk);
+    catch
+        disp('pb')
+        die
+    end
+    
+    
+    Liks(IndTime) = exp(tempLogLik);
+    LogLik = LogLik + tempLogLik;
+    if isinf(LogLik)
+        disp('inf loglik')
+    end
+end
+
+LogPrior = 0;
+Names = Parameters.Names.Estimated;
+ParametersForPriors = Parameters;
+for i = 1:length(Names)
+    temp = eval(Parameters.(Names{i}).Prior);
+    if isnan(temp)
+        temp = eval(Parameters.(Names{i}).Prior2);
+    end
+    LogPrior = LogPrior +log(temp);
+end
+Result.LogPrior = LogPrior;
+
+Result.Data = Data;
+Result.Parameters = Parameters;
+Result.PosteriorMeans = ms;
+Result.PosteriorCovs = Covs;
+Sigmas = [];
+for i = 1:NbVarsTot
+    Sigmas(i,:) = sqrt(Covs(:,i,i));
+end
+Result.Posterior975 = ms + 2*Sigmas;
+Result.Posterior025 = ms - 2*Sigmas;
+Result.Likelihood = prod(Liks);
+Result.Liks = Liks;
+if not(isreal(LogLik))
+    LogLik = 0;
+end
+Result.LogLik = LogLik;

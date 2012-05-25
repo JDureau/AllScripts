@@ -1,0 +1,741 @@
+% Main HIV clean
+
+%% load paths
+
+cd('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Epidemic Models\')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\General Tools')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Epidemic Models\Disease-specific code')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Epidemic Models\Disease-specific code\HIV')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Toolboxes\Resampling\pf_resampling')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Epidemic Models\Generic PMCMC tools')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Epidemic Models\Parameter Estimation')
+addpath('H:\My Documents\PhD Work\Matlab Scripts From Macbook\Toolboxes')
+
+
+%% Go
+
+
+SavePath = 'S:\Results';
+temp = load([SavePath '\ParametersMysore.mat']);
+ParametersMysore = temp.Parameters;
+
+temp = load([SavePath '\ParametersBelgaum.mat']);
+ParametersBelgaum = temp.Parameters;
+
+temp = load([SavePath '\ParametersBellary.mat']);
+ParametersBellary = temp.Parameters;
+
+temp = load([SavePath '\ParametersEastGodavry.mat']);
+ParametersEastGodavry = temp.Parameters;
+
+temp = load([SavePath '\ParametersGuntur.mat']);
+ParametersGuntur = temp.Parameters;
+
+temp = load([SavePath '\ParametersHyderabad.mat']);
+ParametersHyderabad = temp.Parameters;
+
+temp = load([SavePath '\ParametersVisag.mat']);
+ParametersVisag = temp.Parameters;
+
+temp = load([SavePath '\ParametersWarangal.mat']);
+ParametersWarangal = temp.Parameters;
+
+temp = load([SavePath '\ParametersYevatmal.mat']);
+ParametersYevatmal = temp.Parameters;
+
+temp = load([SavePath '\ParametersShimoga.mat']);
+ParametersShimoga = temp.Parameters;
+
+
+
+ObsYearsMysore3rds = [2004.667	2006.917    2008.834	2009.26];
+CIMysore3rds = [];
+ObsMysore3rds = [0.2611	0.2424 0.054 0.111];
+ObsMysore3rdsMin = [0.2193 0.1911 0.032663 0.06975];
+ObsMysore3rdsMax = [0.3028 0.2945 0.07557 0.14818];
+ObsVarsMysore3rds = [7 7 8 7];
+ObsYearsMysore2rds = [2004.667	2006.917    2008.834	];
+ObsMysore2rdsMin = [0.2193 0.1911 0.032663 ];
+ObsMysore2rdsMax = [0.3028 0.2945 0.07557 ];
+ObsMysore2rds = [0.2611	0.2424 0.054 ];
+ObsVarsMysore2rds = [7 7 8 ];
+
+
+
+Name = '\HIV_Mysore_3rounds';
+ParametersMysore.RealData = 1;
+ParametersMysore.ObsYears = ObsYearsMysore3rds;
+ParametersMysore.ObsVars = ObsVarsMysore3rds;
+ParametersMysore.Obs = ObsMysore3rds;
+ParametersMysore.ObsMin = ObsMysore3rdsMin;
+ParametersMysore.ObsMax = ObsMysore3rdsMax;
+ParametersMysore.NameToSave = Name;
+Res = HIVapplyInference([],ParametersMysore);
+
+SavePath = 'S:\Results';
+Res = load([SavePath Name ]);
+
+
+Name = '\HIV_Mysore_2rounds';
+ParametersMysore.RealData = 1;
+ParametersMysore.ObsYears = ObsYearsMysore2rds;
+ParametersMysore.ObsVars = ObsVarsMysore2rds;
+ParametersMysore.Obs = ObsMysore2rds;
+ParametersMysore.ObsMin = ObsMysore2rdsMin;
+ParametersMysore.ObsMax = ObsMysore2rdsMax;
+ParametersMysore.NameToSave = Name;
+Res = HIVapplyInference([],ParametersMysore);
+
+ 
+ObsYearsBelgaum3rds = [2005.834	2007.824    2008.584	2010.71];
+ObsBelgaum3rds = [0.339	0.062 0.273 0.223];
+ObsBelgaum3rdsMin = [0.2762 0.0363 0.2217  0.17552];
+ObsBelgaum3rdsMax = [0.4018 0.0877 0.3251  0.2695];
+ObsVarsBelgaum3rds = [7 8 7 7];
+ObsYearsBelgaum2rds = [2005.834	2007.824    2008.584 ];
+ObsBelgaum2rdsMin = [0.2762  0.0363 0.2217];
+ObsBelgaum2rdsMax = [0.4018  0.0877 0.3251];
+ObsBelgaum2rds = [0.339	0.062 0.273 ];
+ObsVarsBelgaum2rds = [7 8 7];
+
+
+Name = '\HIV_Belgaum_3rounds';
+ParametersBelgaum.RealData = 1;
+ParametersBelgaum.ObsYears = ObsYearsBelgaum3rds;
+ParametersBelgaum.ObsVars = ObsVarsBelgaum3rds;
+ParametersBelgaum.Obs = ObsBelgaum3rds;
+ParametersBelgaum.ObsMin = ObsBelgaum3rdsMin;
+ParametersBelgaum.ObsMax = ObsBelgaum3rdsMax;
+ParametersBelgaum.NameToSave = Name;
+Res = HIVapplyInference([],ParametersBelgaum);
+
+Name = '\HIV_Belgaum_3rounds';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsBelgaum3rds,ObsVarsBelgaum3rds,ObsBelgaum3rds,ObsBelgaum3rdsMin,ObsBelgaum3rdsMax,Name)
+
+Name = '\HIV_Belgaum_2rounds';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsBelgaum2rds,ObsVarsBelgaum2rds,ObsBelgaum2rds,ObsBelgaum2rdsMin,ObsBelgaum2rdsMax,Name)
+
+
+ObsYearsBellary = [2005.908	2007.873  2008.642	2010.865];
+ObsBellary = [0.156	0.060 0.142 0.0634];
+ObsBellaryMin = [0.1106 0.0258 0.1048 0.0377];
+ObsBellaryMax = [0.2003 0.0946 0.1776 0.0892];
+ObsVarsBellary = [7 8 7 7];
+
+Name = '\HIV_Bellary';
+HIVFullPMCMC(ParametersBellary,ObsYearsBellary,ObsVarsBellary,ObsBellary,ObsBellaryMin,ObsBellaryMax,Name)
+
+
+ObsYearsEastGodavry = [2006.25  2006.84 2009.25 2009.35];
+ObsEastGodavry = [0.263	0.083 0.233 0.096];
+ObsEastGodavryMin = [0.2004 0.0483 0.1514 0.041215];
+ObsEastGodavryMax = [0.3247 0.1184 0.3139 0.150556];
+ObsVarsEastGodavry = [7 8 7 8];
+
+Name = '\HIV_EastGodavry';
+HIVFullPMCMC(ParametersEastGodavry,ObsYearsEastGodavry,ObsVarsEastGodavry,ObsEastGodavry,ObsEastGodavryMin,ObsEastGodavryMax,Name)
+
+
+ObsYearsGuntur = [2006.38	2006.905   2009.53	2009.59];
+ObsGuntur = [0.213	0.066 0.0839 0.071];
+ObsGunturMin = [0.1639 0.0369 0.0429 0.021891];
+ObsGunturMax = [0.262 0.0956 0.125 0.1206];
+ObsVarsGuntur = [7 8 7 8];
+
+Name = '\HIV_Guntur';
+HIVFullPMCMC(ParametersGuntur,ObsYearsGuntur,ObsVarsGuntur,ObsGuntur,ObsGunturMin,ObsGunturMax,Name)
+
+
+ObsYearsHyderabad = [2006.16	2006.96   2009.47	2009.52];
+ObsHyderabad = [0.143	0.024 0.096 0.037];
+ObsHyderabadMin = [0.0906 0.07 0.045 0];
+ObsHyderabadMax = [0.1954 0.0405 0.147 0.0841];
+ObsVarsHyderabad = [7 8 7 8];
+
+Name = '\HIV_Hyderabad';
+HIVFullPMCMC(ParametersHyderabad,ObsYearsHyderabad,ObsVarsHyderabad,ObsHyderabad,ObsHyderabadMin,ObsHyderabadMax,Name)
+
+
+% ObsYearsVisag = [2006.37	2006.85  2009.24	2009.34];
+% % ObsVisag = [0.142	0.08 0.182 0.05];
+% ObsVisagMin = [];
+% ObsVisagMax = [];
+% ObsVarsVisag = [7 8 7 8];
+% 
+% Name = '\HIV_Visag';
+% HIVFullPMCMC(ParametersVisag,ObsYearsVisag,ObsVarsVisag,ObsVisag,Name)
+
+
+% ObsYearsWarangal = [ 2006.152 2006.754	2009.58	2009.678];
+% ObsWarangal = [0.108	0.067 0.149 0.028];
+% ObsVarsWarangal = [7 8 7 8];
+% 
+% Name = '\HIV_Warangal';
+% HIVFullPMCMC(ParametersWarangal,ObsYearsWarangal,ObsVarsWarangal,ObsWarangal,Name)
+
+
+ObsYearsYevatmal = [2006.337	2006.902    2009.728	2009.9];
+ObsYevatmal = [0.373	0.109 0.267 0.117];
+ObsYevatmalMin = [0.2391 0.075527 0.1805 0.065032];
+ObsYevatmalMax = [0.506 0.142355 0.3546 0.168657];
+ObsVarsYevatmal = [7 8 7 8];
+
+Name = '\HIV_Yevatmal';
+HIVFullPMCMC(ParametersYevatmal,ObsYearsYevatmal,ObsVarsYevatmal,ObsYevatmal,ObsYevatmalMin,ObsYevatmalMax,Name)
+
+
+ObsYearsShimoga = [2005.688	2007.943  2008.718];
+ObsShimoga = [0.0968	 0.023 0.0896];
+ObsShimogaMin = [0.0632 0.0085 0.0566];
+ObsShimogaMax = [0.1305 0.0514 0.1226];
+ObsVarsShimoga = [7 8 7];
+
+Name = '\HIV_Shimoga';
+HIVFullPMCMC(ParametersShimoga,ObsYearsShimoga,ObsVarsShimoga,ObsShimoga,ObsShimogaMin,ObsShimogaMax,Name)
+
+Name = '\HIV_Mysore_3rounds';
+Name = '\HIV_Mysore_2rounds';
+Name = '\HIV_Belgaum_3rounds';
+Name = '\HIV_Belgaum_2rounds';
+Name = '\HIV_Bellary';
+Name = '\HIV_EastGodavry';
+Name = '\HIV_Guntur';
+Name = '\HIV_Hyderabad';
+Name = '\HIV_Visag';
+Name = '\HIV_Warangal';
+Name = '\HIV_Yevatmal';
+Name = '\HIV_Shimoga';
+
+
+Names = {'\HIV_Mysore_3rounds','\HIV_Belgaum_3rounds','\HIV_Bellary','\HIV_EastGodavry','\HIV_Guntur','\HIV_Hyderabad','\HIV_Yevatmal','\HIV_Shimoga'};
+ToSave = {'Mysore','Belgaum','Bellary','EastGodavry','Guntur','Hyderabad','Yevatmal','Shimoga'};
+Path = 'H:\My Documents\PhD Work\Presentations\Poster ISSTDR\';
+for i = 2:length(Names)
+    SavePath = 'S:\Results';
+    load([SavePath Names{i} '.mat'])
+    ResRW.Parameters.TypeWork = 'ISSTDR Poster';
+    PlotResHIV(ResRW,ResRW.Parameters)
+    saveas(gcf,[Path ToSave{i} '.eps'], 'psc2')
+    disp(Names{i})
+    disp('start:')
+    disp(mean(squeeze(ResRW.Paths(:,9,1))))
+    disp(quantile(squeeze(ResRW.Paths(:,9,1)),0.025))
+    disp(quantile(squeeze(ResRW.Paths(:,9,1)),0.975))
+    disp('end:')
+    disp(mean(squeeze(ResRW.Paths(:,9,end))))
+    disp(quantile(squeeze(ResRW.Paths(:,9,end)),0.025))
+    disp(quantile(squeeze(ResRW.Paths(:,9,end)),0.975))
+end
+
+
+
+
+
+
+
+%% Validation
+
+
+SavePath = 'S:\Results';
+temp = load([SavePath '\ParametersMysore.mat']);
+ParametersMysore = temp.Parameters;
+
+temp = load([SavePath '\ParametersBelgaum.mat']);
+ParametersBelgaum = temp.Parameters;
+
+ObsYearsData1 = [2004.667	2006.917  2008.834	2009.26];
+ObsData1 = [0.284	0.216409 0.038612 0.1404];
+ObsData1Min = [0.23	0.166 0.0 0.095];
+ObsData1Max = [0.35	0.266 0.8 0.195];
+ObsVarsData1 = [7 7 8 7];
+
+ObsYearsData2 = [2004.667	2006.917  2008.834	2009.26];
+ObsData2 = [0.2989	0.2732 0.045 0.24908];
+ObsData2Min = [0.25	0.2232 0.00 0.20];
+ObsData2Max = [0.35	0.3232 0.09 0.30];
+ObsVarsData2 = [7 7 8 7];
+
+ObsYearsData3 = [2005.834	2007.824  2008.584	2010.71];
+ObsData3 = [0.335	0.0386 0.2948 0.27112];
+ObsData3Min = [0.285	0.000 0.2448 0.22112];
+ObsData3Max = [0.385	0.082 0.3448 0.32112];
+ObsVarsData3 = [7 8 7 7];
+
+ObsYearsData4 = [2005.834	2007.824  2008.584	2010.71];
+ObsData4 = [0.381	0.042 0.247 0.177238];
+ObsData4Min = [0.331	0.0 0.197 0.137];
+ObsData4Max = [0.431	0.047 0.297 0.217];
+ObsVarsData4 = [7 8 7 7];
+
+ObsYears,ObsVars,Obs,ObsMin,ObsMax,Name)
+
+Name = '\HIV_MikeDataSet1_Mysore';
+HIVFullPMCMC(ParametersMysore,ObsYearsData1,ObsVarsData1,ObsData1,ObsData1Min,ObsData1Max,Name)
+
+Name = '\HIV_MikeDataSet1_Belgaum';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsData1,ObsVarsData1,ObsData1,ObsData1Min,ObsData1Max,Name)
+
+Name = '\HIV_MikeDataSet2_Mysore';
+HIVFullPMCMC(ParametersMysore,ObsYearsData2,ObsVarsData2,ObsData2,ObsData2Min,ObsData2Max,Name)
+
+Name = '\HIV_MikeDataSet2_Belgaum';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsData2,ObsVarsData2,ObsData2,ObsData2Min,ObsData2Max,Name)
+
+
+Name = '\HIV_MikeDataSet3_Mysore';
+HIVFullPMCMC(ParametersMysore,ObsYearsData3,ObsVarsData3,ObsData3,ObsData3Min,ObsData3Max,Name)
+
+Name = '\HIV_MikeDataSet3_Belgaum';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsData3,ObsVarsData3,ObsData3,ObsData3Min,ObsData3Max,Name)
+
+Name = '\HIV_MikeDataSet4_Mysore';
+HIVFullPMCMC(ParametersMysore,ObsYearsData4,ObsVarsData4,ObsData4,ObsData4Min,ObsData4Max,Name)
+
+Name = '\HIV_MikeDataSet4_Belgaum';
+HIVFullPMCMC(ParametersBelgaum,ObsYearsData4,ObsVarsData4,ObsData4,ObsData4Min,ObsData4Max,Name)
+
+TrajsPath = 'H:\My Documents\PhD Work\Imperial Project\Data\Validation CU trajs\';
+temp = load([TrajsPath 'DataSet1.csv']);
+
+SavePath = 'S:\Results';
+load([SavePath Name '.mat'])
+ResRW.Parameters.TypeWork = 'ISSTDR Poster Val';
+ResRW.SimTraj = temp(:,2);
+PlotResHIV(ResRW,ResRW.Parameters)
+
+	FSW R1	clients R1	FSW R2	FSW R3
+	2004.667	2008.834	2006.917	2009.26
+102fr3X00792	0.284579	0.038612	0.216409	0.140494
+98hR3X00489  	0.298951	0.045019	0.273208	0.24908
+				
+	2005.834	2007.824	2008.584	2010.71
+975fnoY00435 	0.335081	0.038625	0.294871	0.271126
+124fitY00928	0.381032	0.042048	0.247365	0.177238
+
+
+
+
+%%
+
+% Load Mysore data and priors
+
+
+Parameters = struct();
+
+% Initializing all model parameters
+Parameters.TotalFSW.Value = 2144;
+Parameters.TotalFSW.Min = 804;
+Parameters.TotalFSW.Max = 3752;
+Parameters.TotalFSW.Estimates = 0;
+Parameters.TotalFSW.TransfType = 'Log';
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialFt.Value = 0.08;
+Parameters.InitialFt.Min = -10^14;
+Parameters.InitialFt.Max = 10^14;
+Parameters.InitialFt.MaxLim = 0.9;
+Parameters.InitialFt.MinLim = 0.03;
+Parameters.InitialFt.Estimated = 1;
+Parameters.InitialFt.TransfType = 'Logit';
+Parameters.SecondFt.Value = 0.08;
+Parameters.SecondFt.Min = -10^14;
+Parameters.SecondFt.Max = 10^14;
+Parameters.SecondFt.MaxLim = 0.9;
+Parameters.SecondFt.MinLim = 0.03;
+Parameters.SecondFt.Estimated = 1;
+Parameters.SecondFt.TransfType = 'Logit';
+Parameters.ThirdFt.Value = 0.08;
+Parameters.ThirdFt.Min = -10^14;
+Parameters.ThirdFt.Max = 10^14;
+Parameters.ThirdFt.MaxLim = 0.96;
+Parameters.ThirdFt.MinLim = 0.03;
+Parameters.ThirdFt.Estimated = 1;
+Parameters.ThirdFt.TransfType = 'Logit';
+Parameters.FourthFt.Value = 0.7;
+Parameters.FourthFt.Min = -10^14;
+Parameters.FourthFt.Max = 10^14;
+Parameters.FourthFt.MaxLim = 0.96;
+Parameters.FourthFt.MinLim = 0.03;
+Parameters.FourthFt.Estimated = 1;
+Parameters.FourthFt.TransfType = 'Logit';
+Parameters.FifthFt.Value = 0.7;
+Parameters.FifthFt.Min = -10^14;
+Parameters.FifthFt.Max = 10^14;
+Parameters.FifthFt.MaxLim = 0.96;
+Parameters.FifthFt.MinLim = 0.03;
+Parameters.FifthFt.Estimated = 1;
+Parameters.FifthFt.TransfType = 'Logit';
+Parameters.SixthFt.Value = 0.7;
+Parameters.SixthFt.Min = -10^14;
+Parameters.SixthFt.Max = 10^14;
+Parameters.SixthFt.MaxLim = 0.96;
+Parameters.SixthFt.MinLim = 0.03;
+Parameters.SixthFt.Estimated = 1;
+Parameters.SixthFt.TransfType = 'Logit';
+Parameters.InitialIPropF.Value = 0.002;
+Parameters.InitialIPropF.Min = 0;
+Parameters.InitialIPropF.Max = 0.04;
+Parameters.InitialIPropF.MaxLim = 0.010;
+Parameters.InitialIPropF.MinLim = 0;
+Parameters.InitialIPropF.Estimated = 1;
+Parameters.InitialIPropF.TransfType = 'Logit';
+Parameters.InitialIPropM.Value = 0.002;
+Parameters.InitialIPropM.Min = 0;
+Parameters.InitialIPropM.Max = 0.02;
+Parameters.InitialIPropM.MaxLim = 0.1;
+Parameters.InitialIPropM.MinLim = 0;
+Parameters.InitialIPropM.Estimated = 1;
+Parameters.InitialIPropM.TransfType = 'Logit';
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotMFactor.Value = 12.3;
+Parameters.TotMFactor.Min = -10^14;
+Parameters.TotMFactor.Max = 10^14;
+Parameters.TotMFactor.MinLim = 7;
+Parameters.TotMFactor.MaxLim = 19;
+Parameters.TotMFactor.Estimated = 1;
+Parameters.TotMFactor.TransfType = 'Logit';
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.Alpham1.Value = 93;
+Parameters.Alpham1.Min = -10^14;
+Parameters.Alpham1.Max = 10^14;
+Parameters.Alpham1.MinLim = 92; % was 92
+Parameters.Alpham1.MaxLim = 138.5;
+Parameters.Alpham1.Estimated = 1;
+Parameters.Alpham1.TransfType = 'Logit';
+Parameters.Alpham1.PlotInv = 1;
+Parameters.MuFm1.Value = 54;
+Parameters.MuFm1.Min = -10^14;
+Parameters.MuFm1.Max =  10^14;
+Parameters.MuFm1.MinLim = 53; % was 53 switched to 45 (street based might lower the average)
+Parameters.MuFm1.MaxLim = 66;
+Parameters.MuFm1.Estimated = 1;
+Parameters.MuFm1.TransfType = 'Logit';
+Parameters.MuFm1.PlotInv = 1;
+Parameters.MuMm1.Value = 90;
+Parameters.MuMm1.Min = -10^14;
+Parameters.MuMm1.Max = 10^14;
+Parameters.MuMm1.MinLim = 84;
+Parameters.MuMm1.MaxLim = 240;
+Parameters.MuMm1.Estimated = 1;
+Parameters.MuMm1.PlotInv = 1;
+Parameters.MuMm1.TransfType = 'Logit';
+Parameters.BetaMFPerAct.Value = 0.0032;
+Parameters.BetaMFPerAct.Min = -10^14;
+Parameters.BetaMFPerAct.Max =  10^14;
+Parameters.BetaMFPerAct.MinLim = 0.0006*2;
+Parameters.BetaMFPerAct.MaxLim = 0.0011*5;
+Parameters.BetaMFPerAct.Estimated = 1;
+Parameters.BetaMFPerAct.TransfType = 'Logit';
+Parameters.BetaFMPerAct.Value = 0.0048;
+Parameters.BetaFMPerAct.Min = -10^14;
+Parameters.BetaFMPerAct.Max =  10^14;
+Parameters.BetaFMPerAct.MinLim = 0.0001*2;
+Parameters.BetaFMPerAct.MaxLim = 0.0014*5;
+Parameters.BetaFMPerAct.Estimated = 1;
+Parameters.BetaFMPerAct.TransfType = 'Logit';
+Parameters.NumberActsPerClient.Value = 1.7;
+Parameters.NumberActsPerClient.Min = -10^14;
+Parameters.NumberActsPerClient.Max =  10^14;
+Parameters.NumberActsPerClient.MinLim = 1;
+Parameters.NumberActsPerClient.MaxLim = 3;
+Parameters.NumberActsPerClient.Estimated = 1;
+Parameters.NumberActsPerClient.TransfType = 'Logit';
+Parameters.BetaFM.Value = 1-(1-Parameters.BetaFMPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.BetaMF.Value = 1-(1-Parameters.BetaMFPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.eHIV.Value = 0.86;
+Parameters.eHIV.Min = -10^14;
+Parameters.eHIV.Max =  10^14;
+Parameters.eHIV.MaxLim = 0.9;
+Parameters.eHIV.MinLim = 0.8;
+Parameters.eHIV.Estimated = 1;
+Parameters.eHIV.TransfType = 'Logit';
+Parameters.CF1.Value = 16.3;
+Parameters.CF1.Min = -10^14;
+Parameters.CF1.Max =  10^14;
+Parameters.CF1.MinLim = 15.22;
+Parameters.CF1.MaxLim = 17.3;
+Parameters.CF1.Estimated = 1;
+Parameters.CF1.TransfType = 'Logit';
+Parameters.CF2.Value = 53.3;
+Parameters.CF2.Min = -10^14;
+Parameters.CF2.Max = 10^14;
+Parameters.CF2.MinLim = 47.37;
+Parameters.CF2.MaxLim =  56.6;
+Parameters.CF2.Estimated = 1;
+Parameters.CF2.TransfType = 'Logit';
+Parameters.SigmaRW.Value = 10;
+Parameters.SigmaRW.Min = -10^14;
+Parameters.SigmaRW.Max = 10^14;
+Parameters.SigmaRW.MinLim = 0;
+Parameters.SigmaRW.MaxLim = 50;
+Parameters.SigmaRW.Estimated = 1;
+Parameters.SigmaRW.TransfType = 'Logit';
+Parameters.InitialDeriv = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters.StableCUseConstraint = 0;
+TellParsValues(Parameters)
+
+Parameters.NbVariables = 10;
+Parameters.SigmaObs = 0.1;
+Parameters.Problem = 'ImperialHIV';
+Parameters.DiffusionType = 'Affine';
+Parameters.ObservationLength = 25*12;
+Parameters.ComputationTStep = 0.5;
+
+
+% t0 = jan 85.
+Data.Observations = zeros(10,5);
+Data.Observations(7,2) = 26.11;
+Data.Observations(7,3) = 24.24;
+Data.Observations(8,4) = 5.4;
+Data.Observations(7,5) = 11.10;
+Data.Instants = round([0 236 264 286 292]/(Parameters.ComputationTStep));
+Data.ObservedVariables = [ 0 7 7 8 7];
+Data.NbComputingSteps = [0 diff(Data.Instants)];
+
+HIVModel = struct();
+HIVModel.EKF_projection = @HIV_EKF_projection;
+HIVModel.InitializeParameters = @HIVInitialize;
+HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*Parameters.SigmaObs).*(Res.WentOutOrNot)';
+HIVModel.SMC_projection = @HIV_SMC_projection;
+
+temp7 = zeros(1,10);
+temp8 = zeros(1,10);
+temp7(1,7) = 1;
+temp8(1,8) = 1;
+HIVModel.ObservationJacobian = {};
+HIVModel.ObservationJacobian{2} = temp7;
+HIVModel.ObservationJacobian{3} = temp7;
+HIVModel.ObservationJacobian{4} = temp8;
+HIVModel.ObservationJacobian{5} = temp7;
+HIVModel.ObservationMeasurementNoise = {};
+HIVModel.ObservationMeasurementNoise{2} = (Parameters.SigmaObs*Data.Observations(7,2))^2;
+HIVModel.ObservationMeasurementNoise{3} = (Parameters.SigmaObs*Data.Observations(7,3))^2;
+HIVModel.ObservationMeasurementNoise{4} = (Parameters.SigmaObs*Data.Observations(8,4))^2;
+HIVModel.ObservationMeasurementNoise{5} = (Parameters.SigmaObs*Data.Observations(7,5))^2;
+
+
+
+
+% Kal Opt to find MLE parameters (no Cov so no update / rough variations of Ft)
+Names = Parameters.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Parameters.(Names{i}).Estimated = 1;
+    Initialization(i) = Parameters.(Names{i}).TransfValue ;
+end
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters.DiffusionType = 'AffineInt';
+
+[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,Parameters),Initialization,optimset('MaxIter',4000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+Initialization = x;
+Names = Parameters.Names.Estimated;
+for i = 1:length(Names)
+    Parameters.(Names{i}).TransfValue = (x(i));
+end
+Parameters = UpdateParsTransfToNoTransf(Parameters);
+TellParsValues(Parameters)
+Parameters.SigmaRW.Value = 0.1;
+
+
+
+
+%%% Let's start PMCMC
+ParametersPMCMC = Parameters;
+
+% first, model parameters are fixed to MLE, we just estimate the diffusion
+% parameters
+ParametersPMCMC.NbParticules = 1000;
+ParametersPMCMC.StableCUseConstraint = 0;
+ParametersPMCMC.NoPaths = 0;
+ParametersPMCMC.PathsToKeep = [7 8 9];
+ParametersPMCMC.DiffusionType = 'Add';
+ParametersPMCMC.MCMCType = 'jiji';
+ParametersPMCMC.GMeth = 'cst given';
+Names = ParametersPMCMC.Names.All;
+for i = 1:length(Names);
+    ParametersPMCMC.(Names{i}).Estimated = 0;
+end
+
+ParametersPMCMC.SigmaRW.Value = 0.1;
+ParametersPMCMC.SigmaRW.Min = 0;
+ParametersPMCMC.SigmaRW.Max = 10^14;
+ParametersPMCMC.SigmaRW.Estimated = 1;
+ParametersPMCMC.SigmaRW.TransfType = 'Log';
+ParametersPMCMC = DefineEstimatedParametersIndexes(ParametersPMCMC);
+ParametersPMCMC = DefineTransfFunctions(ParametersPMCMC);
+ParametersPMCMC = UpdateParsNoTransfToTransf(ParametersPMCMC);
+ParametersPMCMC = DefinePriors(ParametersPMCMC);
+ResultSMC = EstimationSMCsmoothGen(Data, HIVModel, ParametersPMCMC)
+PlotresHIV(ResultSMC)
+
+% optimize RW parameters with SMC
+ParametersPMCMC.NoPaths = 0;
+Names = ParametersPMCMC.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = ParametersPMCMC.(Names{i}).TransfValue ;
+end
+[x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizeWithPrior(x,Data,HIVModel,ParametersPMCMC),Initialization,optimset('MaxIter',400,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',500));
+Names = ParametersPMCMC.Names.Estimated;
+for i = 1:length(Names)
+    ParametersPMCMC.(Names{i}).TransfValue = (x(i));
+end
+ParametersPMCMC = UpdateParsTransfToNoTransf(ParametersPMCMC);
+TellParsValues(ParametersPMCMC)
+
+
+
+
+% optimize all parameters.
+Names = ParametersPMCMC.Names.All;
+for i = 1:length(Names);
+    ParametersPMCMC.(Names{i}).Estimated = 0;
+end
+ParametersPMCMC.InitialIPropF.Estimated = 1;
+ParametersPMCMC.InitialIPropM.Estimated = 1;
+ParametersPMCMC.SigmaRW.Estimated = 1;
+ParametersPMCMC.TotMFactor.Estimated = 1;
+ParametersPMCMC.Alpha.Estimated = 1;
+ParametersPMCMC.MuF.Estimated = 1;
+ParametersPMCMC.MuMm1.Estimated = 1;
+ParametersPMCMC.BetaMFPerAct.Estimated = 1;
+ParametersPMCMC.BetaFMPerAct.Estimated = 1;
+ParametersPMCMC.NumberActsPerClient.Estimated = 1;
+ParametersPMCMC.eHIV.Estimated = 1;
+ParametersPMCMC.CF1.Estimated = 1;
+ParametersPMCMC.CF2.Estimated = 1;
+ParametersPMCMC = DefineEstimatedParametersIndexes(ParametersPMCMC);
+ParametersPMCMC = DefineTransfFunctions(ParametersPMCMC);
+ParametersPMCMC = UpdateParsNoTransfToTransf(ParametersPMCMC);
+ParametersPMCMC = DefinePriors(ParametersPMCMC);
+Names = ParametersPMCMC.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = ParametersPMCMC.(Names{i}).TransfValue ;
+end
+[x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizeWithPrior(x,Data,HIVModel,ParametersPMCMC),Initialization,optimset('MaxIter',300,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',2000));
+Names = ParametersPMCMC.Names.Estimated;
+for i = 1:length(Names)
+    ParametersPMCMC.(Names{i}).TransfValue = (x(i));
+end
+ParametersPMCMC = UpdateParsTransfToNoTransf(ParametersPMCMC);
+TellParsValues(ParametersPMCMC)
+
+% Real PMCMC
+Names = ParametersPMCMC.Names.All;
+for i = 1:length(Names);
+    ParametersPMCMC.(Names{i}).Estimated = 0;
+end
+ParametersPMCMC.SigmaRW.Estimated = 1;
+ParametersPMCMC.InitialIPropF.Estimated = 1;
+ParametersPMCMC.InitialIPropM.Estimated = 1;
+ParametersPMCMC.InitialFt.Estimated = 1;
+ParametersPMCMC.TotMFactor.Estimated = 1;
+ParametersPMCMC.NumberActsPerClient.Estimated = 1;
+ParametersPMCMC.eHIV.Estimated = 1;
+ParametersPMCMC.Alpha.Estimated = 1;
+ParametersPMCMC.MuF.Estimated = 1;
+ParametersPMCMC.MuM.Estimated = 1;
+ParametersPMCMC.BetaFMPerAct.Estimated = 1;
+ParametersPMCMC.BetaMFPerAct.Estimated = 1;
+ParametersPMCMC.CF1.Estimated = 1;
+ParametersPMCMC.CF2.Estimated = 1;
+ParametersPMCMC = DefineEstimatedParametersIndexes(ParametersPMCMC);
+ParametersPMCMC = DefineTransfFunctions(ParametersPMCMC);
+ParametersPMCMC = UpdateParsNoTransfToTransf(ParametersPMCMC);
+ParametersPMCMC = DefinePriors(ParametersPMCMC);
+
+
+Names = ParametersPMCMC.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = ParametersPMCMC.(Names{i}).TransfValue ;
+end
+ParametersPMCMC = DefineEstimatedParametersIndexes(ParametersPMCMC);
+ParametersPMCMC.DiffusionType = 'AffineAdd';
+
+[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersPMCMC),Initialization,optimset('MaxIter',4000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+Initialization = x;
+Names = ParametersPMCMC.Names.Estimated;
+ParametersKalman = ParametersPMCMC;
+for i = 1:length(Names)
+    ParametersKalman.(Names{i}).TransfValue = (x(i));
+end
+ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+TellParsValues(ParametersKalman)
+Names = ParametersKalman.Names.Estimated;
+for i = 1:length(Names)
+    ParametersKalman.(Names{i}).SamplStd = 0.001*ParametersKalman.(Names{i}).Value;
+end
+ResKal = KalmanNumericDerivativesWithPrior(Data,HIVModel,ParametersKalman);
+Test = mean(eig(-Res.Hess)>0)==1;
+Test
+
+
+
+% Define Cov
+Cov = [];
+Names = ParametersPMCMC.Names.Estimated;
+for i = 1:length(Names)
+    Cov(ParametersPMCMC.(Names{i}).Index,ParametersPMCMC.(Names{i}).Index) =  (0.1*ParametersPMCMC.(Names{i}).TransfValue)^2;
+end
+
+% Estimating only RW parameters:
+ParametersPMCMC.Epsil = 2;
+ParametersPMCMC.ComputeRWsamplCov = 0;
+dim = length(ParametersPMCMC.Names.Estimated);
+Cov =  2.38^2/dim*(-ResKal.Hess)^-1;
+ParametersPMCMC.G = Cov^-1;
+ParametersPMCMC.NoPaths = 1;
+ParametersPMCMC.MCMCType = 'Rand';
+ParametersPMCMC.GMeth = 'cst given';
+ParametersPMCMC.DiffusionType = 'Add';
+ParametersPMCMC.aim = 0.23;
+TempPar = ProposeInitialParameter(Data, HIVModel, ParametersPMCMC);
+% [Parameters, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
+ParametersPMCMC.Epsil = 1;
+ResRW1_RW_Calib_Rds_1_2_3 = RunEstimationMethod(Data, HIVModel,ParametersPMCMC,TempPar,5000);
+
+TempRes = ResRW1_RW_Calib_Rds_1_2_3;
+
+TempPar = TempRes.TempPar;
+ParametersPMCMC.NoPaths = 1;
+Cov = cov(TempRes.TransfThetas');
+ParametersPMCMC.G = Cov^-1;
+TempPar = TempRes.TempPar;
+ParametersPMCMC.Epsil = 0.7;
+ResRW1_RW_Calib_Rds_1_2_3 = RunEstimationMethod(Data, HIVModel,ParametersPMCMC,TempPar,15000);
+
+
+SavePath = 'S:\Results';
+% SavePath = 'H:\PhD Work\Matlab Scripts\Epidemic Models\SIRS\Results';
+% save([SavePath '\HIV_Mysore_ForProj_02I0_Calib.mat'],'ResRW1_RW_Calib_Rds_1_2_3')
+save([SavePath '\HIV_Mysore_ForProj_10I0b_Calib.mat'],'ResRW1_RW_Calib_Rds_1_2_3')
+
+
+TempPar = ResRW1_RW_Calib_Rds_1_2_3.TempPar;
+Cov =  2.38^2/dim*cov(ResRW1_RW_Calib_Rds_1_2_3.TransfThetas');
+ParametersPMCMC.G = Cov^-1;
+ParametersPMCMC.MCMCType = 'Rand';
+ParametersPMCMC.GMeth = 'cst given';
+ParametersPMCMC.NoPaths = 0;
+ParametersPMCMC.PathsToKeep = [1:9];
+ParametersPMCMC.Epsil = 0.7;
+% [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
+ResRW1_RW_Rds_1_2 = RunEstimationMethod(Data, HIVModel,ParametersPMCMC,TempPar,10000);
+
+
+SavePath = 'S:\Results';
+% SavePath = 'H:\PhD Work\Matlab Scripts\Epidemic Models\SIRS\Results';
+save([SavePath '\HIV_Mysore_ForProj_10I0b.mat'],'ResRW1_RW_Rds_1_2')
+% save([SavePath '\HIV_Mysore_ForProj_02I0.mat'],'ResRW1_RW_Rds_1_2')
+

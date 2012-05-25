@@ -1,0 +1,254 @@
+function Result = RunEstimationMethod(Data, Model, Parameters, TempPar, NbIterations)
+
+TransfThetas = [];
+PropTransfThetas = [];
+Thetas = [];
+if not(Parameters.NoPaths)
+    try
+        if Parameters.KeepAll
+            Paths = zeros(NbIterations*1,length(Parameters.PathsToKeep),sum(Data.NbComputingSteps)+1);
+        else
+            die
+        end
+    catch
+        Paths = zeros(NbIterations,length(Parameters.PathsToKeep),sum(Data.NbComputingSteps)+1);
+    end
+else
+    Paths = [];
+end
+LogLiks = [];
+PropLogLiks = [];
+LogPosts = [];
+PropLogPosts = [];
+Accepted = [];
+Ratios = [];
+Grads = [];
+ProposedPars = [];
+SamplCovs = [];
+Mus = [];
+Inds = [];
+Pars = [];
+MargLogLiks = [];
+MargLogLikStars = [];
+Renewal = [];
+EstimatedSigs = [];
+Coalescence = [];
+
+% TempPar = ProposeParameter(Data, Model, Parameters, TempPar);
+Names = Parameters.Names.Estimated;
+if not(isfield(Parameters,'PMCMC'))
+    Parameters.PMCMC = 'PMMH';
+end
+if not(isfield(Parameters,'Adapt'))
+    Parameters.Adapt = 0;
+end
+disp(['PMCMC Type :' Parameters.PMCMC])
+if or(strcmp(Parameters.PMCMC,'Gibbs'),strcmp(Parameters.PMCMC,'GibbsRepar'))
+    Parameters.GibbsAccRates = 0.23*ones(length(Names),1);
+    Parameters.GibbsAdapt = 0.99;
+    Parameters.GibbsEpsils = 1*ones(length(Names),1);
+    Parameters.ForceTraj = 1;
+end
+
+for IndIt = 1:NbIterations
+    if strcmp(Parameters.PMCMC,'PMMH')
+        StarPar = ProposeParameter(Data,  Model,Parameters, TempPar); 
+        for i = 1:length(StarPar.Par)
+            if not(isreal(StarPar.Par(i)))
+                disp('complex argument, this shouldn''t happen')
+            end
+        end
+        Pars(IndIt,:) = TempPar.Par;
+        ProposedPars(IndIt,:) = StarPar.Par;
+        try
+%             SamplCovs(IndIt,:,:) = StarPar.CovSampledFrom;
+            Mus(IndIt,:) = StarPar.MuSampledFrom;
+            Inds(IndIt) = TempPar.CompInd;
+        end
+
+        LogRand = log(rand(1,1));
+        if length(Names)==0
+            LogRand = -Inf;
+        end
+        if or( LogRand <= StarPar.LogAccRate, IndIt == 1)
+            TempPar = StarPar;
+            Accepted(IndIt) = 1;
+        else
+            Accepted(IndIt) = 0;
+        end
+        if and(Parameters.Adapt,IndIt>80)
+            Parameters.Epsil = exp(log(Parameters.Epsil) + Parameters.GibbsAdaptC^IndIt*(mean(Accepted(1:IndIt))-0.23));
+        end
+%         disp(TempPar.LogLik)
+%         disp(TempPar.LogPrior)
+%         disp(TempPar.LogCorr)
+        
+        for i = 1:length(Names)
+            TransfThetas(Parameters.(Names{i}).Index,IndIt) = TempPar.(Names{i}).TransfValue;
+        end
+        for i = 1:length(Names)
+            PropTransfThetas(Parameters.(Names{i}).Index,IndIt) = StarPar.(Names{i}).TransfValue;
+        end
+        if not(Parameters.NoPaths)
+
+            try
+                Paths((IndIt-1)*1+1:(IndIt)*1,:,:) = TempPar.Paths;
+            catch
+                Paths(IndIt,:,:) = TempPar.Paths;
+            end
+        end
+        LogLiks(IndIt) = TempPar.LogLik;
+        LogPosts(IndIt) = TempPar.LogPost;
+        PropLogLiks(IndIt) = StarPar.LogLik;
+        PropLogPosts(IndIt) = StarPar.LogPost;
+        Coalescence(IndIt) = TempPar.Coalescence;
+%         EstimatedSigs(IndIt) = TempPar.EstimatedSig;
+        disp(['Acceptance Rate: ' num2str(sum(Accepted)/length(Accepted),2) ' (it' num2str(IndIt) ')'])
+        if strcmp(Parameters.MCMCType, 'Inde')
+            Ratios(IndIt) = TempPar.Ratio ;
+        end        
+        try 
+            Grads(:,IndIt) = TempPar.Grad;
+        end
+        try
+            Parameters.AccRate = length(unique(TransfThetas(1,1:IndIt)))/IndIt;        
+        catch
+            Parameters.AccRate = 100;
+        end
+        if IndIt>20
+            if rand(1,1)<1/10
+                Parameters.Epsil = exp(log(Parameters.Epsil) + Parameters.AdaptC^IndIt*(Parameters.AccRate-0.23));
+            end
+        end
+        try
+            [Parameters.AccRate Parameters.Epsil]
+        end
+    elseif strcmp(Parameters.PMCMC,'Gibbs')
+        disp(IndIt)
+        TempPar = GibbsStep(Data, Model,Parameters, TempPar);
+        
+        for i = 1:length(Names)
+            TransfThetas(Parameters.(Names{i}).Index,IndIt) = TempPar.(Names{i}).TransfValue;
+        end
+        Coalescence(IndIt) = TempPar.Coalescence;
+        try
+            Paths(IndIt,:,:) = TempPar.Paths;
+        catch
+            'on voit'
+            die
+        end
+        LogLiks(IndIt) = TempPar.LogLik;
+        if strcmp(Parameters.PMCMC,'Gibbs')
+            for i = 1:size(TransfThetas,1)
+                ind = Parameters.(Names{i}).Index;
+                Parameters.GibbsAccRates(ind) = length(unique(TransfThetas(ind,1:IndIt)))/IndIt;        
+            end
+        end
+        if IndIt>10
+            for i = 1:length(Names)
+                    if rand
+                    ind = Parameters.(Names{i}).Index;
+                    Parameters.GibbsEpsils(ind) = exp(log(Parameters.GibbsEpsils(ind)) + Parameters.GibbsAdaptC^IndIt*(Parameters.GibbsAccRates(ind)-0.23));
+%                 end
+            end
+        end
+        [Parameters.GibbsAccRates(1:end-1) Parameters.GibbsEpsils(1:end-1)]
+    elseif strcmp(Parameters.PMCMC,'GibbsRepar')
+        disp(IndIt)
+        TempPar = GibbsReparStep(Data, Model,Parameters, TempPar);
+        
+        for i = 1:length(Names)
+            TransfThetas(Parameters.(Names{i}).Index,IndIt) = TempPar.(Names{i}).TransfValue;
+        end
+        Coalescence(IndIt) = TempPar.Coalescence;
+        try
+            Paths(IndIt,:,:) = TempPar.Paths;
+        catch
+            'on voit'
+            die
+        end
+        LogLiks(IndIt) = TempPar.LogLik;
+        for i = 1:size(TransfThetas,1)
+            ind = Parameters.(Names{i}).Index;
+            Parameters.GibbsAccRates(ind) = length(unique(TransfThetas(ind,1:IndIt)))/IndIt;        
+        end
+%         if IndIt>100
+%             for i = 1:length(Names)
+%                 ind = Parameters.(Names{i}).Index;
+%                 Parameters.GibbsEpsils(ind) = exp(log(Parameters.GibbsEpsils(ind)) + Parameters.GibbsAdaptC^IndIt*(Parameters.GibbsAccRates(ind)-0.23));
+%             end
+%         end
+        [Parameters.GibbsAccRates Parameters.GibbsEpsils]
+    end
+end
+
+
+for IndIt = 1:size(TransfThetas,2)
+    for i = 1:length(Names)
+        Parameters.(Names{i}).TransfValue = TransfThetas(Parameters.(Names{i}).Index,IndIt);
+    end
+    Parameters = UpdateParsTransfToNoTransf(Parameters);
+    for i = 1:length(Names)
+        Thetas(Parameters.(Names{i}).Index,IndIt) = Parameters.(Names{i}).Value ;
+    end
+end
+
+Result.MargLogLiks = MargLogLiks;
+Result.MargLogLiksStars = MargLogLikStars;
+Result.Epsil = Parameters.Epsil;
+Result.Ratios = Ratios;
+Result.TempPar = TempPar;
+Result.TransfThetas  = TransfThetas;
+Result.PropTransfThetas  = PropTransfThetas;
+Result.Thetas  = Thetas;
+Result.Paths = Paths;
+Result.PropLogLiks = PropLogLiks;
+Result.LogLiks = LogLiks;
+Result.PropLogPosts = PropLogPosts;
+Result.LogPosts = LogPosts;
+Result.AccRate = sum(Accepted)/length(Accepted);
+Result.Accepted = Accepted;
+Result.Grads = Grads;
+Result.ESS = [];
+Result.ProposedPars = ProposedPars;
+Result.SamplCovs = SamplCovs;
+Result.Mus = Mus;
+Result.CompInds = Inds;
+Result.Pars = Pars;
+Result.Parameters = Parameters;
+Result.Data = Data;
+Result.Model = Model;
+Result.Coalescence = Coalescence;
+
+tmp = mean(Thetas');
+Names = Parameters.Names.Estimated;
+for i = 1:length(Names)
+    Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
+end
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
+
+p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
+DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
+
+Result.p_d = p_d;
+Result.DIC = DIC;
+
+for i = 1:size(TransfThetas,1)
+    temp = AutoCorrelation(TransfThetas(i,:),100);
+    Result.ESSTransf(i) = NbIterations/(1+2*sum(temp));
+    Result.RelESSTransf(i) = Result.ESSTransf(i)/NbIterations*100;
+end
+for i = 1:size(TransfThetas,1)
+    temp = AutoCorrelation(Thetas(i,:),100);
+    Result.ESS(i) = NbIterations/(1+2*sum(temp));
+    Result.RelESS(i) = Result.ESS(i)/NbIterations*100;
+end
+
+if strcmp(Parameters.PMCMC,'Gibbs')                
+    Result.GibbsAccRates = Parameters.GibbsAccRates;
+    Result.EstimatedSigs = EstimatedSigs; 
+end
+    
+    
+    

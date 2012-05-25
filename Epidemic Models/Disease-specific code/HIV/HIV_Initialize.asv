@@ -1,0 +1,16 @@
+function Parameters = HIV_Initialize(Parameters)
+
+
+InitialState(1) = Parameters.InitialSF1;
+InitialState(2) = Parameters.TotF1.Value - Parameters.InitialSF1;
+InitialState(3) = Parameters.InitialSF2;
+InitialState(4) = Parameters.TotF2.Value - Parameters.InitialSF2;
+InitialState(5) = Parameters.InitialSM;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+
+InitialState(6) = Parameters.TotM.Value - Parameters.InitialSM;
+InitialState(7) = (InitialState(2) + InitialState(4))/Parameters.TotalFSW.Value*100;
+InitialState(8) = (InitialState(6))/Parameters.TotM.Value*100;
+InitialState(9) = Parameters.InitialFt.Value;
+
+Parameters.InitialState = InitialState';

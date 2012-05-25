@@ -1,0 +1,8 @@
+function prior = NormalLogPrior(Name,Parameters,TransfValues,Values)
+
+if nargin == 2
+    if 
+    prior = exp(Parameters.(Name).TransfValue)*normpdf(Parameters.(Name).Value,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+else 
+    prior = exp(TransfValues).*normpdf(Values,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     
+end

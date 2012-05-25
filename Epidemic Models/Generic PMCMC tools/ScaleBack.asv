@@ -1,0 +1,6 @@
+function Thetas = ScaleBack(ScaledThetas,Parameters)
+
+Thetas = [];
+
+for i = 1:length(Parameters.ScalingMeans)
+    Thetas = ScaledThetas.*Parameters.ScalingStds + Parameters.ScalingMeans;

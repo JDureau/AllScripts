@@ -1,0 +1,38 @@
+function Parameters = Dengue_Initialize(Parameters)
+
+
+InitialState(1) = Parameters.SInit.Value;
+InitialState(2) = Parameters.I1Init.Value;
+InitialState(3) = Parameters.I2Init.Value;
+InitialState(4) = 0;
+InitialState(4) = 0;
+InitialState(4) = 0;
+InitialState(4) = 0;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.NbContactsForMen = (Parameters.CF1.Value + Parameters.CF2.Value)/2*Parameters.TotalFSW.Value/Parameters.TotM.Value;
+InitialState(5) = Parameters.InitialSM;
+InitialState(6) = Parameters.TotM.Value - Parameters.InitialSM;
+InitialState(7) = (InitialState(2) + InitialState(4))/Parameters.TotalFSW.Value*100;
+InitialState(8) = (InitialState(6))/Parameters.TotM.Value*100;
+
+try
+    if strcmp(Parameters.DiffusionType,'Bertallanfy')
+        m = Parameters.BRm.Value;
+        mu = Parameters.BRmu.Value;
+        tinfl = Parameters.BRtinfl.Value;
+        baseline = min(Parameters.BRbase.Value,0.99*m^(1/(1-m))*mu);
+        InitialState(9) = (baseline^(1-m)-mu^(1-m))/(1-m);
+        B  = (1 - (baseline/mu)^(1-m));
+        Parameters.k = 1/tinfl*log(B/(1-m));        
+        Parameters = UpdateParsNoTransfToTransf(Parameters);
+    else
+        InitialState(9) = log(Parameters.InitialFt.Value/(1-Parameters.InitialFt.Value));
+    end
+end
+InitialState(10) = 0;
+Parameters.BetaFM.Value = 1-(1-Parameters.BetaFMPerAct.Value)^Parameters.NumberActsPerClient.Value;
+Parameters.BetaMF.Value = 1-(1-Parameters.BetaMFPerAct.Value)^Parameters.NumberActsPerClient.Value;
+
+Parameters.InitialState = InitialState';

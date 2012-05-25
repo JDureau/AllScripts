@@ -1,0 +1,334 @@
+function [] = HIVFullPMCMC(Parameters,ObsYears,ObsVars,Obs,ObsMin,ObsMax,Name)
+
+tic
+
+
+Parameters.ObsMin = ObsMin;
+Parameters.ObsMax = ObsMax;
+
+Parameters.NbVariables = 10;
+Parameters.SigmaObs = 0.1;
+Parameters.Problem = 'ImperialHIV';
+Parameters.DiffusionType = 'Affine';
+Parameters.ObservationLength = 25*12;
+Parameters.ComputationTStep = 0.5;
+Parameters.TypeWork = 'Normal';
+
+
+% Data1.
+%2004.667	2008.834	2006.917	2009.26
+%0.284579	0.038612	0.216409	0.140494
+
+Data.Observations = zeros(10,length(ObsVars)+1);
+for i = 1:length(ObsVars)
+    Data.Observations(ObsVars(i),1+i) = (ObsMin(i)+ObsMax(i))/2*100;
+    Data.ObsSigmas(i+1) = ((ObsMax(i)-ObsMin(i))*100/4);
+end
+Instants = round((ObsYears-1985)*12);
+Data.Instants = round([0 Instants]/(Parameters.ComputationTStep));
+Data.ObservedVariables = [ 0 ObsVars];
+Data.NbComputingSteps = [0 diff(Data.Instants)];
+
+HIVModel = struct();
+HIVModel.EKF_projection = @HIV_EKF_projection;
+HIVModel.InitializeParameters = @HIVInitialize;
+HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(i)+Parameters.ObsMin(i))*100/2,(Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)';
+HIVModel.SMC_projection = @HIV_SMC_projection;
+
+
+%% Go
+
+
+
+temp7 = zeros(1,10);
+temp8 = zeros(1,10);
+temp7(1,7) = 1;
+temp8(1,8) = 1;
+temps{7} = temp7;
+temps{8} = temp8;
+HIVModel.ObservationJacobian = {};
+for i = 1:length(ObsVars)
+    HIVModel.ObservationJacobian{i+1} = temps{ObsVars(i)};
+end
+HIVModel.ObservationMeasurementNoise = {};
+for i = 1:length(ObsVars)
+    HIVModel.ObservationMeasurementNoise{i+1} = ((ObsMax(i)-ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
+end
+
+Names = Parameters.Names.Estimated;
+test = 0;
+for k = 1:length(Names)
+    Parameters.(Names{k}).Sample = 1;
+end
+NbIts = 0;
+Temp = EstimationEKFGen(Data, HIVModel, Parameters);
+while not(test)
+    Parameters = SampleParameters(Parameters);
+    try
+        Temp = EstimationEKFGen(Data, HIVModel, Parameters);
+        if Temp.LogLik>-1000
+            test = 1;
+        end
+    end
+    NbIts = NbIts+1;
+    if NbIts == 10000
+        test = 1;
+    end
+end
+
+
+Parameters.SigmaRW.Estimated = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters = DefinePriors(Parameters);
+
+% With correction
+Parameters.Correction = 1;
+Names = Parameters.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = Parameters.(Names{i}).TransfValue ;
+end
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters.DiffusionType = 'AffineAdd';
+
+[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,Parameters),Initialization,optimset('MaxIter',4000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+Initialization = x;
+Names = Parameters.Names.Estimated;
+ParametersKalman = Parameters;
+for i = 1:length(Names)
+    ParametersKalman.(Names{i}).TransfValue = (x(i));
+    Parameters.(Names{i}).TransfValue = (x(i));
+end
+Parameters = UpdateParsTransfToNoTransf(Parameters);
+ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+
+% No correction: for cov
+Parameters.Correction = 0;
+Names = Parameters.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
+end
+ParametersKalman = DefineEstimatedParametersIndexes(ParametersKalman);
+ParametersKalman.DiffusionType = 'AffineAdd';
+[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',4000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+Initialization = x;
+Names = Parameters.Names.Estimated;
+ParametersKalman = Parameters;
+for i = 1:length(Names)
+    ParametersKalman.(Names{i}).TransfValue = (x(i));
+    Parameters.(Names{i}).TransfValue = (x(i));
+end
+ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+Parameters = UpdateParsTransfToNoTransf(Parameters);
+TellParsValues(ParametersKalman)
+Names = ParametersKalman.Names.Estimated;
+tmpt = [];
+for i = 1:length(Names)
+    ParametersKalman.(Names{i}).SamplStd = abs(0.001*ParametersKalman.(Names{i}).TransfValue);
+    tmpt(i) = ParametersKalman.(Names{i}).SamplStd;
+end
+ResKal = KalmanNumericDerivativesWithPrior(Data,HIVModel,ParametersKalman);
+Test = mean(eig(-ResKal.Hess)>0)==1;
+Cov = (-ResKal.Hess)^-1;
+Test
+
+InterestedIn = {'InitialFt','Alpham1','CF1','CF2','BetaMFPerAct','BetaFMPerAct','MuFm1','MuMm1','InitialIPropF','InitialIPropM','NumberActsPerClient','TotMFactor','eHIV'};
+indskal = [];
+for i = 1:length(InterestedIn)
+    indskal = Parameters.(InterestedIn{i}).Index;
+end
+% 
+while not(Test)
+    Names = Parameters.Names.Estimated;
+    Initialization = [];
+    for i = 1:length(Names)
+        Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
+    end
+    Parameters = DefineEstimatedParametersIndexes(Parameters);
+    Parameters.DiffusionType = 'AffineAdd';
+
+    [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,Parameters),Initialization,optimset('MaxIter',4000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+    Initialization = x;
+    Names = Parameters.Names.Estimated;
+    ParametersKalman = Parameters;
+    for i = 1:length(Names)
+        ParametersKalman.(Names{i}).TransfValue = (x(i));
+        Parameters.(Names{i}).TransfValue = (x(i));
+    end
+    ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+    Parameters = UpdateParsTransfToNoTransf(Parameters);
+    TellParsValues(ParametersKalman)
+    Names = ParametersKalman.Names.Estimated;
+    for i = 1:length(Names)
+        ParametersKalman.(Names{i}).SamplStd = 0.001*ParametersKalman.(Names{i}).Value;
+    end
+    ResKal = KalmanNumericDerivativesWithPrior(Data,HIVModel,ParametersKalman);
+    Test = mean(eig(-ResKal.Hess)>0)==1;
+    Cov = (-ResKal.Hess)^-1;
+    Test
+end
+
+Parameters.Correction = 1;
+Names = Parameters.Names.All;
+for i = 1:length(Names);
+    Parameters.(Names{i}).Estimated = 0;
+end
+Parameters.SigmaRW.Value = 0.1;
+Parameters.SigmaRW.Min = 0;
+Parameters.SigmaRW.Max = 10^14;
+Parameters.SigmaRW.Estimated = 1;
+Parameters.SigmaRW.TransfType = 'Log';
+Parameters.NbParticules = 1000;
+Parameters.StableCUseConstraint = 0;
+Parameters.NoPaths = 0;
+Parameters.PathsToKeep = [7 8 9];
+Parameters.DiffusionType = 'Add';
+Parameters.MCMCType = 'jiji';
+Parameters.GMeth = 'cst given';
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters = DefinePriors(Parameters);
+% optimize RW parameters with SMC
+Parameters.NoPaths = 0;
+Names = Parameters.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = Parameters.(Names{i}).TransfValue ;
+end
+Parameters.NbParticules = 1000;
+
+[x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizewithPrior(x,Data,HIVModel,Parameters),Initialization,optimset('MaxIter',50,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',500));
+Names = Parameters.Names.Estimated;
+for i = 1:length(Names)
+    Parameters.(Names{i}).TransfValue = (x(i));
+end
+Parameters = UpdateParsTransfToNoTransf(Parameters);
+TellParsValues(Parameters)
+
+
+% optimize all parameters.
+Names = Parameters.Names.All;
+for i = 1:length(Names);
+    Parameters.(Names{i}).Estimated = 0;
+end
+Parameters.InitialFt.Estimated = 1;
+Parameters.InitialIPropF.Estimated = 1;
+Parameters.InitialIPropM.Estimated = 1;
+Parameters.SigmaRW.Estimated = 1;
+Parameters.TotMFactor.Estimated = 1;
+Parameters.Alpham1.Estimated = 1;
+Parameters.MuFm1.Estimated = 1;
+Parameters.MuMm1.Estimated = 1;
+Parameters.BetaMFPerAct.Estimated = 1;
+Parameters.BetaFMPerAct.Estimated = 1;
+Parameters.NumberActsPerClient.Estimated = 1;
+Parameters.eHIV.Estimated = 1;
+Parameters.CF1.Estimated = 1;
+Parameters.CF2.Estimated = 1;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters = DefinePriors(Parameters);
+Names = Parameters.Names.Estimated;
+Initialization = [];
+for i = 1:length(Names)
+    Initialization(i) = Parameters.(Names{i}).TransfValue ;
+end
+[x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizeWithPrior(x,Data,HIVModel,Parameters),Initialization,optimset('MaxIter',100,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',2000));
+Names = Parameters.Names.Estimated;
+for i = 1:length(Names)
+    Parameters.(Names{i}).TransfValue = (x(i));
+end
+Parameters = UpdateParsTransfToNoTransf(Parameters);
+TellParsValues(Parameters)
+
+% Real PMCMC
+Names = Parameters.Names.All;
+for i = 1:length(Names);
+    Parameters.(Names{i}).Estimated = 0;
+end
+% Parameters.SigmaRW.Estimated = 1;
+Parameters.InitialIPropF.Estimated = 1;
+Parameters.InitialIPropM.Estimated = 1;
+Parameters.InitialFt.Estimated = 1;
+Parameters.TotMFactor.Estimated = 1;
+Parameters.NumberActsPerClient.Estimated = 1;
+Parameters.eHIV.Estimated = 1;
+Parameters.Alpham1.Estimated = 1;
+Parameters.MuFm1.Estimated = 1;
+Parameters.MuMm1.Estimated = 1;
+Parameters.BetaFMPerAct.Estimated = 1;
+Parameters.BetaMFPerAct.Estimated = 1;
+Parameters.CF1.Estimated = 1;
+Parameters.CF2.Estimated = 1;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters = DefinePriors(Parameters);
+
+% InterestedIn = {'InitialFt','Alpham1','CF1','CF2','BetaMFPerAct','BetaFMPerAct','MuFm1','MuMm1','InitialIPropF','InitialIPropM','NumberActsPerClient','TotMFactor','eHIV'};
+% indsPMCMC = [];
+% for i = 1:length(InterestedIn)
+%     indsPMCMC = Parameters.(InterestedIn{i}).Index;
+% end
+% 
+% Cov(indsPMCMC,indsPMCMC) = ResKal.Hess(indskal,indskal);
+
+% PMCMC
+inds = [1 7:18];
+Parameters.ComputeRWsamplCov = 0;
+dim = 14;
+Cov =  2.38^2/dim*Parameters.CovInit;
+% Cov =  2.38^2/dim*(-ResKal.Hess(inds,inds))^-1;
+Parameters.G = Cov^-1;
+Parameters.NoPaths = 1;
+Parameters.MCMCType = 'Rand';
+Parameters.GMeth = 'cst given';
+Parameters.DiffusionType = 'Add';
+Parameters.aim = 0.23;
+Parameters.Epsil = 1;
+Parameters.ModelType = 'SMC';
+TempPar = ProposeInitialParameter(Data, HIVModel, Parameters);
+% [Parameters, TempPar] = CalibrateMethod( Data, HIVModel, Parameters, TempPar);
+ResRW = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);
+
+
+TempRes = ResRW;
+
+TempPar = TempRes.TempPar;
+Parameters.NoPaths = 1;
+Cov =  2.38^2/dim*cov(TempRes.TransfThetas');
+% Cov = cov(TempRes.TransfThetas');
+Parameters.G = Cov^-1;
+TempPar = TempRes.TempPar;
+Parameters.Epsil = 0.7;
+ResRW = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,15000);
+
+ResRW.ComputingTime = toc;
+
+SavePath = 'S:\Results';
+% SavePath = 'H:\PhD Work\Matlab Scripts\Epidemic Models\SIRS\Results';
+% save([SavePath '\HIV_Mysore_ForProj_02I0_Calib.mat'],'ResRW1_RW_Calib_Rds_1_2_3')
+save([SavePath Name '_Calib.mat'],'ResRW')
+
+
+TempRes = ResRW;
+Cov =  2.38^2/dim*cov(TempRes.TransfThetas');
+Parameters.G = Cov^-1;
+Parameters.NoPaths = 0;
+Parameters.PathsToKeep = [1:9];
+Parameters.Epsil = 0.7;
+TempPar = TempRes.TempPar;
+% [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
+ResRW = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,10000);
+ResRW.Parameters = Parameters;
+
+ResRW.ComputingTime = toc;
+
+save([SavePath Name '.mat'],'ResRW')
+
+

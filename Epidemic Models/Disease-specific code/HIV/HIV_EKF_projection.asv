@@ -1,0 +1,158 @@
+function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
+
+    mpred = m;
+    TStep = Parameters.ComputationTStep;
+
+    
+    deltabetas = zeros(1,NbIts);
+    record = zeros(8,NbIts);
+    for IndDiscr = 1:NbIts;
+        mtemp = mpred;
+        TotF1 = mtemp(1) + mtemp(2);
+        TotF2 = mtemp(3) + mtemp(4);
+        TotM  = mtemp(5) + mtemp(6);
+        mpred(1) = mpred(1) + ( Parameters.MuFm1.Value^-1*(TotF1) + Parameters.Alpham1.Value^-1*mtemp(2) - Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(1).*mtemp(6)./TotM-Parameters.MuFm1.Value^-1*mtemp(1))*TStep;
+        mpred(2) = mpred(2) + ( Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(1).*mtemp(6)./TotM - (Parameters.MuFm1.Value^-1 + Parameters.Alpham1.Value^-1)*mtemp(2))*TStep;
+        mpred(3) = mpred(3) + ( Parameters.MuFm1.Value^-1*(TotF2) + Parameters.Alpham1.Value^-1*mtemp(4) - Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(3).*mtemp(6)./TotM-Parameters.MuFm1.Value^-1*mtemp(3))*TStep;
+        mpred(4) = mpred(4) + ( Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(3).*mtemp(6)./TotM - (Parameters.MuFm1.Value^-1 + Parameters.Alpham1.Value^-1)*mtemp(4))*TStep;
+        mpred(5) = mpred(5) + ( Parameters.MuMm1.Value^-1*(TotM) + Parameters.Alpham1.Value^-1*mtemp(6) - Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(4)./TotF2)-Parameters.MuMm1.Value^-1*mtemp(5))*TStep;
+        mpred(6) = mpred(6) + ( Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(9))*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(4)./TotF2) - (Parameters.MuMm1.Value^-1+Parameters.Alpham1.Value^-1)*mtemp(6))*TStep;
+        mpred(7) = (mpred(2) + mpred(4))/(TotF1+TotF2)*100; 
+        mpred(8) = (mpred(6))/(TotM)*100; 
+        
+        if or(strcmp(Parameters.DiffusionType,'AffineAdd'),strcmp(Parameters.DiffusionType,'AffineInt'))
+            currentind = cum(Data.NbComputingSteps(1:IndTime-1))+IndDiscr ;
+            if currentind < sum(Data.NbComputingSteps)/5
+                IndStart = 1;
+                IndEnd = sum(Data.NbComputingSteps)/5;
+                mpredstart = Parameters.InitialFt.Value;
+                mpredend = Parameters.SecondFt.Value;
+                mpred(9) = mpredstart + (mpredend-mpredstart)*(currentind-IndStart)/(IndEnd-IndStart);
+
+            
+            
+            if IndTime == 2
+                if IndDiscr < NbIts/5
+                    mpredstart = Parameters.InitialFt.Value;
+                    mpredend = Parameters.SecondFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*IndDiscr*5/NbIts;
+                elseif IndDiscr < 2*NbIts/5
+                    mpredstart = Parameters.SecondFt.Value;
+                    mpredend = Parameters.ThirdFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*(IndDiscr-NbIts/5)*5/NbIts;
+                elseif IndDiscr < 3*NbIts/5
+                    mpredstart = Parameters.FourthFt.Value;
+                    mpredend = Parameters.FifthFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*(IndDiscr-NbIts*2/5)*5/NbIts;
+                elseif IndDiscr < 4*NbIts/5
+                    mpredstart = Parameters.FifthFt.Value;
+                    mpredend = Parameters.SixthFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*(IndDiscr-NbIts*3/5)*5/NbIts;
+                else 
+                    mpredstart = Parameters.SixthFt.Value;
+                    mpredend = Parameters.SeventhFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*(IndDiscr-NbIts*4/5)*5/NbIts;
+                end
+            elseif IndTime == 3
+                if IndDiscr < NbIts/2
+                    mpredstart = Parameters.SeventhFt.Value;
+                    mpredend = Parameters.EigthFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*IndDiscr*2/NbIts;
+                else
+                    mpredstart = Parameters.EigthFt.Value;
+                    mpredend = Parameters.NinethFt.Value;
+                    mpred(9) = mpredstart + (mpredend-mpredstart)*(IndDiscr-NbIts/2)*2/NbIts;
+                end
+            elseif IndTime == 4
+                mpredstart = Parameters.NinethFt.Value;
+                mpredend = Parameters.TenthFt.Value;
+                mpred(9) = mpredstart + (mpredend-mpredstart)*IndDiscr/NbIts;
+            end
+            deltabetas(IndDiscr) = mpred(9)-mtemp(9);
+            if mpred(9)<0
+                die
+            end
+        else
+            
+            if strcmp(Parameters.DiffusionType,'Add')
+                mpred(9) = mtemp(9);
+            elseif strcmp(Parameters.DiffusionType,'OUD')
+                if IndDiscr<204/Parameters.ComputationTStep
+                    Mu = Parameters.MuOU1.TransfValue;
+                else
+                    Mu = Parameters.MuOU2.TransfValue;
+                end
+                mpred(9) = mtemp(9) + ( Parameters.KappaOU.Value*(Mu-mtemp(9)))*TStep;
+            end
+        end
+        
+%         Jacobian = zeros(9,9);
+%         Jacobian(1,1) = - Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(6)./TotM;
+%         Jacobian(1,2) = Parameters.Alpha.Value+Parameters.MuF.Value;
+%         Jacobian(1,3) = 0;
+%         Jacobian(1,4) = 0;
+%         Jacobian(1,5) = 0;
+%         Jacobian(1,6) =  - Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(1)./TotM;
+%         Jacobian(1,7) = 0;
+%         Jacobian(1,8) =  - Parameters.BetaMF.Value*Parameters.CF1.Value*(-Parameters.eHIV.Value)*mtemp(1).*mtemp(6)./TotM;
+%         Jacobian(2,1) =    Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(6)./TotM;
+%         Jacobian(2,2) =  - (Parameters.Alpha.Value+Parameters.MuF.Value);
+%         Jacobian(2,3) = 0;
+%         Jacobian(2,4) = 0;
+%         Jacobian(2,5) = 0;
+%         Jacobian(2,6) =    Parameters.BetaMF.Value*Parameters.CF1.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(1)./TotM;
+%         Jacobian(2,7) = 0;
+%         Jacobian(2,8) =    Parameters.BetaMF.Value*Parameters.CF1.Value*(-Parameters.eHIV.Value)*mtemp(1).*mtemp(6)./TotM;
+%         Jacobian(3,1) = 0;
+%         Jacobian(3,2) = 0;
+%         Jacobian(3,3) = - Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(6)./TotM;
+%         Jacobian(3,4) = Parameters.Alpha.Value+Parameters.MuF.Value;
+%         Jacobian(3,5) = 0;
+%         Jacobian(3,6) =  - Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(3)./TotM;
+%         Jacobian(3,7) = 0;
+%         Jacobian(3,8) =  - Parameters.BetaMF.Value*Parameters.CF2.Value*(-Parameters.eHIV.Value)*mtemp(3).*mtemp(6)./TotM;
+%         Jacobian(4,1) = 0;   
+%         Jacobian(4,2) = 0;
+%         Jacobian(4,3) = Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(6)./TotM;
+%         Jacobian(4,4) = - (Parameters.Alpha.Value+Parameters.MuF.Value);
+%         Jacobian(4,5) = 0;
+%         Jacobian(4,6) =    Parameters.BetaMF.Value*Parameters.CF2.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(3)./TotM;
+%         Jacobian(4,7) = 0;
+%         Jacobian(4,8) =    Parameters.BetaMF.Value*Parameters.CF2.Value*(-Parameters.eHIV.Value)*mtemp(2).*mtemp(6)./TotM;
+%         Jacobian(5,1) = 0;
+%         Jacobian(5,2) = - Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*1./TotF1);
+%         Jacobian(5,3) = 0;
+%         Jacobian(5,4) = - Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(5).*(Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*1./TotF2);
+%         Jacobian(5,5) = - Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(1)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(3)./TotF2);
+%         Jacobian(5,6) =  Parameters.Alpha.Value+Parameters.MuM.Value;
+%         Jacobian(5,7) = 0;
+%         Jacobian(5,8) =   Parameters.BetaFM.Value*(-Parameters.eHIV.Value)*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(4)./TotF2);
+%         Jacobian(6,1) = 0;
+%         Jacobian(6,2) =  Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*1./TotF1);
+%         Jacobian(6,3) = 0;
+%         Jacobian(6,4) =  Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*mtemp(5).*(Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*1./TotF2);
+%         Jacobian(6,5) =  Parameters.BetaFM.Value*(1-Parameters.eHIV.Value*mtemp(8))*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(1)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(3)./TotF2);
+%         Jacobian(6,6) =  -(Parameters.Alpha.Value+Parameters.MuM.Value);
+%         Jacobian(6,7) = 0;
+%         Jacobian(6,8) =  Parameters.BetaFM.Value*(-Parameters.eHIV.Value)*mtemp(5).*(Parameters.CF1.Value*TotF1./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(2)./TotF1+Parameters.CF2.Value*TotF2./(Parameters.CF2.Value*TotF2+Parameters.CF1.Value*TotF1).*mtemp(4)./TotF2);
+%         Jacobian(7,:) = (Jacobian(2,:) + Jacobian(4,:))/(TotF1+TotF2)*100;
+%         Jacobian(8,:) = (Jacobian(6,:))/(TotM)*100;
+%         if strcmp(Parameters.DiffusionType,'OUD')
+%             Jacobian(9,9) = -Parameters.KappaOU.Value;
+%         end
+%         Q = zeros(9,9);
+%         if strcmp(Parameters.DiffusionType,'Add')
+%             Q(9,9) = (Parameters.SigmaRW.Value)^2;
+%         elseif strcmp(Parameters.DiffusionType,'OUD')
+%             Q(9,9) = (Parameters.SigmaOU.Value)^2;
+%         end
+%         Cov = Cov + (Jacobian*Cov+Cov*Jacobian'+Q)*TStep;
+%         record(:,IndDiscr)= mtemp;
+    end
+
+try
+    Res.deltabetas = deltabetas;
+end
+    Res.m = mpred;
+    Res.Cov = Cov;
+    Res.Model = Model;

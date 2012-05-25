@@ -1,0 +1,121 @@
+function Res = HIV_UKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
+
+    TStep = Parameters.ComputationTStep;
+
+    mpred = m;
+    
+    deltabetas = zeros(1,NbIts);
+    
+    if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+        m = Parameters.BRmm1.Value + 1;
+        mu = Parameters.BRmu.Value;
+        k = Parameters.k;
+    else
+%         disp('Unknown Diffusion')
+%         die
+    end
+        
+    MuFm1 = Parameters.MuFm1.Value;
+    Alpham1 = Parameters.Alpham1.Value;
+    BetaMF = Parameters.BetaMF.Value;
+    CF1 = Parameters.CF1.Value;
+    BetaFM = Parameters.BetaFM.Value;
+    CF2 = Parameters.CF2.Value;
+    eHIV = Parameters.eHIV.Value;
+    NbContactsForMen = Parameters.NbContactsForMen;
+    MuMm1 = Parameters.MuMm1.Value;
+    Crash = 0;
+    
+    L = length(m);
+    alpha = Parameters.UKFalpha.Value;
+    kappa = Parameters.UKFkappa.Value;
+    beta = Parameters.UKFbeta.Value;
+    c = alpha^2*(L+kappa);
+    lambda = c-L;
+    
+    record = zeros(L,NbIts);
+
+    Wms = [lambda/(L+lambda) lambda/(2*(L+lambda))*ones(1,2*L)];
+    Wcs = [lambda/(L+lambda)+(1-alpha^2+beta) lambda/(2*(L+lambda))*ones(1,2*L)];
+    
+    BigW = (eye(2*L+1)-repmat(Wms,2*L+1,1))*diag(Wcs)*(eye(2*L+1)-repmat(Wms,2*L+1,1))';
+    
+    for IndDiscr = 1:NbIts
+        IndDiscr
+        mtmp = repmat(mpred,1,2*L+1);
+%         if Cov == zeros(size(Cov))
+%             choltmp = zeros(size(Cov));
+%         else
+            choltmp = chol(Cov);
+%         end
+        
+        mtmp = mtmp + sqrt(c)*[zeros(size(mpred)) choltmp -choltmp];
+        
+        if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+            mtmp(9,:) = min(-0.01,mtmp(9,:));
+            beta = ((1-m)*mtmp(9,:)+mu^(1-m)).^(1/(1-m));
+            if Parameters.BRbase.Value>m^(1/(1-m))*mu
+                Crash = 1;
+                beta = Parameters.BRbase.Value*ones(size(beta));
+            end
+        else
+            beta = exp(mtmp(9,:))./(1+exp(mtmp(9,:)));
+        end
+        mpredtmp = mtmp;
+        TotF1 = mtmp(1,:) + mtmp(2,:);
+        TotF2 = mtmp(3,:) + mtmp(4,:);
+        TotM  = mtmp(5,:) + mtmp(6,:);
+        ftmp = zeros(size(mtmp));
+        ftmp(1,:) =  ( MuFm1^-1*(TotF1) + Alpham1^-1*mtmp(2,:) - BetaMF*CF1*(1-eHIV*beta).*mtmp(1,:).*mtmp(6,:)/TotM-MuFm1^-1*mtmp(1,:));
+        ftmp(2,:) =  ( BetaMF*CF1*(1-eHIV*beta).*mtmp(1,:).*mtmp(6,:)/TotM - (MuFm1^-1 + Alpham1^-1)*mtmp(2,:));
+        ftmp(3,:) =  ( MuFm1^-1*(TotF2) + Alpham1^-1*mtmp(4,:) - BetaMF*CF2*(1-eHIV*beta).*mtmp(3,:).*mtmp(6,:)/TotM-MuFm1^-1*mtmp(3,:));
+        ftmp(4,:) =  ( BetaMF*CF2*(1-eHIV*beta).*mtmp(3,:).*mtmp(6,:)/TotM - (MuFm1^-1 + Alpham1^-1)*mtmp(4,:));
+        ftmp(5,:) =  ( MuMm1^-1*(TotM) + Alpham1^-1*mtmp(6,:) - BetaFM*NbContactsForMen*(1-eHIV*beta).*mtmp(5,:).*(CF1*TotF1/(CF2*TotF2+CF1*TotF1).*mtmp(2,:)./TotF1+CF2*TotF2/(CF2*TotF2+CF1*TotF1).*mtmp(4,:)/TotF2)-MuMm1^-1*mtmp(5,:));
+        ftmp(6,:) =  ( BetaFM*NbContactsForMen*(1-eHIV*beta).*mtmp(5,:)*(CF1*TotF1/(CF2*TotF2+CF1*TotF1).*mtmp(2,:)/TotF1+CF2*TotF2/(CF2*TotF2+CF1*TotF1).*mtmp(4,:)/TotF2) - (MuMm1^-1+Alpham1^-1)*mtmp(6,:));
+        ftmp(7,:) =  ((ftmp(2,:) + ftmp(4,:))/(TotF1+TotF2))*100; 
+        ftmp(8,:) =  ((ftmp(6,:))/(TotM))*100; 
+        
+        
+        if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+            ftmp(9,:) =  - k*mtmp(9,:);
+            if Crash
+                ftmp(9,:) = zeros(size(ftmp(9,:)));
+            end
+        elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
+            ftmp(9,:) = zeros(size(ftmp(9,:)));
+        else
+            disp('Unknown Diffusion')
+            die
+        end
+        
+        if not(isreal(mpred))
+            '....unreal'
+        end
+
+        mpred = mpred + ftmp*Wms'*TStep;
+        
+        Q = zeros(L,L);
+        if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+            Q(9,9) = (Parameters.SigmaRW.Value*mpred(9))^2;
+%             Q(9,9) = (Parameters.SigmaRW.Value/(mu*exp(mtmp(9,:))/(1+exp(mtmp(9,:)))^2))^2;
+        elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
+            Q(9,9) = (Parameters.SigmaRW.Value)^2;
+        else
+            die
+        end
+        
+        
+        Cov = Cov + (ftmp*BigW*mtmp' + mtmp*BigW*ftmp'+Q)*TStep;
+        
+        record(:,IndDiscr)= mpred;
+        
+%         mpred(1:8) = max(0,mpred(1:8));
+    end
+    
+% try
+%     Res.deltabetas = deltabetas;
+% end
+    Res.m = mpred;
+    Res.Cov = Cov;
+    Res.Model = Model;
+    Res.Crash = Crash;

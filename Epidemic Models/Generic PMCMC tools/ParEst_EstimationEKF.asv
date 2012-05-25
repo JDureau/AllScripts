@@ -1,0 +1,124 @@
+function mloglik = ParEst_EstimationEKF(Pars, Data, Parameters)
+
+beta = Pars(1);
+gamma = Pars(2);
+
+tic
+NbVarsTot = size(Data.RealData,1);
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+TStep     = Parameters.ComputationTStep;
+if std(diff(ObservationInstants))>mean(diff(ObservationInstants))/100000
+    disp('Attention: IrregularTSteps')
+    die % For the moment, we don't deal with this. 
+    pause(2)
+end
+ObservationTStep = mean(diff(ObservationInstants));
+ComputationTStep = Parameters.ComputationTStep;
+if ComputationTStep>ObservationTStep
+    disp('Problem: CTStep>OTStep')
+    ComputationTStep = min(ComputationTStep,ObservationTStep);
+end
+
+
+NbTSteps = ceil(ObservationTStep/ComputationTStep);
+
+InitialState = Data.RealData(:,1);
+
+m = InitialState;
+Cov = zeros(4,4);
+Ps = eye(4);
+% initilization of Cov:
+mpred = m;
+for IndDiscr = 1:NbTSteps
+    mpred(1) = mpred(1) + (-mpred(4)*mpred(1)*mpred(2)+beta*mpred(3))*TStep;
+    mpred(2) = mpred(2) + ( mpred(4)*mpred(1)*mpred(2)-gamma*mpred(2))*TStep;
+    mpred(3) = mpred(3) + (gamma*mpred(2) - beta*mpred(3))*TStep;
+    mpred(4) = mpred(4);
+    Jacobian = zeros(4,4);
+    Jacobian(1,1) = -mpred(4)*mpred(2);
+    Jacobian(1,2) = -mpred(4)*mpred(1);
+    Jacobian(1,3) = beta;
+    Jacobian(1,4) = -mpred(1)*mpred(2);
+    Jacobian(2,1) =  mpred(4)*mpred(2);
+    Jacobian(2,2) =  mpred(4)*mpred(1)- gamma;
+    Jacobian(2,3) =  0;
+    Jacobian(2,4) =  mpred(1)*mpred(2);
+    Jacobian(3,1) =  0;
+    Jacobian(3,2) =  gamma;
+    Jacobian(3,3) =  - beta;
+    Q = zeros(4,4);
+    Q(4,4) = (Parameters.SigmaDiffusion(4))^2;
+    exp = expm(IndDiscr*TStep*Jacobian);
+    Cov = Cov + exp*Q*exp'*TStep;
+end
+Cov = Ps*Cov;
+
+
+ms = m;
+Covs = [];
+Covs(1,:,:)=Cov;
+Liks = 1;
+LogLik  = 0;
+for IndTime = 2:length(ObservationInstants)
+    mpred = m;
+    for IndDiscr = 1:NbTSteps
+        mpred(1) = mpred(1) + (-mpred(4)*mpred(1)*mpred(2)+beta*mpred(3))*TStep;
+        mpred(2) = mpred(2) + ( mpred(4)*mpred(1)*mpred(2)-gamma*mpred(2))*TStep;
+        mpred(3) = mpred(3) + (gamma*mpred(2) - beta*mpred(3))*TStep;
+        mpred(4) = mpred(4);
+        Jacobian = zeros(4,4);
+        Jacobian(1,1) = -mpred(4)*mpred(2);
+        Jacobian(1,2) = -mpred(4)*mpred(1);
+        Jacobian(1,3) = beta;
+        Jacobian(1,4) = -mpred(1)*mpred(2);
+        Jacobian(2,1) =  mpred(4)*mpred(2);
+        Jacobian(2,2) =  mpred(4)*mpred(1)- gamma;
+        Jacobian(2,3) =  0;
+        Jacobian(2,4) =  mpred(1)*mpred(2);
+        Jacobian(3,1) =  0;
+        Jacobian(3,2) =  gamma;
+        Jacobian(3,3) =  - beta;
+        Q = zeros(4,4);
+        Q(4,4) = (Parameters.SigmaDiffusion(4))^2;
+        Cov = Cov + [Jacobian*Cov+Cov*Jacobian'+Q]*TStep;
+    end
+    Ck = zeros(1,4); % Jacobian of obs
+    Ck(1,2) = 1;
+    Rk_km1 = Ck*Cov*Ck'+(Parameters.SigmaObs*Observations(IndTime))^2;
+    Kk = Cov*Ck'*Rk_km1^-1;
+    ypred = mpred(2);
+    res = Observations(IndTime) - ypred; 
+    m = mpred + Kk*res;
+    Cov = Cov - Kk*Rk_km1*Kk';
+    
+    InvCov = Cov^-1;
+    InvCov2 = InvCov;
+    o = Observations(IndTime);
+    InvCov2(5,5) = 1/(Parameters.SigmaObs*o)^2;
+    InvCov2(2,2) = InvCov2(2,2) + 1/(Parameters.SigmaObs*o)^2;
+    InvCov2(2,5) = -1/(Parameters.SigmaObs*o)^2;
+    InvCov2(5,2) = -1/(Parameters.SigmaObs*o)^2;
+    
+    Cov2 = InvCov2^-1;
+    Liks(IndTime) = normpdf(o,mpred(2),sqrt(Cov2(5,5)));
+    LogLik = LogLik + log(normpdf(o,mpred(2),sqrt(Cov2(5,5))));
+%     Lik = Lik * normpdf(o,mpred(2),sqrt(Cov2(5,5)));
+    
+    ms(:,IndTime) = m;
+    Covs(IndTime,:,:) = Cov;
+end
+
+ResultSMC.Data = Data;
+ResultSMC.Parameters = Parameters;
+ResultSMC.PosteriorMeans = ms;
+ResultSMC.PosteriorCovs = Covs;
+Sigmas = [];
+for i = 1:4
+    Sigmas(i,:) = sqrt(Covs(:,i,i));
+end
+ResultSMC.Posterior975 = ms + 2*Sigmas;
+ResultSMC.Posterior025 = ms - 2*Sigmas;
+ResultSMC.Likelihood = prod(Liks);
+ResultSMC.RealTime = toc;
+mloglik = LogLik;

@@ -1,0 +1,292 @@
+function Res = SigmoidMCMC(Res)
+
+Parameters = Res.Parameters;
+sigm = Res.Data.Fts;
+Pars = FitSigmoid(sigm,Parameters);
+xis = Parameters.ComputationTStep:Parameters.ComputationTStep:Parameters.ObservationLength;
+sigm = Pars.Baseline+Pars.SigmAmpl*Sigmoid((xis-Pars.Inflpt*Parameters.ComputationTStep)/Pars.Steepness);
+
+Parameters.Baseline.Value =  sigm(1);
+Parameters.Baseline.Estimated = 1;
+Parameters.Baseline.Min = -10^14;
+Parameters.Baseline.Max = 10^14;
+Parameters.Baseline.MaxLim = 1;
+Parameters.Baseline.MinLim = 0;
+Parameters.Baseline.Estimated = 1;
+Parameters.Baseline.TransfType = 'Logit';
+Parameters.Baseline.Init = 0;
+Parameters.Amplitude.Value = Pars.Ampl;
+Parameters.Amplitude.Estimated = 1;
+Parameters.Amplitude.Min = -10^14;
+Parameters.Amplitude.Max = 10^14;
+Parameters.Amplitude.MaxLim = 1;
+Parameters.Amplitude.MinLim = 0;
+Parameters.Amplitude.Estimated = 1;
+Parameters.Amplitude.TransfType = 'Logit';
+Parameters.Amplitude.Init = 0;
+Parameters.Steepness.Value = min(Pars.Steepness,49);
+Parameters.Steepness.Estimated = 1;
+Parameters.Steepness.Min = -10^14;
+Parameters.Steepness.Max = 10^14;
+Parameters.Steepness.MaxLim = 50;
+Parameters.Steepness.MinLim = 0;
+Parameters.Steepness.Estimated = 1;
+Parameters.Steepness.TransfType = 'Logit';
+Parameters.Steepness.Init = 0;
+Parameters.InflPt.Value = min(510,max(2,Pars.Inflpt));
+Parameters.InflPt.Estimated = 1;
+Parameters.InflPt.Min = -10^14;
+Parameters.InflPt.Max = 10^14;
+Parameters.InflPt.MaxLim = 520;
+Parameters.InflPt.MinLim = 1;
+Parameters.InflPt.Estimated = 1;
+Parameters.InflPt.TransfType = 'Logit';
+Parameters.InflPt.Init = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+sigs = std(Res.TransfThetas');
+Names = Parameters.Names.Estimated;
+NbIterations = 1000;
+LogLik = -Inf;
+LogPrior = -Inf;
+LogCorr = Inf;
+Epsils = ones(length(Names),1);
+Accepteds = zeros(length(Names),NbIterations);
+LogLiks = [];
+sigs = [sigs 0.1 0.1 0.1 0.1];
+TransfThetas = [];
+Thetas = [];
+for IndIt = 1:NbIterations
+    disp(IndIt)
+    for i = 1:length(Names)
+        TempParameters = Parameters;
+        TempParameters.(Names{i}).TransfValue = TempParameters.(Names{i}).TransfValue + Epsils(i)*sigs(i)*randn(1,1);
+        TempParameters = UpdateParsTransfToNoTransf(TempParameters);
+        
+        xis = Parameters.ComputationTStep:Parameters.ComputationTStep:Parameters.ObservationLength;
+        sigm = TempParameters.Baseline.Value+TempParameters.Amplitude.Value*Sigmoid((xis-TempParameters.InflPt.Value*Parameters.ComputationTStep)/TempParameters.Steepness.Value);
+
+        res =  TrajLogLik(sigm,TempParameters,Res.Model,Res.Data);
+        TempLogLik = res.LogLik;
+        TempLogPrior = 0;
+        TempLogCorr = 0;
+        for k = 1:length(Names)
+            tmp = Parameters.(Names{k}).Prior(Names{k},TempParameters);
+            TempLogPrior = TempLogPrior + log(tmp);
+            
+            TempLogCorr = TempLogCorr + log(Parameters.(Names{k}).CorrFunct(Names{k},TempParameters));
+        end
+        
+        AccRate = TempLogLik + TempLogPrior - TempLogCorr - (LogLik + LogPrior - LogCorr);
+        if log(rand(1,1))<AccRate
+            Parameters = TempParameters;
+            LogLik = TempLogLik;
+            LogPrior = TempLogPrior;
+            LogCorr = TempLogCorr;
+            Accepteds(i,IndIt) = 1;
+        end
+        TransfThetas(i,IndIt) = Parameters.(Names{i}).TransfValue;
+        Thetas(i,IndIt) = Parameters.(Names{i}).Value;
+        
+        if IndIt >10
+            if rand(1,1)>0.8
+                Epsils(i) = exp(log(Epsils(i)) - 0.999^IndIt*(0.23-mean(Accepteds(i,1:IndIt))));
+            end
+        end
+    end
+    LogLiks(IndIt) = LogLik;
+end
+GibbsTransfThetas = TransfThetas; 
+
+plot(LogLiks)
+
+
+subplot(2,1,1)
+hist(Thetas(Parameters.Amplitude.Index,:))
+title('ampl')
+subplot(2,1,2)
+hist(Thetas(Parameters.InflPt.Index,:))
+title('inflpt')
+
+
+subplot(2,1,1)
+plot(Thetas(Parameters.Amplitude.Index,:))
+title('ampl')
+subplot(2,1,2)
+plot(Thetas(Parameters.InflPt.Index,:))
+title('inflpt')
+
+Names = Parameters.Names.Estimated;
+k = ceil(sqrt(length(Names)));
+for i = 1:length(Names)
+    subplot(k,k,i)
+    hist(Thetas(i,:))
+    hold on
+    try
+        plot(Res.Parameters.(Names{i}).Value,0,'og')
+    end
+    hold off
+    title(Names{i})
+end
+
+
+
+
+Names = Parameters.Names.Estimated;
+Cov = 2.38^2/length(Names)*cov(GibbsTransfThetas');
+NbIterations = 50000;
+LogLik = -Inf;
+LogPrior = -Inf;
+LogCorr = Inf;
+Epsil = 0.1;
+Accepted = zeros(1,NbIterations);
+LogLiks = [];
+TransfThetas = [];
+Thetas = [];
+for IndIt = 1:NbIterations
+    disp(IndIt)
+    TempParameters = Parameters;
+    tmp = [];
+    for i = 1:length(Names)
+        tmp(i) = TempParameters.(Names{i}).TransfValue;
+    end
+    tmp = tmp'+Epsil*chol(Cov)*randn(length(Names),1);
+    for i = 1:length(Names)
+        TempParameters.(Names{i}).TransfValue = tmp(i);
+    end
+    TempParameters = UpdateParsTransfToNoTransf(TempParameters);
+        
+    xis = Parameters.ComputationTStep:Parameters.ComputationTStep:Parameters.ObservationLength;
+    sigm = TempParameters.Baseline.Value+TempParameters.Amplitude.Value*Sigmoid((xis-TempParameters.InflPt.Value*Parameters.ComputationTStep)/TempParameters.Steepness.Value);
+
+    res =  TrajLogLik(sigm,TempParameters,Res.Model,Res.Data);
+    TempLogLik = res.LogLik;);
+    TempLogPrior = 0;
+    TempLogCorr = 0;
+    for k = 1:length(Names)
+        tmp = Parameters.(Names{k}).Prior(Names{k},TempParameters);
+        TempLogPrior = TempLogPrior + log(tmp);            
+        TempLogCorr = TempLogCorr + log(Parameters.(Names{k}).CorrFunct(Names{k},TempParameters));
+    end
+        
+     AccRate = TempLogLik + TempLogPrior - TempLogCorr - (LogLik + LogPrior - LogCorr);
+     if log(rand(1,1))<AccRate
+        Parameters = TempParameters;
+        LogLik = TempLogLik;
+        LogPrior = TempLogPrior;
+        LogCorr = TempLogCorr;
+        Accepted(IndIt) = 1;
+     end
+     for i = 1:length(Names)
+        TransfThetas(i,IndIt) = Parameters.(Names{i}).TransfValue;
+        Thetas(i,IndIt) = Parameters.(Names{i}).Value;
+     end
+     if IndIt >10
+        if rand(1,1)>0.8
+            Epsil = exp(log(Epsil) - 0.999^IndIt*(0.23-mean(Accepted(1:IndIt))));
+        end
+    end
+    LogLiks(IndIt) = LogLik;
+    disp(num2str([mean(Accepted(1:IndIt)) Epsil]))
+end
+plot(LogLiks)
+    
+
+
+Names = Parameters.Names.Estimated;
+Cov = 2.38^2/length(Names)*cov(GibbsTransfThetas');
+NbIterations = 50000;
+LogLik = -Inf;
+LogPrior = -Inf;
+LogCorr = Inf;
+Epsil = 0.1;
+Accepted = zeros(1,NbIterations);
+LogLiks = [];
+TransfThetas = [];
+Thetas = [];
+EstSigs = zeros(NbIterations,584);
+EstPrev = zeros(NbIterations,584);
+for IndIt = 1:NbIterations
+    disp(IndIt)
+    TempParameters = Parameters;
+    tmp = [];
+    for i = 1:length(Names)
+        tmp(i) = TempParameters.(Names{i}).TransfValue;
+    end
+    tmp = tmp'+Epsil*chol(Cov)*randn(length(Names),1);
+    for i = 1:length(Names)
+        TempParameters.(Names{i}).TransfValue = tmp(i);
+    end
+    TempParameters = UpdateParsTransfToNoTransf(TempParameters);
+        
+    xis = Parameters.ComputationTStep:Parameters.ComputationTStep:Parameters.ObservationLength;
+    sigm = TempParameters.Baseline.Value+TempParameters.Amplitude.Value*Sigmoid((xis-TempParameters.InflPt.Value*Parameters.ComputationTStep)/TempParameters.Steepness.Value);
+
+    res =  TrajLogLik(sigm,TempParameters,Res.Model,Res.Data);
+    TempLogLik = res.LogLik;
+    EstSigs(IndIt,:) = res.Record(:,9);
+    EstPrev(IndIt,:) = res.Record(:,7);
+    TempLogPrior = 0;
+    TempLogCorr = 0;
+    for k = 1:length(Names)
+        tmp = Parameters.(Names{k}).Prior(Names{k},TempParameters);
+        TempLogPrior = TempLogPrior + log(tmp);            
+        TempLogCorr = TempLogCorr + log(Parameters.(Names{k}).CorrFunct(Names{k},TempParameters));
+    end
+        
+     AccRate = TempLogLik + TempLogPrior - TempLogCorr - (LogLik + LogPrior - LogCorr);
+     if log(rand(1,1))<AccRate
+        Parameters = TempParameters;
+        LogLik = TempLogLik;
+        LogPrior = TempLogPrior;
+        LogCorr = TempLogCorr;
+        Accepted(IndIt) = 1;
+     end
+     for i = 1:length(Names)
+        TransfThetas(i,IndIt) = Parameters.(Names{i}).TransfValue;
+        Thetas(i,IndIt) = Parameters.(Names{i}).Value;
+     end
+     if IndIt >10
+        if rand(1,1)>0.8
+            Epsil = exp(log(Epsil) - 0.99^IndIt*(0.23-mean(Accepted(1:IndIt))));
+        end
+    end
+    LogLiks(IndIt) = LogLik;
+    disp(num2str([mean(Accepted(1:IndIt)) Epsil]))
+end
+clf
+plot(LogLiks)
+    
+TempRes = Res;
+tmp = EstSigs;
+TempRes.Paths(:,3,1:584) = log(tmp./(1-tmp));
+TempRes.Paths(:,1,1:584) = EstPrev; 
+
+TempRes.Parameters.TypeWork='Boston Examples HIV2';
+TempRes.Parameters.Sigm = sigm; 
+PlotResHIV(TempRes,TempRes.Parameters,TempRes.Data.Fts)
+
+
+Names = Parameters.Names.Estimated;
+k = ceil(sqrt(length(Names)));
+for i = 1:length(Names)
+    subplot(k,k,i)
+    plot(Thetas(i,:))
+%     hold on
+%     try
+%         plot(Res.Parameters.(Names{i}).Value,0,'og')
+%     end
+%     hold off
+    title(Names{i})
+end
+
+
+
+
+
+
+
+
