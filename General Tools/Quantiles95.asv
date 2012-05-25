@@ -1,0 +1,10 @@
+function [inf,sup] = Quantiles95(Values,Weigths)
+
+
+    temp = [];
+    for i = 1:length(Values)
+        temp = [temp; Values(i)*ones(round(Weigths(i)*100000),1)];
+    end
+    sup = quantile(temp,0.975);
+    inf = quantile(temp,0.225);
+    

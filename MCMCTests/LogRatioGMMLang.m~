@@ -1,0 +1,32 @@
+function LogRatio = LogRatioGMMLang(x,xstar,Parameters)
+
+Epsil = Parameters.Epsil;
+
+% numerator (xstar)
+temp = 0;
+post = log(1+posterior(Parameters.Dens,x))/sum(log(1+posterior(Parameters.Dens,x)));
+for IndComp = 1:Parameters.Dens.NComponents
+    mu = Parameters.Dens.mu(IndComp,:)';
+    temp = temp + (mvnpdf(xstar',x'+Epsil^2*(mu-x')/2,Parameters.Epsil^2*(squeeze(Parameters.Dens.Sigma(:,:,IndComp))))*post(IndComp));
+end
+LogqTempStar = log(max(eps^3,temp));
+LogLikxstar = log(max(eps^3,Parameters.f(xstar,Parameters)));
+
+
+% Star to Temp 
+temp = 0;
+post = log(1+posterior(Parameters.Dens,x))/sum(log(1+posterior(Parameters.Dens,x)));
+for IndComp = 1:Parameters.Dens.NComponents
+    mu = Parameters.Dens.mu(IndComp,:)';
+    temp = temp + (mvnpdf(x',xstar'+Epsil^2*(mu-xstar')/2,Parameters.Epsil^2*(squeeze(Parameters.Dens.Sigma(:,:,IndComp))))*post(IndComp));
+end
+LogqStarTemp = log(max(eps^3,temp));
+LogLikx = log(Parameters.f(x,Parameters));
+
+LogNum = LogLikxstar + LogqStarTemp;
+LogDenom = LogLikx + LogqTempStar;
+LogRatio = LogNum - LogDenom;
+
+if isnan(LogRatio)
+    disp('Problem')
+end

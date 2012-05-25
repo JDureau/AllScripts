@@ -1,0 +1,26 @@
+function xstar = SampleGMMLang(x,Parameters)
+
+Mixture = Parameters.Dens;
+
+
+liks = max(eps,posterior(Mixture,x));
+ind = PickRandInd((liks));
+
+
+mu = Parameters.Dens.mu(ind,:)';
+Epsil = Parameters.Epsil;
+
+plot(x(1),x(2),'ob', 'MarkerFaceColor','b')
+hold on
+tmp = x'+Epsil^2*(mu-x')/2;
+plot(tmp(1),tmp(2),'ok', 'MarkerFaceColor','k')
+
+X = [mvnrnd(tmp,squeeze(Epsil^2*Parameters.Dens.Sigma(:,:,ind)),1000)];
+TempDens = gmdistribution.fit(X,1);
+ezcontour(@(x,y)pdf(TempDens,[x y]),[TempDens.mu(1)-sqrt(TempDens.Sigma(1,1,1)) TempDens.mu(1)+sqrt(TempDens.Sigma(1,1,1))],[TempDens.mu(2)-sqrt(TempDens.Sigma(2,2,1)) TempDens.mu(2)+sqrt(TempDens.Sigma(2,2,1))]);
+xlim([-20 20])
+hold off
+
+pause()
+
+xstar = mvnrnd(x'+Epsil^2*(mu-x')/2,squeeze(Epsil^2*Parameters.Dens.Sigma(:,:,ind)));

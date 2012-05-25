@@ -1,0 +1,38 @@
+function [] = PlotTracePlots(Res)
+
+dim = Res.Parameters.NbParsEstimated;
+figure(1)
+if dim <6
+    for i = 1:dim
+        for j = i+1:dim
+            subplot(dim,dim,(i-1)*dim+j)
+            plot(Res.Thetas(j,:),Res.Thetas(i,:),'.')
+            if i == 1
+                title(Res.Parameters.Names.Estimated{j})
+            end
+            subplot(dim,dim,(j-1)*dim+i)
+            plot(Res.TransfThetas(i,:),Res.TransfThetas(j,:),'.')
+            if i == 1
+                ylabel(Res.Parameters.Names.Estimated{j})
+            end
+        end
+        subplot(dim,dim,(i-1)*dim+i)
+        plot(Res.TransfThetas(i,:))
+        if i == 1
+            ylabel(Res.Parameters.Names.Estimated{i})
+            title(Res.Parameters.Names.Estimated{i})
+        end
+    end
+else
+    k = ceil(sqrt(dim));
+    for i = 1:dim  
+        subplot(dim,dim,(i-1)*dim+j)
+end
+    
+figure(2)
+subplot(2,1,1)
+plot(Res.LogLiks)
+title('LogLiks')
+subplot(2,1,2)
+plot(Res.LogPosts)
+title('LogPosts')

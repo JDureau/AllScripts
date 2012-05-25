@@ -1,0 +1,13 @@
+function xstar = SampleGMM(x,Parameters)
+
+Mixture = Parameters.SamplDens;
+
+
+liks = posterior(Mixture,x');
+ind = PickRandInd(liks);
+
+mu = Parameters.Mus(ind,:)';
+cov = Mixture.Sigmas(:,:,ind);
+Epsil = Parameters.Epsil;
+
+xstar = x - Epsil^2/2*(x-mu) + Epsil*chol(cov)*randn(Parameters.Dim,1);

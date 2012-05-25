@@ -1,0 +1,28 @@
+function Dates = ApproxWeeklyDates(InitialDate,NbWeeks)
+
+MonthsInLetters = {'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'};
+DaysThatMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+Date = CompleteDate(InitialDate);
+Dates = {Date};
+
+for i = 2:NbWeeks
+    day = Date.Day+7;
+    year = Date.Year;
+    month = Date.Month;
+    if day>DaysThatMonth(month)
+        day = day - DaysThatMonth(month);
+        month = month + 1;
+        Date.MonthInLetters = [];
+        if month>12
+            month = 1;
+            year = year + 1;
+        end
+    end
+    Date.Day = day;
+    Date.Month = month;
+    Date.Year = year;
+    Dates{i} = CompleteDate(Date);
+end
+
+
+    

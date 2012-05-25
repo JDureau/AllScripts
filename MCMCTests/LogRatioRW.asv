@@ -1,0 +1,13 @@
+function LogRatio = LogRatioRW(x,xstar,Parameters)
+
+Epsil = Parameters.Epsil;
+
+% numerator (xstar)
+LogLik = log(pdf(Parameters.RealDens,xstar'));
+LogNum = LogLik;
+
+% denominator (x)
+LogLik = log(pdf(Parameters.RealDens,x'));
+LogDenom = LogLik;
+
+LogRatio = LogNum - LogDenom;

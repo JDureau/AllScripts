@@ -1,0 +1,54 @@
+function ind = PickRandComp( x , DensityModel, Parameters)
+
+NComps = DensityModel.NComponents;
+
+liks = [];
+for i = 1:NComps
+%     liks(i) = DensityModel.PComponents(i);
+    liks(i) = DensityModel.PComponents(i)*(mvnpdf(x,DensityModel.mu(i,:)',squeeze(DensityModel.Sigma(:,:,i))));
+%     liks(i) = (mvnpdf(x,DensityModel.mu(i,:)',squeeze(DensityModel.Sigma(:,:,i))));
+end
+
+if length(x) == 2
+    xmin = [0.3 0.3*10^-5];
+    xmax = [75  1.8*10^-5];
+else
+    xmin = [0.3 0.8 0.3*10^-5];
+    xmax = [75  1.2 1.8*10^-5];
+end
+ScaledLogXmin = Scale(log(xmin'),Parameters);
+ScaledLogXmax = Scale(log(xmax'),Parameters);
+
+subplot(12,1,1:5)
+var = 1;
+plot(x(var),0,'og')
+hold on
+xs = ScaledLogXmin(var):0.01:ScaledLogXmax(var);
+for i = 1:NComps
+    temp = DensityModel.PComponents(i)*normpdf(xs,DensityModel.mu(i,var),sqrt(DensityModel.Sigma(var,var,i)));
+    plot(xs,temp)
+end
+hold off
+
+subplot(12,1,6)
+plot(exp(x(var)),0,'og')
+xlim([0 10])
+
+subplot(12,1,7:11)
+var = 2;
+plot(x(var),0,'og')
+hold on
+xs = ScaledLogXmin(var):0.01:ScaledLogXmax(var);
+for i = 1:NComps
+    temp = DensityModel.PComponents(i)*normpdf(xs,DensityModel.mu(i,var),sqrt(DensityModel.Sigma(var,var,i)));
+    plot(xs,temp)
+end
+hold off
+
+subplot(12,1,12)
+plot(exp(x(var)),0,'og')
+xlim([0.3 1.8]*10^-5)
+
+pause(0.01)
+
+ind = PickRandInd(liks);

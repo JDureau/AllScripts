@@ -1,0 +1,35 @@
+function [] = PlotScatteredQuantity(Data,Quantity)
+
+if not(size(Data,2) == 2)
+    'dimension problem'
+    die
+end
+
+xmin = min(Data(:,1));
+xmax = max(Data(:,1));
+ymin = min(Data(:,2));
+ymax = max(Data(:,2));
+
+NbSteps = 3;
+
+XStep = (xmax - xmin)/NbSteps;
+YStep = (ymax - ymin)/NbSteps;
+
+res = [];
+X = [];
+Y = [];
+for i = 1:NbSteps
+    for j = 1:NbSteps
+        X(end+1) = xmin + (i-1)*XStep + XStep/2;
+        Y(end+1) = ymin + (j-1)*YStep + YStep/2;
+        indsX = (Data(:,1)>xmin + (i-1)*XStep).*(Data(:,1)<xmin + (i)*XStep);
+        indsY = (Data(:,2)>ymin + (j-1)*YStep).*(Data(:,2)<ymin + (j)*YStep);
+        inds = indsX.*indsY;
+        if sum(inds)
+            res(end+1) = mean(Quantity(find(inds)));
+        else
+            res(end+1) = 0;
+        end
+    end
+end
+contour(X,Y,res')

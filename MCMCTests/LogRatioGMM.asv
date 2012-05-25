@@ -1,0 +1,26 @@
+function LogRatio = LogRatioGMM(x,xstar,Parameters)
+
+Epsil = Parameters.Epsil;
+
+% numerator (xstar)
+temp = 0;
+post = posterior(Parameters.SamplDens,x');
+for IndComp = 1:Parameters.SamplDens.NComponents
+    temp = temp + log(mvnpdf(xstar,x + Parameters.Epsil^2/2*(Parameters.SamplDens.mu(IndComp,:)'-x),Parameters.Epsil^2*squeeze(Parameters.DensityModel.Sigma(:,:,IndComp)))*post(IndComp));
+end
+LogqTempStar = temp;
+LogLik = log(pdf(Parameters.RealDens,xstar'));
+LogNum = LogLik + LogqTempStar;
+
+% Star to Temp 
+temp = 0;
+post = posterior(Parameters.SamplDens,xstar');
+for IndComp = 1:Parameters.SamplDens.NComponents
+    temp = temp + log(mvnpdf(x,xstar + Parameters.Epsil^2/2*(Parameters.SamplDens.mu(ind,:)'-xstar),Parameters.Epsil^2*squeeze(Parameters.DensityModel.Sigma(:,:,IndComp)))*post(IndComp));
+end
+LogqStarTemp = temp;
+LogLik = log(pdf(Parameters.RealDens,x'));
+LogDenom = LogLik + LogqStarTemp;
+
+
+LogRatio = LogNum - LogDenom;

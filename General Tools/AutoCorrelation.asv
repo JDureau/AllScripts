@@ -1,0 +1,14 @@
+function [AutoCor] = AutoCorrelation( X, MaxLag )
+
+if nargin == 1
+    MaxLag = length(X);
+end
+
+AutoCor = zeros(1,MaxLag);
+Mu = mean(X);
+for k = 1:MaxLag
+    Xt = X(k:length(X));
+    Xs = X(1:length(X)-k+1);
+    AutoCor(1,k)=sum((Xt-mean(Xt)).*(Xs(1:length(X)-k+1)-Mu));
+    AutoCor(1,k) = AutoCor(1,k)/(length(X)*(std(X)^2)) ; 
+end

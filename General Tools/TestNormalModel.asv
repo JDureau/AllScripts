@@ -1,0 +1,30 @@
+function error = TestNormalModel(x,xvalues,yvalues,MinVect,MaxVect,MinC,MaxC,inds,weigths)
+
+dim = size(xvalues,2);
+if nargin == 8
+    weigths = ones(size(yvalues));
+end
+
+c = InvLogitTransf(x(1),MinC,MaxC);
+mu = ones(1,dim);
+for i = 1:dim
+    try
+        mu(i) = InvLogitTransf(x(1+i),MinVect(i),MaxVect(i));
+    catch
+        disp('pb')
+    end
+end
+a = x(dim+2:end); 
+% a = InvLogitTransf(a,MinBounds,MaxBounds);
+b = triu(ones(dim),1)+eye(dim); 
+b(~~b)=a ;
+sigma = b*b';
+
+temp = min(1000,mvnpdf(xvalues(inds,:),mu,sigma));
+% error = log((mean(weigths.*((c*yvalues-mvnpdf(xvalues,mu,sigma)')./(c*yvalues)).^2)));
+error = (sum(weigths(inds).*((c*exp(yvalues(inds))-temp')./(temp)').^2))+ max(0);
+if isinf(error)
+    disp('inf value')
+else
+%     disp(error)
+end
