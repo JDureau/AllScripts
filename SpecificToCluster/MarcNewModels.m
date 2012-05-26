@@ -1,5 +1,7 @@
 function [] = MarcNewModels(IndModel)
 
+IndModel = IndModel + 1;
+
 
 cd('/users/ecologie/dureau/src/AllScripts/')
 addpath([pwd '/General Tools'])
@@ -66,6 +68,6 @@ DiffType = 'Add';
 ObsType = 'Fixed';
 Name = '';
 
-FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
+FullSEIRinference(Data,DiffType,ObsType,Name,IndModel+1)
 
 
