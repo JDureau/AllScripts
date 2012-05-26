@@ -369,7 +369,7 @@ switch IndModel
 end
 
 if IndModel >1
-    Parameters.NbParticules = 30000;
+    Parameters.NbParticules = 2000;
 else
     Parameters.NbParticules = 1000;
 end
@@ -391,8 +391,8 @@ end
 Parameters = UpdateParsTransfToNoTransf(Parameters);
 TellParsValues(Parameters)  
 
-Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
-Temp.LogLik
+% Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
+% Temp.LogLik
 % 
 % % defining NbParts 
 % nbparts = [  100 1000 2000 3000 4000  5000 ];
@@ -484,7 +484,7 @@ else
 end
     
 if IndModel >1
-    Parameters.NbParticules = 2000;
+    Parameters.NbParticules = 4000;
 end
     
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;

@@ -6,7 +6,7 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 50000;
+NbIters = 5000;
 
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
@@ -391,6 +391,8 @@ end
 Parameters = UpdateParsTransfToNoTransf(Parameters);
 TellParsValues(Parameters)  
 
+% Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
+% Temp.LogLik
 % 
 % % defining NbParts 
 % nbparts = [  100 1000 2000 3000 4000  5000 ];
@@ -482,7 +484,7 @@ else
 end
     
 if IndModel >1
-    Parameters.NbParticules = 2000;
+    Parameters.NbParticules = 4000;
 end
     
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;
@@ -539,7 +541,7 @@ Parameters.ComputeRWsamplCov = 0;
 Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
 TempPar = TempRes.TempPar;
-Parameters.NoPaths = 0;
+Parameters.NoPaths = 1;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 
 % if strcmp(Parameters.DiffusionType,'IBM')
