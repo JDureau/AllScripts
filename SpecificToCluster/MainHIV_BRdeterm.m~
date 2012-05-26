@@ -80,6 +80,7 @@ end
 
 Parameters.InitialFt.Estimated = 0;
 Parameters.SigmaRW.Estimated = 0;
+Parameters.BRsigma.Estimated = 0;
 
 if IndModel == 1
     Parameters.BRmm1.Estimated = 1;
@@ -98,9 +99,11 @@ elseif IndModel == 2
     Parameters.Sigmrate.Value = 6;
     Parameters.Sigmrate.Min = -10^14;
     Parameters.Sigmrate.Max = 10^14;
+    Parameters.Sigmrate.MaxLim = 1000;
+    Parameters.Sigmrate.MinLim = 0;
     % Parameters.Sigmmm1.MaxLim = 10;
     Parameters.Sigmrate.Estimated = 1;
-    Parameters.Sigmrate.TransfType = 'Log';
+    Parameters.Sigmrate.TransfType = 'Logit';
     Parameters.Sigmrate.Init = 1;
     Parameters.Sigmmu.Value = 0.8;
     Parameters.Sigmmu.Min = -10^14;
@@ -179,7 +182,7 @@ Hess = diag(-HD);
 
 NbIts = 20000;
 Parameters = InitParameters;
-Cov = 0.01*2.38^2/length(finalx)*(-Hess)^-1;
+Cov = (-Hess)^-1;
 test =  (mean(eig(-Hess)>0)==1)*isreal(eig(-Hess));
 
 % test = 1;
@@ -226,6 +229,8 @@ while not(test)
         test = 1;
     end
 end
+Cov = (-Hess)^-1;
+
 
 % 
 % fvals = fval;
@@ -316,7 +321,7 @@ Parameters = Res.Parameters;
 Cov = 2.38^2/length(finalx)*cov(Res.TransfThetas');
 Parameters.NamesEst = NamesEst;
 Parameters.SaveSpace = 1;
-Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,150000,IndModel);
+Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,130000,IndModel);
 
 if IndModel == 1
     save([SavePath '/ResGenBR' ModelType '_BRdeterm_' num2str(ind) '.mat'],'Res')

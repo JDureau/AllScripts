@@ -15,6 +15,7 @@ else
 end
 
 if strcmp(Parameters.TypeWork,'Normal')
+    if size(Paths,2)<40
 %     figure(1)
 clf
     subplot(3,1,1)
@@ -26,7 +27,7 @@ clf
     try
         for i = 2:size(Data.Observations,2)
             if Data.Observations(7,i)>0
-                plot(Data.Instants(i)*ones(1,2),[Data.Observations(7,i)*(1-2*sqrt(Data.Observations(7,i)*(100-Data.Observations(7,i))/400)) Data.Observations(7,i)*1.1],'r','LineWidth',3)
+                plot(Data.Instants(i)*ones(1,2),[Data.Observations(7,i)-2*sqrt(Data.Observations(7,i)*(100-Data.Observations(7,i))/400) Data.Observations(7,i)+2*sqrt(Data.Observations(7,i)*(100-Data.Observations(7,i))/400)],'r','LineWidth',3)
             end
         end
     end
@@ -52,7 +53,7 @@ clf
     try 
         for i = 2:size(Data.Observations,2)
             if Data.Observations(8,i)>0
-                plot(Data.Instants(i)*ones(1,2),[Data.Observations(8,i)*0.9 Data.Observations(8,i)*1.1],'r','LineWidth',3)
+                plot(Data.Instants(i)*ones(1,2),[Data.Observations(8,i)-2*sqrt(Data.Observations(8,i)*(100-Data.Observations(8,i))/400) Data.Observations(8,i)+2*sqrt(Data.Observations(8,i)*(100-Data.Observations(8,i))/400)],'r','LineWidth',3)
             end
         end
     end
@@ -127,6 +128,67 @@ clf
     xlabel('Time')
     ylabel('Condom use frequency')
 %     legend('95% C.I','50% C.I.','Mean')
+
+    else
+        if strcmp(Parameters.DiffusionType,'Logistic')
+            paths = Paths;
+            indinit = Parameters.CUinit.Index;
+            inddelta  = Parameters.CUdelta.Index;
+            mu = Res.Thetas(indinit,:) + Res.Thetas(inddelta,:);
+            Betas = min(1,max(0,diag(mu)*exp(paths)./(1+exp(paths))));
+            ciplot(quantile(Betas,0.025),quantile(Betas,0.975),[172,215,255]/255)
+            xlim([0 620])
+            hold on
+            ciplot(quantile(Betas,0.25),quantile(Betas,0.75),[100,153,251]/255)
+            plot(mean(Betas),'k','LineWidth',2)
+
+        else
+            try
+                if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+                    if Parameters.BRsigma.Estimated
+                        tmp = Paths;
+    %                     beta0s = squeeze(Res.Thetas(Parameters.BRbase.Index,:));
+                        mus = squeeze(Res.Thetas(Parameters.BRmu.Index,:));
+                        ms  = squeeze(Res.Thetas(Parameters.BRmm1.Index,:))+1;
+    %                     ts = squeeze(Res.Thetas(Parameters.BRtinfl.Index,:));
+            %             Bs = 1-(beta0s./mus).^(1-ms);
+            %             ks = 1./ts.*log(Bs./(1-ms));
+                        FtBer = mean((repmat(1-ms',1,size(Paths,2)).*tmp+repmat(mus.^(1-ms)',1,size(Paths,2))).^(repmat(1./(1-ms)',1,size(Paths,2))));
+                        Paths = ((repmat(1-ms',1,size(Paths,2)).*tmp+repmat(mus.^(1-ms)',1,size(Paths,2))).^(repmat(1./(1-ms)',1,size(Paths,2))));
+
+                    end
+
+        %             m = Parameters.BRm.Value;
+        %             mu = Parameters.BRmu.Value;
+        %             k = Parameters.k;
+
+                elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
+                    Paths = exp(Paths)./(1+exp(Paths));
+                end
+                clf
+                ciplot(quantile(squeeze(Paths),0.025),quantile(squeeze(Paths),0.975),[172,215,255]/255)
+                xlim([0 620])
+                hold on
+                ciplot(quantile(squeeze(Paths),0.25),quantile(squeeze(Paths),0.75),[100,153,251]/255)
+                plot(mean(squeeze(Paths)),'k','LineWidth',2)
+
+            end
+        end
+    %     for i = 1:9
+    %         plot(1:620,i*0.1*ones(1,620))
+    %     end
+        if nargin == 3
+            plot(FtPath,'--g','LineWidth',2)
+        end
+        plot([456 456],[0 1],'--k','LineWidth',2)
+        ylim([0 1])
+        set(gca,'XTick',[0:(600)/5:(600)])
+        set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'])
+        title('Estimated condom use frequency along time','FontWeight','bold')
+        xlabel('Time')
+        ylabel('Condom use frequency')
+    end
+        
 
 elseif strcmp(Parameters.TypeWork,'ISSTDR Poster')
 %     figure(1)

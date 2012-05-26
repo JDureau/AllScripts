@@ -310,7 +310,7 @@ for i = 1:5
     
     disp(['Burn-in ' num2str(i)])
     Parameters = Res.Parameters;
-    Cov = 2.38^2/length(finalx)*cov(Res.TransfThetas');
+    Cov = cov(Res.TransfThetas');
     Parameters.NamesEst = NamesEst;
     Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,NbIts,IndModel);
     Parameters = Res.Parameters;
