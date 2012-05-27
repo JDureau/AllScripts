@@ -130,7 +130,7 @@ switch ind
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.ModelType='SMC';
-        Parameters.AdaptC = 0.9999;
+        Parameters.AdaptC = 0.99;
         Parameters.NbVariables = 7;
         Parameters.aim = 0.23;
         Parameters.Epsil = 1;
@@ -154,7 +154,7 @@ switch ind
         Parameters.ModelType='SMC';
         TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
         
-       if indeps == 1
+        if indeps == 1
             % no eps, no AM
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
@@ -288,7 +288,7 @@ for i = 1:5
         [i j]
         Ress{i,j}.AutoCorr = {};
         for k = 1:size(Ress{i,j}.TransfThetas,1)
-            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,50000:end),1000);
+            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,50000:end));
             Ress{i,j}.ESSTransf(k) = 100000/(1+2*sum(temp(2:end)));
             Ress{i,j}.RelESSTransf(k) = 1/(1+2*sum(temp(2:end)))*100;
             Ress{i,j}.AutoCorr{k} = temp;

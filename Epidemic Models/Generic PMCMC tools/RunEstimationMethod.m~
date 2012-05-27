@@ -25,7 +25,7 @@ MargLogLikStars = [];
 Renewal = [];
 EstimatedSigs = [];
 Coalescence = [];
-
+InitCov = Parameters.G^(-1);
 try 
     if not(Parameters.AdMet)
         Parameters.AdMet = 0;
@@ -56,12 +56,14 @@ end
 
 for IndIt = 1:NbIterations
     if strcmp(Parameters.PMCMC,'PMMH')
+       TempPar.Cov = InitCov;
        if Parameters.AdMet
             if IndIt > 100
                 if rand(1,1)>Parameters.AdMetBeta
                     try
                         if not(sum(eig(cov(TransfThetas'))<=eps))
                             TempPar.Cov = cov(TransfThetas');
+%                             eig(TempPar.Cov)
                         end
                     end
                 end
@@ -81,9 +83,13 @@ for IndIt = 1:NbIterations
         
         LogRand = log(rand(1,1));
         
-        if ( LogRand <= StarPar.LogAccRate)
+        if LogRand <= StarPar.LogAccRate
             TempPar = StarPar;
             Accepted(IndIt) = 1;
+%         elseif and(StarPar.LogAccRate>-50,mean(Accepted(end-min(100,length(Accepted))+1:end))==0)
+%             TempPar = StarPar;
+%             Accepted(IndIt) = 1;
+%             disp('forced it')
         else
             Accepted(IndIt) = 0;
         end
@@ -125,10 +131,10 @@ for IndIt = 1:NbIterations
             Parameters.AccRate = 100;
         end
         if IndIt>100
-            if rand(1,1)<0.2
+%             if rand(1,1)<0.2
                 Parameters.Epsil = exp(log(Parameters.Epsil) + Parameters.AdaptC^IndIt*(Parameters.AccRate-0.23));
 
-            end
+%             end
         end
 
     end

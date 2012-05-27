@@ -84,7 +84,7 @@ figure(4)
 k = ceil(sqrt(dim));
 for i = 1:dim 
     subplot(k,k,i)
-    temp = AutoCorrelation(Res.TransfThetas(i,end-NbSamples+1:end),MaxLag);
+    temp = AutoCorrelation(Res.TransfThetas(i,end-NbSamples+1:end));
     plot(temp)
     ylim([-0.2 1])
     title(length(Res.TransfThetas(i,:))/(1+2*sum(temp(2:end))))

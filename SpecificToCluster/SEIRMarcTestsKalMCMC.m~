@@ -42,7 +42,7 @@ end
 
 TempRess = {};
 
-NbIters = 200000;
+NbIters = 150000;
 dim = 7;
 
 load([SavePath '/ResTrueCov.mat']);
@@ -51,7 +51,7 @@ load([SavePath '/ResTrueCov.mat']);
 switch ind
     case 1
         % 1: from posterior cov, w-o eps 
-        Cov = 2.38^2/dim*cov(Res.TransfThetas(:,100000:end)');
+        Cov = cov(Res.TransfThetas(:,100000:end)');
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -88,7 +88,7 @@ switch ind
 
     case 2
         % 2: from EKF mode cov, w-o eps
-        Cov = 2.38^2/dim*(-KalHess)^-1;
+        Cov = (-KalHess)^-1;
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -126,11 +126,11 @@ switch ind
     case 3
         % 3: from EKF post cov, w-o eps
         %%%EKF - MCMC
-        Cov = 2.38^2/dim*(-KalHess)^-1;
+        Cov = (-KalHess)^-1;
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.ModelType='SMC';
-        Parameters.AdaptC = 0.9999;
+        Parameters.AdaptC = 0.99;
         Parameters.NbVariables = 7;
         Parameters.aim = 0.23;
         Parameters.Epsil = 1;
@@ -138,13 +138,13 @@ switch ind
         Parameters.ModelType='Kalman';
         Parameters.AdaptC = 0.99;
         ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-        Cov = 2.38^2/dim*cov(ResKal.TransfThetas');
+        Cov = cov(ResKal.TransfThetas');
         Parameters.G = Cov^-1;
         Parameters.ModelType='Kalman';
         Parameters.AdaptC = 0.99;
         ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
         %%%Go
-        Cov = 2.38^2/dim*cov(ResKal.TransfThetas');
+        Cov = cov(ResKal.TransfThetas');
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -181,7 +181,7 @@ switch ind
 
     case 4
         % 4: from Identity, w-o eps
-        Cov = 2.38^2/dim*eye(dim);
+        Cov = eye(dim);
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -217,7 +217,7 @@ switch ind
         end
     case 5
         % 1: from diagonal posterior cov, 
-        Cov = 2.38^2/dim*diag(diag(cov(Res.TransfThetas')));
+        Cov = diag(diag(cov(Res.TransfThetas')));
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -288,7 +288,7 @@ for i = 1:5
         [i j]
         Ress{i,j}.AutoCorr = {};
         for k = 1:size(Ress{i,j}.TransfThetas,1)
-            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,50000:end),1000);
+            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,50000:end));
             Ress{i,j}.ESSTransf(k) = 100000/(1+2*sum(temp(2:end)));
             Ress{i,j}.RelESSTransf(k) = 1/(1+2*sum(temp(2:end)))*100;
             Ress{i,j}.AutoCorr{k} = temp;
