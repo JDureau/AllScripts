@@ -70,10 +70,11 @@ for  j = 1:NbIts
 %     LogqStarTemp = log(mvnpdf(x',xstar' ,Epsil^2*tmpCov));
 %     LogqTempStar = log(mvnpdf(xstar',x'    ,Epsil^2*tmpCov));
     
-    if CptNotAccepted > 100
+    if CptNotAccepted > 500
         xstar = mu;
         LogqStarTemp = Inf;
         LogqTempStar = 0;
+        disp('Forced move')
     end
     
     
