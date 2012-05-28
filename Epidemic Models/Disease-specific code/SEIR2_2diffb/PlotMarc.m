@@ -187,18 +187,34 @@ catch
         % logged:
         for i = 1:length(toplot)
             subplot(length(toplot)+1,1,i)
-            ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),[172,215,255]/255)
-            hold on
-            ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),[100,153,251]/255)
-            plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),'k','LineWidth',2)
-            plot((Data.Observations(5,:)),'g','LineWidth',2)
-            hold off
-            xlim([1 size(Data.Observations,2)])
             try
-                set(gca,'XTick',[delta:delta:length(Data.Dates)])
-        %         set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
-                set(gca,'XTickLabel',dates)
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),[172,215,255]/255)
+                hold on
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),[100,153,251]/255)
+                plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),'k','LineWidth',2)
+                plot((Data.Observations(5,:)),'g','LineWidth',2)
+                hold off
+                xlim([1 size(Data.Observations,2)])
+                try
+                    set(gca,'XTick',[delta:delta:length(Data.Dates)])
+            %         set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
+                    set(gca,'XTickLabel',dates)
+                end
+            catch
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),[172,215,255]/255)
+                hold on
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),[100,153,251]/255)
+                plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),'k','LineWidth',2)
+                plot((Data.Observations(5,:)),'g','LineWidth',2)
+                hold off
+                xlim([1 size(Data.Observations,2)])
+                try
+                    set(gca,'XTick',[delta:delta:length(Data.Dates)])
+            %         set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
+                    set(gca,'XTickLabel',dates)
+                end
             end
+            
             title('Total Influenza Incidence')
             ylabel('Incidence')
             xlabel('t (weeks)')

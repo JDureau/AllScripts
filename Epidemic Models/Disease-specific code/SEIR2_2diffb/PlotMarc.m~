@@ -64,7 +64,7 @@ try
         i=1;
         nsmooth = Parameters.nsmooth;
         subplot(rows,cols,figind)
-       KM-=OK t((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),Light)
+        ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),Light)
         hold on
         try Parameters.holidays
             ymax = max(mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1)))));
@@ -121,7 +121,7 @@ try
         
         try
             plot(1000000,ymax,'.','Color',DotsColor,'MarkerSize',16)
-            if figind == 1
+            if figind == 2
                 width = 4;
             else
                 width = 1.5;
@@ -187,12 +187,13 @@ catch
         % logged:
         for i = 1:length(toplot)
             subplot(length(toplot)+1,1,i)
-            ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),[172,215,255]/255)
-            hold on
-            ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),[100,153,251]/255)
-            plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),'k','LineWidth',2)
-            plot((Data.Observations(5,:)),'g','LineWidth',2)
-            hold off
+            try
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.025)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975)),[172,215,255]/255)
+                hold on
+                ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),[100,153,251]/255)
+                plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),'k','LineWidth',2)
+                plot((Data.Observations(5,:)),'g','LineWidth',2)
+                hold off
             xlim([1 size(Data.Observations,2)])
             try
                 set(gca,'XTick',[delta:delta:length(Data.Dates)])

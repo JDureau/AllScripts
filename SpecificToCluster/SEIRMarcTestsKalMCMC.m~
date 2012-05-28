@@ -143,6 +143,9 @@ switch ind
         Parameters.ModelType='Kalman';
         Parameters.AdaptC = 0.99;
         ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+        save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
+
+        
         %%%Go
         Cov = cov(ResKal.TransfThetas');
         Parameters.G = Cov^-1;
@@ -154,7 +157,7 @@ switch ind
         Parameters.ModelType='SMC';
         TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
         
-       if indeps == 1
+        if indeps == 1
             % no eps, no AM
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
@@ -295,6 +298,34 @@ for i = 1:5
         end
     end
 end
+
+i = 3
+j = 3
+cpt = 0;
+cptmax = 0;
+currentind = 1;
+inds = [];
+for k = 50000:size(Ress{i,j}.Thetas,2)
+    if Ress{i,j}.Thetas(1,k) == Ress{i,j}.Thetas(1,k-1)
+        cpt = cpt+1;
+    else
+        cpt = 0;
+    end
+    if cpt>cptmax
+        cptmax = cpt;
+    end
+    if cpt<180
+        inds(end+1) = k;
+    end
+end
+Ress{i,j}.Thetas = Ress{i,j}.Thetas(:,inds);
+Ress{i,j}.TransfThetas = Ress{i,j}.TransfThetas(:,inds);
+cptmax
+
+
+[b,c,inds] = unique(Ress{i,j}.Thetas(1,:));    
+        
+        
 % 
 % 
 % i = 5

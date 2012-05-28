@@ -541,7 +541,7 @@ Parameters.ComputeRWsamplCov = 0;
 Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
 TempPar = TempRes.TempPar;
-Parameters.NoPaths = 1;
+Parameters.NoPaths = 0;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 
 % if strcmp(Parameters.DiffusionType,'IBM')
