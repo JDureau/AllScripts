@@ -68,6 +68,6 @@ DiffType = 'Add';
 ObsType = 'Fixed';
 Name = '';
 
-FullSEIRinference(Data,DiffType,ObsType,Name,IndModel+1)
+FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 
 

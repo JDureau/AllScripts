@@ -484,7 +484,7 @@ else
 end
     
 if IndModel >1
-    Parameters.NbParticules = 4000;
+    Parameters.NbParticules = 6000;
 end
     
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;
