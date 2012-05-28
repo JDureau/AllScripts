@@ -369,7 +369,7 @@ switch IndModel
 end
 
 if IndModel >1
-    Parameters.NbParticules = 2000;
+    Parameters.NbParticules = 4000;
 else
     Parameters.NbParticules = 1000;
 end
@@ -515,7 +515,7 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 TempRes = Res2;
 
 dim = length(Parameters.Names.Estimated);
-Cov = 2.38^2/dim*cov(TempRes.TransfThetas');
+Cov = cov(TempRes.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 1;
 Parameters.MCMCType = 'Rand';
@@ -533,7 +533,7 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 TempRes = Res2;
 
-Cov = 2.38^2/dim*cov(TempRes.TransfThetas');
+Cov = cov(TempRes.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.MCMCType = 'Rand';
 Parameters.GMeth = 'cst given';

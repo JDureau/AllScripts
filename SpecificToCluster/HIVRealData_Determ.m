@@ -389,7 +389,7 @@ Cov = 2.38^2/length(finalx)*cov(Res.TransfThetas');
 Parameters.NamesEst = NamesEst;
 Parameters.SaveSpace = 1;
 clear Res;
-Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,200000,IndModel);
+Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,150000,IndModel);
 
 
 save([SavePath Name],'Res')

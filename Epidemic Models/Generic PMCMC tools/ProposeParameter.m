@@ -16,7 +16,7 @@ LogCorr = 0;
 Names = Parameters.Names.Estimated;
 if strcmp(Parameters.MCMCType,'Lang')
     epsil = Parameters.Epsil;
-    CholCov = chol(TempPar.Cov);
+    CholCov = chol(2.38^2/length(Names)*TempPar.Cov);
     StarPar.Par = mvnrnd(TempPar.Mu,TempPar.Cov);
     for i = 1:length(Names)
         StarPar.(Names{i}).TransfValue =  StarPar.Par(Parameters.(Names{i}).Index);
