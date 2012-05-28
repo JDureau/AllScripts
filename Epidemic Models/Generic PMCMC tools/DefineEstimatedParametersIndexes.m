@@ -50,6 +50,7 @@ tmpNotInit = 0;
 EstNotInit = {};
 names = EstimatedNames;
 for i = 1:ind-1
+%     names{i}
     if  Parameters.(names{i}).Init
         tmpInit = tmpInit + 1;
         EstInit{end+1} = names{i};

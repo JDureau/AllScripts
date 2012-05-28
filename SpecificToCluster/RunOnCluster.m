@@ -1,7 +1,7 @@
 function [] = RunOnCluster(BigInd,SmallInd,IndMode,IndDiff)
 
-% ModelType = 'Bert10';
- ModelType = 'Step10';
+ModelType = 'Bert';
+% ModelType = 'Step10';
 %ModelType = 'Affine10';
 % ModelType = 'Logist';
 %ModelType = 'Sigm';

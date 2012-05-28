@@ -197,8 +197,8 @@ if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
     ParametersKalman.BRsigma.MinLim = 0;
     ParametersKalman.BRsigma.MaxLim = 2;
     ParametersKalman.BRsigma.Estimated = 1;
-    ParametersKalman.BRsigma.TransfType = 'Logit';
-    ParametersKalman.BRsigma.Init = 0;
+    Parameters.BRsigma.TransfType = 'Logit';
+    Parameters.BRsigma.Init = 0;
 elseif strcmp(ParametersKalman.DiffusionType,'BertallanfyConstr')
     ParametersKalman.BRmm1.Estimated = 1;
     ParametersKalman.BRbase.Estimated = 1;

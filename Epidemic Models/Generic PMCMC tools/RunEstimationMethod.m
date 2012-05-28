@@ -130,7 +130,7 @@ for IndIt = 1:NbIterations
             die
             Parameters.AccRate = 100;
         end
-        if IndIt>50
+        if IndIt>100
 %             if rand(1,1)<0.2
                 Parameters.Epsil = exp(log(Parameters.Epsil) + Parameters.AdaptC^IndIt*(Parameters.AccRate-0.23));
 
@@ -191,12 +191,12 @@ Result.p_d = p_d;
 Result.DIC = DIC;
 
 for i = 1:size(TransfThetas,1)
-    temp = AutoCorrelation(TransfThetas(i,:),1000);
+    temp = AutoCorrelation(TransfThetas(i,:));
     Result.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
     Result.RelESSTransf(i) = Result.ESSTransf(i)/NbIterations*100;
 end
 for i = 1:size(TransfThetas,1)
-    temp = AutoCorrelation(Thetas(i,:),1000);
+    temp = AutoCorrelation(Thetas(i,:));
     Result.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
     Result.RelESS(i) = Result.ESS(i)/NbIterations*100;
 end
@@ -212,7 +212,7 @@ try
     if Parameters.SaveSpace
         miness = round(min(Result.ESSTransf));
         NbWeKeep = min(NbIterations,miness*5);
-        inds = sort(randsample(NbIterations,NbWeKeep));
+        inds = (randsample(NbIterations,NbWeKeep));
         Result.Thetas = Result.Thetas(:,inds);
         Result.TransfThetas = Result.TransfThetas(:,inds);
         Result.Paths = Result.Paths(inds,:,:);
