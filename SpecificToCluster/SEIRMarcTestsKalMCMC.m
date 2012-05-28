@@ -143,6 +143,9 @@ switch ind
         Parameters.ModelType='Kalman';
         Parameters.AdaptC = 0.99;
         ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+        save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
+
+        
         %%%Go
         Cov = cov(ResKal.TransfThetas');
         Parameters.G = Cov^-1;
