@@ -376,7 +376,7 @@ for i = 1:5
     disp(['Burn-in ' num2str(i)])
     Parameters = Res.Parameters;
     if not(sum(eig(cov(Res.TransfThetas'))<=0))
-        Cov = 2.38^2/length(finalx)*cov(Res.TransfThetas');
+        Cov = cov(Res.TransfThetas');
     end
     Parameters.NamesEst = NamesEst;
     Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,NbIts,IndModel);
@@ -385,11 +385,11 @@ end
 
 disp('MCMC')
 Parameters = Res.Parameters;
-Cov = 2.38^2/length(finalx)*cov(Res.TransfThetas');
+Cov = cov(Res.TransfThetas');
 Parameters.NamesEst = NamesEst;
 Parameters.SaveSpace = 1;
 clear Res;
-Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,150000,IndModel);
+Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,100000,IndModel);
 
 
 save([SavePath Name],'Res')

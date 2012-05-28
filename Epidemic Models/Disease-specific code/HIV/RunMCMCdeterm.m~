@@ -2,7 +2,7 @@ function Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,NbIts,IndModel)
 
 
 mu = Parameters.mu;
-Epsil = 0.3;
+Epsil = 0.;
 NamesEst = Parameters.NamesEst;
 indpars = [];
 dim = length(NamesEst);
@@ -77,8 +77,8 @@ for  j = 1:NbIts
         xstar = mvnrnd(x' + Epsil^2/2*(mu-x)',Epsil^2*covcoeff*2.38^2/dim*tmpCov);
     end
     
-    LogqStarTemp = log((1-probother)*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*covcoeff*2.38^2/dim*tmpCov));
-    LogqTempStar = log((1-probother)*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*covcoeff*2.38^2/dim*tmpCov));
+    LogqStarTemp = log((1-probother)*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(x',xstar' + Epsil^2/2*2.38^2/dim*(mu-xstar)',Epsil^2*covcoeff*2.38^2/dim*tmpCov));
+    LogqTempStar = log((1-probother)*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(xstar',x' + Epsil^2/2*2.38^2/dim*(mu-x)'    ,Epsil^2*covcoeff*2.38^2/dim*tmpCov));
 %     xstar = mvnrnd(x' ,Epsil^2*2.38^2/dim*tmpCov);
 %     LogqStarTemp = log(mvnpdf(x',xstar' ,Epsil^2*tmpCov));
 %     LogqTempStar = log(mvnpdf(xstar',x'    ,Epsil^2*tmpCov));

@@ -844,8 +844,13 @@ for i = 1:length(Names)
     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
-    ResDet.Paths = ResDet.Paths(randinds,:,:);
+    ResDet.Paths = ResDet.Paths(randinds,:);
     ResDet.Thetas = ResDet.Thetas(:,randinds);
+    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+    ResSigm = Res;
+    randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
+    ResSigm.Paths = ResSigm.Paths(randinds,:);
+    ResSigm.Thetas = ResSigm.Thetas(:,randinds);
     load([SavePath '/HIV_' Names{i} 'Add.mat'])
     ResAdd = Res;
     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
@@ -861,9 +866,12 @@ for i = 1:length(Names)
     
     indend = ResAdd.Data.Instants(end);
     
-    FtDet = mean(squeeze(ResDet.Paths(:,3,1:indend)));
-    FtsDet = (squeeze(ResDet.Paths(:,3,1:indend)));
+    FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
+    FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
 
+    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+    
     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
     FtsAdd = (exp(tmp)./(1+exp(tmp)));
@@ -930,11 +938,14 @@ for i = 1:length(Names)
     ResDet.Parameters.TypeWork = 'Boston Examples';
     ResDet.Parameters.PlotIndex = 1;
     PlotResHIV(ResDet,ResDet.Parameters)
+    ResSigm.Parameters.TypeWork = 'Boston Examples';
+    ResSigm.Parameters.PlotIndex = 2;
+    PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
-    ResBer.Parameters.PlotIndex = 2;
+    ResBer.Parameters.PlotIndex = 3;
     PlotResHIV(ResBer,ResBer.Parameters)
     ResAdd.Parameters.TypeWork = 'Boston Examples';
-    ResAdd.Parameters.PlotIndex = 3;
+    ResAdd.Parameters.PlotIndex = 4;
     PlotResHIV(ResAdd,ResAdd.Parameters)
 end
 

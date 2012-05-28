@@ -411,7 +411,7 @@ load([SavePath '/PostThreeMethods.mat' ])
 
 
 
-PlotPostForqNew('ROC',0.5,'Delta2003',0.2)
+PlotPostForq('ROC',0.5,'Delta2003',0.2)
 
 
 
@@ -844,8 +844,13 @@ for i = 1:length(Names)
     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
-    ResDet.Paths = ResDet.Paths(randinds,:,:);
+    ResDet.Paths = ResDet.Paths(randinds,:);
     ResDet.Thetas = ResDet.Thetas(:,randinds);
+    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+    ResSigm = Res;
+    randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
+    ResSigm.Paths = ResSigm.Paths(randinds,:);
+    ResSigm.Thetas = ResSigm.Thetas(:,randinds);
     load([SavePath '/HIV_' Names{i} 'Add.mat'])
     ResAdd = Res;
     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
@@ -856,11 +861,7 @@ for i = 1:length(Names)
     randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
     ResBer.Paths = ResBer.Paths(randinds,:,:);
     ResBer.Thetas = ResBer.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
-    ResSigm = Res;
-    randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
-    ResSigm.Paths = ResSigm.Paths(randinds,:,:);
-    ResSigm.Thetas = ResSigm.Thetas(:,randinds);
+    
     
     
     indend = ResAdd.Data.Instants(end);
@@ -933,7 +934,6 @@ for i = 1:length(Names)
     clf
     ResDet.Parameters.TypeWork = 'Boston Examples';
     ResDet.Parameters.PlotIndex = 1;
-    ResDet.Parameters.BRsigma.Estimated = 0;
     PlotResHIV(ResDet,ResDet.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 2;
@@ -946,14 +946,8 @@ end
 save([SavePath '/AllRegionsEstimates.mat'],'ests')
 
 
-  ResBer.Parameters.TypeWork = 'Normal';
-    ResDet.Parameters.PlotIndex = 1;
-    ResDet.Parameters.BRsigma.Estimated = 0;
-    PlotResHIV(ResBer,ResBer.Parameters)
 
-obss = [21.82 6.53 7.48 3.69 10.53 5.25 5.91 5.4 11.05 2.35 8.25];
-sigs = [2.4 1.37 1.69 1.27 1.53 1.57 1.46 1.07 1.93 0.81 1.49];
-plot(sigs,sqrt(obss.*(100-obss)/400))
+
 
 
 mean(FtsDet(:,582)-FtsDet(:,585-168))
