@@ -35,7 +35,8 @@ try if Parameters.RealData
             HIVModel.LikFunction = 'not(Res.Crash)*Res.WentOutOrNot.*normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
         else
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,(Parameters.ObsMax(IndTime-1)-Parameters.ObsMin(IndTime-1))*100/4)';
-            HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
+%             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
+            HIVModel.LikFunction = 'binopdf(round(425*(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))/2),400,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
         end
 
         temp7 = zeros(1,9);
@@ -84,7 +85,8 @@ catch
     if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
         HIVModel.LikFunction = 'not(Res.Crash)*normpdf(Res.WentOutOrNot.*Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
     else
-        HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
+%         HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
+        HIVModel.LikFunction = 'binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),400,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
     end
         % HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime))/400)).*(Res.WentOutOrNot)';
     NbItsPMCMC = 30000;
@@ -197,8 +199,8 @@ if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
     ParametersKalman.BRsigma.MinLim = 0;
     ParametersKalman.BRsigma.MaxLim = 2;
     ParametersKalman.BRsigma.Estimated = 1;
-    Parameters.BRsigma.TransfType = 'Logit';
-    Parameters.BRsigma.Init = 0;
+    ParametersKalman.BRsigma.TransfType = 'Logit';
+    ParametersKalman.BRsigma.Init = 0;
 elseif strcmp(ParametersKalman.DiffusionType,'BertallanfyConstr')
     ParametersKalman.BRmm1.Estimated = 1;
     ParametersKalman.BRbase.Estimated = 1;
