@@ -2,7 +2,7 @@ function Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,NbIts,IndModel)
 
 
 mu = Parameters.mu;
-Epsil = 0.3;
+Epsil = 1;
 NamesEst = Parameters.NamesEst;
 indpars = [];
 dim = length(NamesEst);
@@ -71,15 +71,16 @@ for  j = 1:NbIts
 
     probother = 0;
     covcoeff  = 10; 
-    if rand(1,1)>probother
-        xstar = mvnrnd(x' + Epsil^2/2*(mu-x)',Epsil^2*2.38^2/dim*tmpCov);
-    else
-        xstar = mvnrnd(x' + Epsil^2/2*(mu-x)',Epsil^2*covcoeff*2.38^2/dim*tmpCov);
-    end
-    
-    LogqStarTemp = log((1-probother)*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*covcoeff*2.38^2/dim*tmpCov));
-    LogqTempStar = log((1-probother)*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*covcoeff*2.38^2/dim*tmpCov));
-%     xstar = mvnrnd(x' ,Epsil^2*2.38^2/dim*tmpCov);
+%     if rand(1,1)>probother
+%         xstar = mvnrnd(x' + Epsil^2/2*(mu-x)',Epsil^2*2.38^2/dim*tmpCov);
+%     else
+%         xstar = mvnrnd(x' + Epsil^2/2*(mu-x)',Epsil^2*covcoeff*2.38^2/dim*tmpCov);
+%     end
+%     LogqStarTemp = log(mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*2.38^2/dim*tmpCov));
+%     LogqTempStar = log(mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*2.38^2/dim*tmpCov));
+%     LogqStarTemp = log((1-probother)*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(x',xstar' + Epsil^2/2*(mu-xstar)',Epsil^2*covcoeff*2.38^2/dim*tmpCov));
+%     LogqTempStar = log((1-probother)*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*2.38^2/dim*tmpCov)+probother*mvnpdf(xstar',x' + Epsil^2/2*(mu-x)'    ,Epsil^2*covcoeff*2.38^2/dim*tmpCov));
+    xstar = mvnrnd(x' ,Epsil^2*2.38^2/dim*tmpCov);
 %     LogqStarTemp = log(mvnpdf(x',xstar' ,Epsil^2*tmpCov));
 %     LogqTempStar = log(mvnpdf(xstar',x'    ,Epsil^2*tmpCov));
     
@@ -131,8 +132,8 @@ for  j = 1:NbIts
 %     disp([LogPostStar - LogPost  LogqStarTemp - LogqTempStar
 %     LogPostStar+LogqStarTemp-LogPost-LogqTempStar])
    
-    if log(rand(1,1))<LogPostStar+LogqStarTemp-LogPost-LogqTempStar
-%     if log(rand(1,1))<LogPostStar-LogPost
+%     if log(rand(1,1))<LogPostStar+LogqStarTemp-LogPost-LogqTempStar
+    if log(rand(1,1))<LogPostStar-LogPost
         x = xstar;
         Parameters = ParametersStar;
         LogPost = LogPostStar;
@@ -156,11 +157,11 @@ for  j = 1:NbIts
     LogPosts(j) = LogPost;
     LogLiks(j) = LogLik;
     Paths(j,:) = TempSim.BuiltTraj(:,9)';
-%     if j >150
-%         if rand(1,1)<0.1
-%             Epsil = exp(log(Epsil) + AdaptC^j*(mean(Accepted)-0.23));
-%         end
-%     end
+    if j >150
+        if rand(1,1)<0.1
+            Epsil = exp(log(Epsil) + AdaptC^j*(mean(Accepted)-0.23));
+        end
+    end
     if rand(1,1)<0.05
         disp([num2str(j) '    ' num2str(mean(Accepted)) ])
     end
