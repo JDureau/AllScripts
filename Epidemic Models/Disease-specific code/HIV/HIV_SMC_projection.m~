@@ -13,12 +13,16 @@
         m = Parameters.BRmm1.Value + 1;
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
+    elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        rate = Parameters.Sigmrate.Value;
+        base = Parameters.Sigmbase.Value;
+        mu = Parameters.Sigmmu.Value;
     end
     
     Crash = 0;
     if Crash 
         NbIts = 1;
-        e
+    end
     for IndDiscr = 1:NbIts
         % Variables
         if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
@@ -65,7 +69,7 @@
         if 1
             if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
                 try
-                    TempVariables(:,9) = TempVariables(:,9) - k*TempVariables(:,9)*TStep + sqrt(TStep)*Parameters.SigmaRW.Value*TempVariables(:,9).*rands(:,IndDiscr);            
+                    TempVariables(:,9) = TempVariables(:,9) - k*TempVariables(:,9)*TStep + sqrt(TStep)*Parameters.BRsigma.Value*TempVariables(:,9).*rands(:,IndDiscr);            
                     WentOutOrNot = WentOutOrNot.*(TempVariables(:,9)<0);
                     tmpinds = find(not(WentOutOrNot));
                     TempVariables(tmpinds,9) = -0.00001;
@@ -105,3 +109,4 @@
     Res.WentOutOrNot = WentOutOrNot;
     Res.Paths = Path;
     Res.Variables = Variables; 
+    Res.Crash = Crash;

@@ -11,6 +11,10 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         m = Parameters.BRmm1.Value + 1;
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
+    elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        rate = Parameters.Sigmrate.Value;
+        base = Parameters.Sigmbase.Value;
+        mu = Parameters.Sigmmu.Value;
     else
 %         disp('Unknown Diffusion')
 %         die
@@ -46,6 +50,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 k = real(k);
                 beta = Parameters.BRbase.Value;
             end
+        elseif strcmp(difftype,'Sigmoid')
+            beta = base + (mu-base)/(1+mtemp(9));
         else
             beta = exp(mtemp(9))/(1+exp(mtemp(9)));
         end
@@ -67,6 +73,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             if Crash
                 mpred(9) = mtemp(9);
             end
+        elseif strcmp(difftype,'Sigmoid')
+            mpred(9) = mtemp(9) - 1/rate*mtemp(9)*TStep;
         elseif or(strcmp(difftype,'Add'),strcmp(difftype,'AddConstr'))
             mpred(9) = mtemp(9);
         else
@@ -84,6 +92,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             if Crash
                 betader = 0;
             end
+        elseif strcmp(difftype,'Sigmoid')
+            betader = -(mu-base)/((1+mpred(9))^2);
         else
             betader = exp(mpred(9))/((1+exp(mpred(9)))^2);
         end
@@ -152,6 +162,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             Jacobian(9,10) = 1;
         elseif or(strcmp(difftype,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
             Jacobian(9,9) = - k;
+        elseif strcmp(difftype,'Sigmoid')
+            Jacobian(9,9) = - 1/rate;
         end
         
         Q = zeros(9,9);
@@ -161,7 +173,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 Q(9,9) = (Parameters.BRsigma.Value)^2;
                 Crash = 1;
             end
-            
+        elseif strcmp(difftype,'Sigmoid')
+            Q(9,9) = (Parameters.Sigmsigma.Value)^2;
 %             Q(9,9) = (Parameters.SigmaRW.Value/(mu*exp(mtemp(9))/(1+exp(mtemp(9)))^2))^2;
         elseif or(strcmp(difftype,'Add'),strcmp(difftype,'AddConstr'))
             Q(9,9) = (Parameters.SigmaRW.Value)^2;

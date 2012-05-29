@@ -13,6 +13,10 @@
         m = Parameters.BRmm1.Value + 1;
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
+    elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        rate = Parameters.Sigmrate.Value;
+        base = Parameters.Sigmbase.Value;
+        mu = Parameters.Sigmmu.Value;
     end
     
     Crash = 0;
@@ -27,6 +31,8 @@
                 Crash = 1;
                 beta = Parameters.BRbase.Value;
             end
+        elseif strcmp(difftype,'Sigmoid')
+            beta = base + (mu-base)./(1+Variables(:,9));    
         elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
             beta = min(1,max(0,exp(Variables(:,9))./(1+exp(Variables(:,9)))));
         end    
@@ -72,6 +78,9 @@
                 catch
                     'problem'
                 end
+            elseif
+                TempVariables(:,9) = TempVariables(:,9) - 1/rate*Variables(:,9)*TStep;
+
                     %                 TempVariables(:,9) = TempVariables(:,9) + Parameters.CUsteepness.Value*Parameters.k*TStep + sqrt(TStep)*Parameters.SigmaRW.Value/(mu*exp(Variables(:,9))./(1+exp(Variables(:,9))^2))*rands(:,IndDiscr);            
             elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                 TempVariables(:,9) = TempVariables(:,9) + sqrt(TStep)*Parameters.SigmaRW.Value*rands(:,IndDiscr);            
