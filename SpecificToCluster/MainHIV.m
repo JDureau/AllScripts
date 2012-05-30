@@ -35,6 +35,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersMysore = temp.Parameters;
 
@@ -44,6 +46,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersBelgaum = temp.Parameters;
 
@@ -52,6 +56,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersBellary = temp.Parameters;
 
@@ -60,6 +66,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersEastGodavry = temp.Parameters;
 
@@ -68,6 +76,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersGuntur = temp.Parameters;
 
@@ -76,6 +86,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersHyderabad = temp.Parameters;
 
@@ -84,6 +96,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersVisag = temp.Parameters;
 
@@ -92,6 +106,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersWarangal = temp.Parameters;
 
@@ -100,6 +116,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersYevatmal = temp.Parameters;
 
@@ -108,6 +126,8 @@ if IndDiff == 1
     temp.Parameters.DiffusionType = 'Add';
 elseif IndDiff == 2
     temp.Parameters.DiffusionType = 'Bertallanfy';
+elseif IndDiff == 3
+    temp.Parameters.DiffusionType = 'Sigmoid';
 end
 ParametersShimoga = temp.Parameters;
 

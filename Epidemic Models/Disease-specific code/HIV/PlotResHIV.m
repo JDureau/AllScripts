@@ -105,6 +105,11 @@ clf
 
             elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                 Paths(:,ToPlot(3),:) = exp(Paths(:,ToPlot(3),:))./(1+exp(Paths(:,ToPlot(3),:)));
+            elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+                base = Parameters.Sigmbase.Value;
+                rate = Parameters.Sigmrate.Value;
+                mu = Parameters.Sigmmu.Value;
+                Paths = base + (mu-base)./(1+(Paths));
             end
             ciplot(quantile(squeeze(Paths(:,ToPlot(3),:)),0.025),quantile(squeeze(Paths(:,ToPlot(3),:)),0.975),[172,215,255]/255)
             xlim([0 620])
@@ -164,6 +169,7 @@ clf
 
                 elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                     Paths = exp(Paths)./(1+exp(Paths));
+                
                 end
                 clf
                 ciplot(quantile(squeeze(Paths),0.025),quantile(squeeze(Paths),0.975),[172,215,255]/255)

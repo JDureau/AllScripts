@@ -51,6 +51,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 beta = Parameters.BRbase.Value;
             end
         elseif strcmp(difftype,'Sigmoid')
+            mtemp(9) = min(10^6,max(0.000001,mtemp(9)));
             beta = base + (mu-base)/(1+mtemp(9));
         else
             beta = exp(mtemp(9))/(1+exp(mtemp(9)));
@@ -174,7 +175,12 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 Crash = 1;
             end
         elseif strcmp(difftype,'Sigmoid')
-            Q(9,9) = (Parameters.Sigmsigma.Value)^2;
+            Q(9,9) = (Parameters.Sigmsigma.Value*mpred(9))^2;
+            if isinf(Q(9,9))
+                Q(9,9) = (Parameters.Sigmsigma.Value)^2;
+                Crash = 1;
+                'crash'
+            end
 %             Q(9,9) = (Parameters.SigmaRW.Value/(mu*exp(mtemp(9))/(1+exp(mtemp(9)))^2))^2;
         elseif or(strcmp(difftype,'Add'),strcmp(difftype,'AddConstr'))
             Q(9,9) = (Parameters.SigmaRW.Value)^2;

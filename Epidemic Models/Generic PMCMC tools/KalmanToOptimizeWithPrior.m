@@ -70,6 +70,19 @@ if strcmp(Parameters.Problem,'ImperialHIV2')
             tmp = min(0,Temp.Posterior025(9,:));
             plot(Data.Instants,((1-m)*tmp+mu^(1-m)).^(1/(1-m)),'r')
             hold off
+        elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+            base = Parameters.Sigmbase.Value;
+            mu   = Parameters.Sigmmu.Value;
+            rate = Parameters.Sigmrate.Value;
+            tinfl = Parameters.Sigmbase.Value;
+            tmp = max(0,Temp.PosteriorMeans(9,:));
+            plot(Data.Instants,base+(mu-base)./(1+tmp),'g')
+            hold on
+            tmp =  max(0,Temp.Posterior975(9,:));
+            plot(Data.Instants,base+(mu-base)./(1+tmp),'r')
+            tmp =  max(0,Temp.Posterior025(9,:));
+            plot(Data.Instants,base+(mu-base)./(1+tmp),'r')
+            hold off
         else
             tmp = Temp.PosteriorMeans(9,:);
             plot(Data.Instants,exp(tmp)./(1+exp(tmp)),'g')

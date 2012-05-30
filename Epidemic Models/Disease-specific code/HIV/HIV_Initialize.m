@@ -38,8 +38,8 @@ try
         B  = (1 - (baseline/mu)^(1-m));
         Parameters.k = 1/tinfl*log(B/(1-m)); 
         
-    elseif Parameters.DiffusionType=='Sigmoid'
-        InitialState(9) = Parameters.Sigmbase.Value;
+    elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        InitialState(9) = exp(Parameters.Sigmtinfl.Value/Parameters.Sigmrate.Value);
     else
         InitialState(9) = log(Parameters.InitialFt.Value/(1-Parameters.InitialFt.Value));
     end
