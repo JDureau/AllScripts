@@ -51,11 +51,9 @@ if Parameters.SaveForMarcMCMC
         Ratios = Res.Ratios;
         TransfThetas  = Res.TransfThetas;
         Thetas  = Res.Thetas;
-        Paths = Res.Paths;
         LogLiks = Res.LogLiks;
         LogPosts = Res.LogPosts;
         Accepted = Res.Accepted;
-        ESS = Res.ESS;
         Pars = Res.Pars;  
         startind = size(Thetas,2);
         TempPar = Res.TempPar;
