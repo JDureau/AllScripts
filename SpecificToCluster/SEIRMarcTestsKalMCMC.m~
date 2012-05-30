@@ -50,7 +50,7 @@ NbIters = 150000;
 dim = 7;
 
 Parameters.SaveForMarcMCMC = 1;
-Parameters.NameToSave = [SavePath '/TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'];
+Parameters.NameToSave = [SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'];
 
 
     

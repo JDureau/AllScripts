@@ -191,8 +191,10 @@ switch IndModel
         Parameters.SigmaRW11.Estimated = 1;
         Parameters.beta11init.Estimated = 1;
         Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
         Parameters.adultsmult.Estimated = 1;
+        Parameters.kidsmult.Estimated = 1;
+        Parameters.adultsadd.Estimated = 1;
+        Parameters.kidsadd.Estimated = 1;
         Parameters.E1InitProp.Estimated = 1;
         Parameters.I1InitProp.Estimated = 1;
         Parameters.R1InitProp.Estimated = 1;
@@ -277,11 +279,12 @@ switch IndModel
         Parameters.RInitProp.Estimated = 1;
     case 2
         Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
         Parameters.beta11init.Estimated = 1;
         Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
         Parameters.adultsmult.Estimated = 1;
+        Parameters.kidsmult.Estimated = 1;
+        Parameters.adultsadd.Estimated = 1;
+        Parameters.kidsadd.Estimated = 1;
         Parameters.E1InitProp.Estimated = 1;
         Parameters.I1InitProp.Estimated = 1;
         Parameters.R1InitProp.Estimated = 1;

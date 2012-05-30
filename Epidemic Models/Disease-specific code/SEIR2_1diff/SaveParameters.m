@@ -256,6 +256,6 @@ TellParsValues(Parameters)
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/ResultsMarc';
 
 
-save([SavePath '/ParametersSEIR2_2diffb.mat'])
+save([SavePath '/ParametersSEIR2_1diff.mat'])
 
 
