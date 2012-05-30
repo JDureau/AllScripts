@@ -230,6 +230,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         end
     case 5
+        load([SavePath '/ResTrueCov.mat']);
         % 1: from diagonal posterior cov, 
         Cov = diag(diag(cov(Res.TransfThetas')));
         Parameters.G = Cov^-1;
