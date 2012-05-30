@@ -1,4 +1,4 @@
-function Result = RunEstimationMethod(Data, Model, Parameters, TempPar, NbIterations)
+function Res = RunEstimationMethod(Data, Model, Parameters, TempPar, NbIterations)
 
 TransfThetas = [];
 PropTransfThetas = [];
@@ -46,7 +46,6 @@ end
 if Parameters.SaveForMarcMCMC
     try
         load(Parameters.NameToSave);
-    catch
         MargLogLiks = Res.MargLogLiks;
         MargLogLiksStars = Res.MargLogLiksStars;
         Ratios = Res.Ratios;
@@ -59,6 +58,9 @@ if Parameters.SaveForMarcMCMC
         ESS = Res.ESS;
         Pars = Res.Pars;  
         startind = size(Thetas,2);
+        TempPar = Res.TempPar;
+    catch
+        startind = 1;
     end
 else
     startind = 1;
@@ -171,25 +173,26 @@ for IndIt = startind:NbIterations
     
     end
     if Parameters.SaveForMarcMCMC
-        Result.MargLogLiks = MargLogLiks;
-        Result.MargLogLiksStars = MargLogLikStars;
-        Result.Epsil = Parameters.Epsil;
-        Result.Ratios = Ratios;
-        Result.TempPar = TempPar;
-        Result.TransfThetas  = TransfThetas;
-        Result.Thetas  = Thetas;
-        Result.Paths = Paths;
-        Result.LogLiks = LogLiks;
-        Result.LogPosts = LogPosts;
-        Result.AccRate = sum(Accepted)/length(Accepted);
-        Result.Accepted = Accepted;
-        Result.Grads = Grads;
-        Result.ESS = [];
-        Result.CompInds = Inds;
-        Result.Pars = Pars;
-        Result.Parameters = Parameters;
-        Result.Data = Data;
-        Result.Model = Model;
+        Res.MargLogLiks = MargLogLiks;
+        Res.MargLogLiksStars = MargLogLikStars;
+        Res.Epsil = Parameters.Epsil;
+        Res.Ratios = Ratios;
+        Res.TempPar = TempPar;
+        Res.TransfThetas  = TransfThetas;
+        Res.Thetas  = Thetas;
+        Res.Paths = Paths;
+        Res.LogLiks = LogLiks;
+        Res.LogPosts = LogPosts;
+        Res.AccRate = sum(Accepted)/length(Accepted);
+        Res.Accepted = Accepted;
+        Res.Grads = Grads;
+        Res.ESS = [];
+        Res.CompInds = Inds;
+        Res.Pars = Pars;
+        Res.Parameters = Parameters;
+        Res.Data = Data;
+        Res.Model = Model;
+        if IndIt > 50
         tmp = median(Thetas');
         Names = Parameters.Names.Estimated;
         for i = 1:length(Names)
@@ -199,18 +202,21 @@ for IndIt = startind:NbIterations
         TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
         p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
         DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
-        Result.p_d = p_d;
-        Result.DIC = DIC;
+        Res.p_d = p_d;
+        Res.DIC = DIC;
+        
         for i = 1:size(TransfThetas,1)
             temp = AutoCorrelation(TransfThetas(i,:));
-            Result.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Result.RelESSTransf(i) = Result.ESSTransf(i)/NbIterations*100;
+            Res.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
+            Res.RelESSTransf(i) = Res.ESSTransf(i)/NbIterations*100;
         end
         for i = 1:size(TransfThetas,1)
             temp = AutoCorrelation(Thetas(i,:));
-            Result.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Result.RelESS(i) = Result.ESS(i)/NbIterations*100;
+            Res.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
+            Res.RelESS(i) = Res.ESS(i)/NbIterations*100;
         end
+        end
+        save(Parameters.NameToSave,'Res');
     end
 end
 
@@ -226,29 +232,29 @@ for IndIt = 1:size(TransfThetas,2)
 end
 
 
-Result.MargLogLiks = MargLogLiks;
-Result.MargLogLiksStars = MargLogLikStars;
-Result.Epsil = Parameters.Epsil;
-Result.Ratios = Ratios;
-Result.TempPar = TempPar;
-Result.TransfThetas  = TransfThetas;
-%Result.PropTransfThetas  = PropTransfThetas;
-Result.Thetas  = Thetas;
-Result.Paths = Paths;
-%Result.PropLogLiks = PropLogLiks;
-Result.LogLiks = LogLiks;
-%Result.PropLogPosts = PropLogPosts;
-Result.LogPosts = LogPosts;
-Result.AccRate = sum(Accepted)/length(Accepted);
-Result.Accepted = Accepted;
-Result.Grads = Grads;
-Result.ESS = [];
-%Result.ProposedPars = ProposedPars;
-Result.CompInds = Inds;
-Result.Pars = Pars;
-Result.Parameters = Parameters;
-Result.Data = Data;
-Result.Model = Model;
+Res.MargLogLiks = MargLogLiks;
+Res.MargLogLiksStars = MargLogLikStars;
+Res.Epsil = Parameters.Epsil;
+Res.Ratios = Ratios;
+Res.TempPar = TempPar;
+Res.TransfThetas  = TransfThetas;
+%Res.PropTransfThetas  = PropTransfThetas;
+Res.Thetas  = Thetas;
+Res.Paths = Paths;
+%Res.PropLogLiks = PropLogLiks;
+Res.LogLiks = LogLiks;
+%Res.PropLogPosts = PropLogPosts;
+Res.LogPosts = LogPosts;
+Res.AccRate = sum(Accepted)/length(Accepted);
+Res.Accepted = Accepted;
+Res.Grads = Grads;
+Res.ESS = [];
+%Res.ProposedPars = ProposedPars;
+Res.CompInds = Inds;
+Res.Pars = Pars;
+Res.Parameters = Parameters;
+Res.Data = Data;
+Res.Model = Model;
 
 tmp = median(Thetas');
 Names = Parameters.Names.Estimated;
@@ -261,37 +267,37 @@ TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
 p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
 DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
 
-Result.p_d = p_d;
-Result.DIC = DIC;
+Res.p_d = p_d;
+Res.DIC = DIC;
 
 for i = 1:size(TransfThetas,1)
     temp = AutoCorrelation(TransfThetas(i,:));
-    Result.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
-    Result.RelESSTransf(i) = Result.ESSTransf(i)/NbIterations*100;
+    Res.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
+    Res.RelESSTransf(i) = Res.ESSTransf(i)/NbIterations*100;
 end
 for i = 1:size(TransfThetas,1)
     temp = AutoCorrelation(Thetas(i,:));
-    Result.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
-    Result.RelESS(i) = Result.ESS(i)/NbIterations*100;
+    Res.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
+    Res.RelESS(i) = Res.ESS(i)/NbIterations*100;
 end
 
 if strcmp(Parameters.PMCMC,'Gibbs')                
-    Result.GibbsAccRates = Parameters.GibbsAccRates;
-    Result.EstimatedSigs = EstimatedSigs; 
+    Res.GibbsAccRates = Parameters.GibbsAccRates;
+    Res.EstimatedSigs = EstimatedSigs; 
 end
     
     
 
 try
     if Parameters.SaveSpace
-        miness = round(min(Result.ESSTransf));
+        miness = round(min(Res.ESSTransf));
         NbWeKeep = min(NbIterations,miness*5);
         inds = (randsample(NbIterations,NbWeKeep));
-        Result.Thetas = Result.Thetas(:,inds);
-        Result.TransfThetas = Result.TransfThetas(:,inds);
-        Result.Paths = Result.Paths(inds,:,:);
-        Result.LogLiks = Result.LogLiks(inds);
-        Result.LogPosts = Result.LogPosts(inds);
+        Res.Thetas = Res.Thetas(:,inds);
+        Res.TransfThetas = Res.TransfThetas(:,inds);
+        Res.Paths = Res.Paths(inds,:,:);
+        Res.LogLiks = Res.LogLiks(inds);
+        Res.LogPosts = Res.LogPosts(inds);
     end
 end
     

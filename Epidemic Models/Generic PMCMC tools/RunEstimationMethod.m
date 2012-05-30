@@ -192,26 +192,29 @@ for IndIt = startind:NbIterations
         Res.Parameters = Parameters;
         Res.Data = Data;
         Res.Model = Model;
-        tmp = median(Thetas');
-        Names = Parameters.Names.Estimated;
-        for i = 1:length(Names)
-            Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
-        end
-        Parameters = UpdateParsNoTransfToTransf(Parameters);
-        TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
-        p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
-        DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
-        Res.p_d = p_d;
-        Res.DIC = DIC;
-        for i = 1:size(TransfThetas,1)
-            temp = AutoCorrelation(TransfThetas(i,:));
-            Res.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Res.RelESSTransf(i) = Res.ESSTransf(i)/NbIterations*100;
-        end
-        for i = 1:size(TransfThetas,1)
-            temp = AutoCorrelation(Thetas(i,:));
-            Res.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Res.RelESS(i) = Res.ESS(i)/NbIterations*100;
+        if IndIt > 50
+            tmp = median(Thetas');
+            Names = Parameters.Names.Estimated;
+            for i = 1:length(Names)
+                Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
+            end
+            Parameters = UpdateParsNoTransfToTransf(Parameters);
+            TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
+            p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
+            DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
+            Res.p_d = p_d;
+            Res.DIC = DIC;
+
+            for i = 1:size(TransfThetas,1)
+                temp = AutoCorrelation(TransfThetas(i,:));
+                Res.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
+                Res.RelESSTransf(i) = Res.ESSTransf(i)/NbIterations*100;
+            end
+            for i = 1:size(TransfThetas,1)
+                temp = AutoCorrelation(Thetas(i,:));
+                Res.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
+                Res.RelESS(i) = Res.ESS(i)/NbIterations*100;
+            end
         end
         save(Parameters.NameToSave,'Res');
     end
