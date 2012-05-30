@@ -134,25 +134,28 @@ switch ind
     case 3
         % 3: from EKF post cov, w-o eps
         %%%EKF - MCMC
-        Cov = (-KalHess)^-1;
-        Parameters.G = Cov^-1;
-        Parameters.NoPaths = 1;
-        Parameters.ModelType='SMC';
-        Parameters.AdaptC = 0.99;
-        Parameters.NbVariables = 7;
-        Parameters.aim = 0.23;
-        Parameters.Epsil = 1;
-        TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
-        Parameters.ModelType='Kalman';
-        Parameters.AdaptC = 0.99;
-        ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-        Cov = cov(ResKal.TransfThetas');
-        Parameters.G = Cov^-1;
-        Parameters.ModelType='Kalman';
-        Parameters.AdaptC = 0.99;
-        ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-        save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
-
+        try 
+            load([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'])
+        catch
+            Cov = (-KalHess)^-1;
+            Parameters.G = Cov^-1;
+            Parameters.NoPaths = 1;
+            Parameters.ModelType='SMC';
+            Parameters.AdaptC = 0.99;
+            Parameters.NbVariables = 7;
+            Parameters.aim = 0.23;
+            Parameters.Epsil = 1;
+            TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+            Parameters.ModelType='Kalman';
+            Parameters.AdaptC = 0.99;
+            ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+            Cov = cov(ResKal.TransfThetas');
+            Parameters.G = Cov^-1;
+            Parameters.ModelType='Kalman';
+            Parameters.AdaptC = 0.99;
+            ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+            save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
+        end
         
         %%%Go
         Cov = cov(ResKal.TransfThetas');
