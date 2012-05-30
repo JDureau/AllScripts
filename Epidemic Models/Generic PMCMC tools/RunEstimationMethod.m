@@ -195,6 +195,8 @@ for IndIt = startind:NbIterations
         if IndIt > 50
             tmp = median(Thetas');
             Names = Parameters.Names.Estimated;
+            length(Names)
+            size(Thetas)
             for i = 1:length(Names)
                 Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
             end
