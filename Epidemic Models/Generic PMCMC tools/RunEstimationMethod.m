@@ -46,7 +46,6 @@ end
 if Parameters.SaveForMarcMCMC
     try
         load(Parameters.NameToSave);
-    catch
         MargLogLiks = Res.MargLogLiks;
         MargLogLiksStars = Res.MargLogLiksStars;
         Ratios = Res.Ratios;
