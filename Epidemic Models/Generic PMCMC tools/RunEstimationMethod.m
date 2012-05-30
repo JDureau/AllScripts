@@ -59,6 +59,8 @@ if Parameters.SaveForMarcMCMC
         Pars = Res.Pars;  
         startind = size(Thetas,2);
         TempPar = Res.TempPar;
+    catch
+        startind = 1;
     end
 else
     startind = 1;
