@@ -14,18 +14,18 @@ SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
 
 load([SavePath '/RealTime_Add_28_cluster5.mat']);
 
+PostCov = cov(Res3.TransfThetas');
+SEIRModel = Res3.Model;
+SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
+Parameters = Res3.Parameters;
+Data = Res3.Data;
+TempPar = Res3.TempPar;
+Parameters.NbParticules = 3000;
+Parameters.Correction = 1;
+Parameters.Problem = 'MarcFluPlusObs';
 try 
     load([SavePath '/MarcMCMC_KalHess.mat'])
 catch
-    PostCov = cov(Res3.TransfThetas');
-    SEIRModel = Res3.Model;
-    SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
-    Parameters = Res3.Parameters;
-    Data = Res3.Data;
-    TempPar = Res3.TempPar;
-    Parameters.NbParticules = 3000;
-    Parameters.Correction = 1;
-    Parameters.Problem = 'MarcFluPlusObs';
     Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
     Test = 0;
     NbIts = 0;
