@@ -14,44 +14,51 @@ SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
 
 load([SavePath '/RealTime_Add_28_cluster5.mat']);
 
-PostCov = cov(Res3.TransfThetas');
-SEIRModel = Res3.Model;
-SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
-Parameters = Res3.Parameters;
-Data = Res3.Data;
-TempPar = Res3.TempPar;
-Parameters.NbParticules = 3000;
-Parameters.Correction = 1;
-Parameters.Problem = 'MarcFluPlusObs';
-Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
-Test = 0;
-NbIts = 0;
-while not(Test)
-    Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
-    try
-        KalHess = Parameters.KalHess;
-        Test = Parameters.KalmMaxReached;
+try 
+    load([SavePath '/MarcMCMC_KalHess.mat'])
+catch
+    PostCov = cov(Res3.TransfThetas');
+    SEIRModel = Res3.Model;
+    SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
+    Parameters = Res3.Parameters;
+    Data = Res3.Data;
+    TempPar = Res3.TempPar;
+    Parameters.NbParticules = 3000;
+    Parameters.Correction = 1;
+    Parameters.Problem = 'MarcFluPlusObs';
+    Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+    Test = 0;
+    NbIts = 0;
+    while not(Test)
+        Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+        try
+            KalHess = Parameters.KalHess;
+            Test = Parameters.KalmMaxReached;
+        end
+        NbIts = NbIts + 1;
+        disp(NbIts)
+        if NbIts>50
+            return
+        end
     end
-    NbIts = NbIts + 1;
-    disp(NbIts)
-    if NbIts>50
-        return
-    end
+    save([SavePath '/MarcMCMC_KalHess.mat'],'KalHess')
 end
-
 
 TempRess = {};
 
 NbIters = 150000;
 dim = 7;
 
-load([SavePath '/ResTrueCov.mat']);
 
 
 switch ind
     case 1
+        load([SavePath '/ResTrueCov.mat']);
         % 1: from posterior cov, w-o eps 
         Cov = cov(Res.TransfThetas(:,100000:end)');
+        try
+            load([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat']);
+            currentind = size(Res.
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -298,34 +305,6 @@ for i = 1:5
         end
     end
 end
-
-i = 3
-j = 3
-cpt = 0;
-cptmax = 0;
-currentind = 1;
-inds = [];
-for k = 50000:size(Ress{i,j}.Thetas,2)
-    if Ress{i,j}.Thetas(1,k) == Ress{i,j}.Thetas(1,k-1)
-        cpt = cpt+1;
-    else
-        cpt = 0;
-    end
-    if cpt>cptmax
-        cptmax = cpt;
-    end
-    if cpt<180
-        inds(end+1) = k;
-    end
-end
-Ress{i,j}.Thetas = Ress{i,j}.Thetas(:,inds);
-Ress{i,j}.TransfThetas = Ress{i,j}.TransfThetas(:,inds);
-cptmax
-
-
-[b,c,inds] = unique(Ress{i,j}.Thetas(1,:));    
-        
-        
 % 
 % 
 % i = 5

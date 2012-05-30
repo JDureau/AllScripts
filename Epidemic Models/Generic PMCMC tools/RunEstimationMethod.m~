@@ -34,6 +34,36 @@ catch
     Parameters.AdMet = 0;
 end
 
+try
+    if not(Parameters.SaveForMarcMCMC)
+        Parameters.SaveForMarcMCMC = 0;
+    end
+catch
+    Parameters.SaveForMarcMCMC = 0;
+end
+
+
+if Parameters.SaveForMarcMCMC
+    try
+        load(Parameters.NameToSave);
+    catch
+        MargLogLiks = Res.MargLogLiks;
+        MargLogLiksStars = Res.MargLogLiksStars;
+        Ratios = Res.Ratios;
+        TransfThetas  = Res.TransfThetas;
+        Thetas  = Res.Thetas;
+        Paths = Res.Paths;
+        LogLiks = Res.LogLiks;
+        LogPosts = Res.LogPosts;
+        Accepted = Res.Accepted;
+        ESS = Res.ESS;
+        Pars = Res.Pars;  
+        startind = size(Thetas,2);
+    end
+else
+    startind = 1;
+end
+
 if not(Parameters.NoPaths)
    Names = Parameters.Names.Estimated;
    for i = 1:length(Names)
@@ -54,7 +84,9 @@ end
 % [TempPar.LogLik TempPar.LogPost]
 % 'go'
 
-for IndIt = 1:NbIterations
+
+
+for IndIt = startind:NbIterations
     if strcmp(Parameters.PMCMC,'PMMH')
        TempPar.Cov = InitCov;
        if Parameters.AdMet
@@ -136,7 +168,49 @@ for IndIt = 1:NbIterations
 
 %             end
         end
-
+    
+    end
+    if Parameters.SaveForMarcMCMC
+        Result.MargLogLiks = MargLogLiks;
+        Result.MargLogLiksStars = MargLogLikStars;
+        Result.Epsil = Parameters.Epsil;
+        Result.Ratios = Ratios;
+        Result.TempPar = TempPar;
+        Result.TransfThetas  = TransfThetas;
+        Result.Thetas  = Thetas;
+        Result.Paths = Paths;
+        Result.LogLiks = LogLiks;
+        Result.LogPosts = LogPosts;
+        Result.AccRate = sum(Accepted)/length(Accepted);
+        Result.Accepted = Accepted;
+        Result.Grads = Grads;
+        Result.ESS = [];
+        Result.CompInds = Inds;
+        Result.Pars = Pars;
+        Result.Parameters = Parameters;
+        Result.Data = Data;
+        Result.Model = Model;
+        tmp = median(Thetas');
+        Names = Parameters.Names.Estimated;
+        for i = 1:length(Names)
+            Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
+        end
+        Parameters = UpdateParsNoTransfToTransf(Parameters);
+        TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
+        p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
+        DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
+        Result.p_d = p_d;
+        Result.DIC = DIC;
+        for i = 1:size(TransfThetas,1)
+            temp = AutoCorrelation(TransfThetas(i,:));
+            Result.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
+            Result.RelESSTransf(i) = Result.ESSTransf(i)/NbIterations*100;
+        end
+        for i = 1:size(TransfThetas,1)
+            temp = AutoCorrelation(Thetas(i,:));
+            Result.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
+            Result.RelESS(i) = Result.ESS(i)/NbIterations*100;
+        end
     end
 end
 
@@ -212,7 +286,7 @@ try
     if Parameters.SaveSpace
         miness = round(min(Result.ESSTransf));
         NbWeKeep = min(NbIterations,miness*5);
-        inds = sort(randsample(NbIterations,NbWeKeep));
+        inds = (randsample(NbIterations,NbWeKeep));
         Result.Thetas = Result.Thetas(:,inds);
         Result.TransfThetas = Result.TransfThetas(:,inds);
         Result.Paths = Result.Paths(inds,:,:);
