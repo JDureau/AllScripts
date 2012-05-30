@@ -6,10 +6,14 @@ function TempSimData = SimulateSigmoidDetermEpid(Data,Parameters,HIVModel)
 
     Parameters = HIV_Initialize(Parameters);
     
-    mu = Parameters.Sigmmu.Value;
     rate = Parameters.Sigmrate.Value;
-    baseline = Parameters.Sigmbase.Value;
+    base = Parameters.Sigmbase.Value;
+    mu = Parameters.Sigmmu.Value;
     tinfl = Parameters.Sigmtinfl.Value;
+
+    c = 1/(1+exp(tinfl/rate));
+    b = (mu-base)*c/(1-c);
+    a = base - b;
     
     
 %     tis = Parameters.ComputationTStep:Parameters.ComputationTStep:Parameters.ObservationLength;
@@ -23,7 +27,7 @@ function TempSimData = SimulateSigmoidDetermEpid(Data,Parameters,HIVModel)
     for i = 2:length(tis)
         xis(i) = xis(i-1) -1/rate*xis(i-1)*Parameters.ComputationTStep ;
     end
-    Fts =  baseline + 1./(1+xis)*(mu-baseline);
+    Fts =  a + b./(c*(1+xis));
     
         
 
