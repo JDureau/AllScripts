@@ -12,9 +12,15 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
     elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        % beta(t) = a + b/c(1+x_t)
         rate = Parameters.Sigmrate.Value;
         base = Parameters.Sigmbase.Value;
         mu = Parameters.Sigmmu.Value;
+        tinfl = Parameters.Sigmtinfl.Value;
+        
+        c = 1/(1+exp(tinfl/rate));
+        b = (mu-base)*c/(1-c);
+        a = base - b;
     else
 %         disp('Unknown Diffusion')
 %         die
@@ -53,6 +59,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         elseif strcmp(difftype,'Sigmoid')
             mtemp(9) = min(10^6,max(0.000001,mtemp(9)));
             beta = base + (mu-base)/(1+mtemp(9));
+            beta = a + b/(c*(1+mtemp(9)));
         else
             beta = exp(mtemp(9))/(1+exp(mtemp(9)));
         end

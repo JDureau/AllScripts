@@ -14,9 +14,15 @@
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
     elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        % beta(t) = a + b/c(1+x_t)
         rate = Parameters.Sigmrate.Value;
         base = Parameters.Sigmbase.Value;
         mu = Parameters.Sigmmu.Value;
+        tinfl = Parameters.Sigmtinfl.Value;
+        
+        c = 1/(1+exp(tinfl/rate));
+        b = (mu-base)*c/(1-c);
+        a = base - b;
     end
     
     Crash = 0;
@@ -32,7 +38,8 @@
                 beta = Parameters.BRbase.Value;
             end
         elseif strcmp(Parameters.DiffusionType,'Sigmoid')
-            beta = base + (mu-base)./(1+min(10^6,max(0.000001,Variables(:,9))));    
+            Variables(:,9) = max(0.000001,Variables(:,9));
+            beta = a + b./(c*(1+min(10^6,Variables(:,9))));
         elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
             beta = min(1,max(0,exp(Variables(:,9))./(1+exp(Variables(:,9)))));
         end    
