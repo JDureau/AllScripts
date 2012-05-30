@@ -5,7 +5,10 @@ addpath([pwd '/General Tools'])
 addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
-addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_cst'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_1diff'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_2diff'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_2diffb'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_3diff'])
 
 
 DataPath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/HPA';
@@ -33,8 +36,16 @@ legend('0-4','5-14','15-24','25-44','45-64','65+')
 PopWeigths = [667600,2461800,5904100,6862500,14417400,12847800,7929300];
 PopProps = PopWeigths/sum(PopWeigths)*100;
 Weigthed = sum((A(:,1:7)*diag(PopWeigths.^-1)*diag(PopProps/100)*100000)');
-Students = sum((A(:,1:4)*diag(PopWeigths(1:4).^-1)*diag(PopProps(1:4)/100)*100000)');
-Adults = sum((A(:,5:7)*diag(PopWeigths(5:7).^-1)*diag(PopProps(5:7)/100)*100000)');
+
+PropStudents = sum(PopWeigths(1:4))/sum(PopWeigths);
+PropAdults = sum(PopWeigths(5:7))/sum(PopWeigths);
+
+tmp = (A(:,1:4)*diag(PopWeigths(1:4).^-1)*diag(PopWeigths(1:4)))/sum(PopWeigths(1:4))*PropStudents*100000;
+Students = sum(tmp');
+tmp = (A(:,5:7)*diag(PopWeigths(5:7).^-1)*diag(PopWeigths(5:7)))/sum(PopWeigths(5:7))*PropStudents*100000;
+Adults = sum(tmp');
+
+
 
 plot(Students,'g')
 hold on
@@ -61,13 +72,31 @@ Data.Observations = zeros(12,35);
 Data.Observations(9,:) = Students*10;
 Data.Observations(10,:) = Adults*10;
 
+[(Students*10)' (Adults*10)']
+
 DiffType = 'Add';
 ObsType = 'Fixed';
 Parameters.StructModel = 1;
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/ResultsMarc';
 
 
-Name = [SavePath '/MarcData_Add_LogNorm_Tau3.mat'];
+Name = [SavePath '/MarcData_StructModel2_2diff.mat'];
+
+
+FullSEIRinference(Data,Difftype,Obstype,Name)
+
+Parameters.SigmaRW11.Value = 0.1;
+Parameters.SigmaRW22.Value = 0.1;
+Parameters.beta11init.Value = 0.6;
+Parameters.beta22init.Value = 0.05;
+Parameters.beta12init.Value = 0.05;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+
+
 
 
 
