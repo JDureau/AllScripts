@@ -14,18 +14,18 @@ SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
 
 load([SavePath '/RealTime_Add_28_cluster5.mat']);
 
+PostCov = cov(Res3.TransfThetas');
+SEIRModel = Res3.Model;
+SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
+Parameters = Res3.Parameters;
+Data = Res3.Data;
+TempPar = Res3.TempPar;
+Parameters.NbParticules = 3000;
+Parameters.Correction = 1;
+Parameters.Problem = 'MarcFluPlusObs';
 try 
     load([SavePath '/MarcMCMC_KalHess.mat'])
 catch
-    PostCov = cov(Res3.TransfThetas');
-    SEIRModel = Res3.Model;
-    SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
-    Parameters = Res3.Parameters;
-    Data = Res3.Data;
-    TempPar = Res3.TempPar;
-    Parameters.NbParticules = 3000;
-    Parameters.Correction = 1;
-    Parameters.Problem = 'MarcFluPlusObs';
     Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
     Test = 0;
     NbIts = 0;
@@ -49,16 +49,17 @@ TempRess = {};
 NbIters = 150000;
 dim = 7;
 
+Parameters.SaveForMarcMCMC = 1;
+Parameters.NameToSave = [SavePath '/TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'];
 
+
+    
 
 switch ind
     case 1
         load([SavePath '/ResTrueCov.mat']);
         % 1: from posterior cov, w-o eps 
         Cov = cov(Res.TransfThetas(:,100000:end)');
-        try
-            load([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat']);
-            currentind = size(Res.
         Parameters.G = Cov^-1;
         Parameters.NoPaths = 1;
         Parameters.NbVariables = 7;
@@ -133,25 +134,28 @@ switch ind
     case 3
         % 3: from EKF post cov, w-o eps
         %%%EKF - MCMC
-        Cov = (-KalHess)^-1;
-        Parameters.G = Cov^-1;
-        Parameters.NoPaths = 1;
-        Parameters.ModelType='SMC';
-        Parameters.AdaptC = 0.99;
-        Parameters.NbVariables = 7;
-        Parameters.aim = 0.23;
-        Parameters.Epsil = 1;
-        TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
-        Parameters.ModelType='Kalman';
-        Parameters.AdaptC = 0.99;
-        ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-        Cov = cov(ResKal.TransfThetas');
-        Parameters.G = Cov^-1;
-        Parameters.ModelType='Kalman';
-        Parameters.AdaptC = 0.99;
-        ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-        save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
-
+        try 
+            load([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'])
+        catch
+            Cov = (-KalHess)^-1;
+            Parameters.G = Cov^-1;
+            Parameters.NoPaths = 1;
+            Parameters.ModelType='SMC';
+            Parameters.AdaptC = 0.99;
+            Parameters.NbVariables = 7;
+            Parameters.aim = 0.23;
+            Parameters.Epsil = 1;
+            TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+            Parameters.ModelType='Kalman';
+            Parameters.AdaptC = 0.99;
+            ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+            Cov = cov(ResKal.TransfThetas');
+            Parameters.G = Cov^-1;
+            Parameters.ModelType='Kalman';
+            Parameters.AdaptC = 0.99;
+            ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+            save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
+        end
         
         %%%Go
         Cov = cov(ResKal.TransfThetas');
@@ -226,6 +230,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         end
     case 5
+        load([SavePath '/ResTrueCov.mat']);
         % 1: from diagonal posterior cov, 
         Cov = diag(diag(cov(Res.TransfThetas')));
         Parameters.G = Cov^-1;

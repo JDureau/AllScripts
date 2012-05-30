@@ -55,7 +55,7 @@ if Parameters.SaveForMarcMCMC
         LogPosts = Res.LogPosts;
         Accepted = Res.Accepted;
         Pars = Res.Pars;  
-        startind = size(Thetas,2);
+        startind = size(TransfThetas,2);
         TempPar = Res.TempPar;
     catch
         startind = 1;
