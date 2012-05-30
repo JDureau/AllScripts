@@ -46,7 +46,7 @@ end
 
 TempRess = {};
 
-NbIters = 300;
+NbIters = 150000;
 dim = 7;
 
 Parameters.SaveForMarcMCMC = 1;
