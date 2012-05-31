@@ -95,8 +95,8 @@ for IndIt = startind:NbIterations
                     try
                         chol(cov(TransfThetas'))
                         TempPar.Cov = cov(TransfThetas');
-                        disp('changed cov')
-                        disp(eig(TempPar.Cov))
+%                         disp('changed cov')
+%                         disp(eig(TempPar.Cov))
                     end
                 end
             end
