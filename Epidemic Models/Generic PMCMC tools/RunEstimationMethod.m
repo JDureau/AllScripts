@@ -93,11 +93,10 @@ for IndIt = startind:NbIterations
             if IndIt > 100
                 if rand(1,1)>Parameters.AdMetBeta
                     try
-                        if not(sum(eig(cov(TransfThetas'))<=eps))
-                            TempPar.Cov = cov(TransfThetas');
-                            disp('changed cov')
-                            disp(eig(TempPar.Cov))
-                        end
+                        chol(cov(TransfThetas'))
+                        TempPar.Cov = cov(TransfThetas');
+                        disp('changed cov')
+                        disp(eig(TempPar.Cov))
                     end
                 end
             end
