@@ -51,13 +51,11 @@ if Parameters.SaveForMarcMCMC
         Ratios = Res.Ratios;
         TransfThetas  = Res.TransfThetas;
         Thetas  = Res.Thetas;
-        Paths = Res.Paths;
         LogLiks = Res.LogLiks;
         LogPosts = Res.LogPosts;
         Accepted = Res.Accepted;
-        ESS = Res.ESS;
         Pars = Res.Pars;  
-        startind = size(Thetas,2);
+        startind = size(TransfThetas,2);
         TempPar = Res.TempPar;
     catch
         startind = 1;
@@ -97,7 +95,8 @@ for IndIt = startind:NbIterations
                     try
                         if not(sum(eig(cov(TransfThetas'))<=eps))
                             TempPar.Cov = cov(TransfThetas');
-%                             eig(TempPar.Cov)
+                            disp(
+                            disp(eig(TempPar.Cov))
                         end
                     end
                 end
@@ -192,30 +191,6 @@ for IndIt = startind:NbIterations
         Res.Parameters = Parameters;
         Res.Data = Data;
         Res.Model = Model;
-        if IndIt > 50
-        tmp = median(Thetas');
-        Names = Parameters.Names.Estimated;
-        for i = 1:length(Names)
-            Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
-        end
-        Parameters = UpdateParsNoTransfToTransf(Parameters);
-        TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
-        p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
-        DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
-        Res.p_d = p_d;
-        Res.DIC = DIC;
-        
-        for i = 1:size(TransfThetas,1)
-            temp = AutoCorrelation(TransfThetas(i,:));
-            Res.ESSTransf(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Res.RelESSTransf(i) = Res.ESSTransf(i)/NbIterations*100;
-        end
-        for i = 1:size(TransfThetas,1)
-            temp = AutoCorrelation(Thetas(i,:));
-            Res.ESS(i) = NbIterations/(1+2*sum(temp(2:end)));
-            Res.RelESS(i) = Res.ESS(i)/NbIterations*100;
-        end
-        end
         save(Parameters.NameToSave,'Res');
     end
 end

@@ -95,7 +95,8 @@ for IndIt = startind:NbIterations
                     try
                         if not(sum(eig(cov(TransfThetas'))<=eps))
                             TempPar.Cov = cov(TransfThetas');
-%                             eig(TempPar.Cov)
+                            disp('changed cov')
+                            disp(eig(TempPar.Cov))
                         end
                     end
                 end
