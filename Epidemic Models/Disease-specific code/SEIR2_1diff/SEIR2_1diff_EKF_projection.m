@@ -1,4 +1,4 @@
-function Res = SEIR2_1diffb_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
+function Res = SEIR2_1diff_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
 
 
     temp = zeros(2,12);

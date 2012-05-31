@@ -6,7 +6,7 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 5000;
+NbIters = 50000;
 
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
@@ -358,6 +358,7 @@ Parameters = DefinePriors(Parameters);
 Parameters = UpdateParsNoTransfToTransf(Parameters);
 
 Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+KalHess = Parameters.KalHess;
 
 
 % Parameters.InitialCov = 0;
@@ -409,7 +410,7 @@ switch IndModel
         Parameters.PathsToKeep = [1:13]';
 end
 
-if IndModel >1
+if IndModel >2
     Parameters.NbParticules = 4000;
 else
     Parameters.NbParticules = 1000;
@@ -524,18 +525,22 @@ else
     Parameters.ComputationTStep = 1/3;
 end
     
-if IndModel >1
+if IndModel >2
     Parameters.NbParticules = 6000;
 end
-    
+
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;
-Data.ObservedVariables = 5*ones(1,length(Data.Instants));
+if IndModel>=2
+    Data.ObservedVariables = diag([9 10])*ones(2,length(Data.Instants));
+else
+    Data.ObservedVariables = 5*ones(1,length(Data.Instants));
+end
 Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
-Cov = (-KalHess)^-1;
+Cov = (-KalHess)^(-1);
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 1;
 % if strcmp(Parameters.PMCMC,'Gibbs')
@@ -590,7 +595,11 @@ Parameters.NoPaths = 0;
 % else
 %     Parameters.NoPaths = 0;
 % end
-% Parameters.PathsToKeep = [1:7]';
+if IndModel>1
+    Parameters.PathsToKeep = [1:12]';
+else
+    Parameters.PathsToKeep = [1:7]';
+end
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
