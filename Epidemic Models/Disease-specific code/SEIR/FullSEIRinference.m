@@ -7,6 +7,7 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 4 -> 3diff
         
 NbIters = 50000;
+NbItersPrep = 5000;
 
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
@@ -554,14 +555,18 @@ Parameters.ComputeRWsamplCov = 0;
 Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
 Parameters.AdaptC = 0.99;
+Parameters.AdMet = 1;
+Parameters.AdMetBeta = 0.05;
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
-Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
+Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
 TempRes = Res2;
 
 dim = length(Parameters.Names.Estimated);
-Cov = cov(TempRes.TransfThetas');
+try
+    Cov = cov(TempRes.TransfThetas');
+end
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 1;
 Parameters.MCMCType = 'Rand';
@@ -569,9 +574,11 @@ Parameters.GMeth = 'cst given';
 Parameters.ComputeRWsamplCov = 0;
 Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
+Parameters.AdMet = 1;
+Parameters.AdMetBeta = 0.05;
 TempPar = TempRes.TempPar;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
-Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
+Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
 % SavePath = 'S:\Results\';
 % save([Name '_NoPaths.mat'],'Res2')
@@ -588,6 +595,8 @@ Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
 TempPar = TempRes.TempPar;
 Parameters.NoPaths = 0;
+Parameters.AdMet = 0;
+Parameters.AdMetBeta = 0.05;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 
 % if strcmp(Parameters.DiffusionType,'IBM')

@@ -6,7 +6,8 @@ HIVModel.InitializeParameters = @HIV_Initialize;
 HIVModel.SMC_projection = @HIV_SMC_projection;
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 
-try if Parameters.RealData
+try 
+    if Parameters.RealData
 
         
         Parameters.NbVariables = 9;
@@ -85,8 +86,8 @@ catch
     if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
         HIVModel.LikFunction = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
     else
-        HIVModel.LikFunction = 'not(Res.Crash)*normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
-%         HIVModel.LikFunction = 'binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+%         HIVModel.LikFunction = 'not(Res.Crash)*normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
+        HIVModel.LikFunction = 'binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
     end
         % HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime))/400)).*(Res.WentOutOrNot)';
     NbItsPMCMC = 30000;
