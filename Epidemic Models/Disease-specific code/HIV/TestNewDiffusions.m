@@ -224,37 +224,14 @@ while cpt < 100
                 die
             end
         end
-        if(Fts(end)-Fts(456)<0.15)
-            if strcmp(ModelType,'Bert')
-                if rand(1,1)<0.5
-                    die
-                end
-            elseif strcmp(ModelType,'Logist')
-                if rand(1,1)<0.8
-                    die
-                end
-                if ind<200
-                    die
-                end
+        
+        if strcmp(ModelType,'Bert')
+            if rand(1,1)>(Fts(end)-Fts(456))
+                die
             end
         end
-        if(Fts(end)-Fts(456)<0.3)
-            if strcmp(ModelType,'Sigm')
-                if rand(1,1)<0.5
-                    die
-                end
-            end
-            if strcmp(ModelType,'Step')
-                if rand(1,1)<0.5
-                    die
-                end
-            end
-        end
-%         if(Fts(end)<0.8)
-%             if rand(1,1)<0.9
-%                 die
-%             end
-%         end
+                
+      
         
        pause(0.01)
        
@@ -270,9 +247,7 @@ subplot(3,1,3)
 hist(amplints)
 	
 if strcmp(ModelType,'Bert')
-    save([SavePath '/ResGenBR.mat'],'ResGens')
-    save([SavePath '/ResGenBR10.mat'],'ResGens')
-    save([SavePath '/ResGenBRmInf.mat'],'ResGens')
+    save([SavePath '/ResGenBR_v2.mat'],'ResGens')
 elseif strcmp(ModelType,'Logist')
     save([SavePath '/ResGenLogist.mat'],'ResGens')
 elseif strcmp(ModelType,'Sigm')
@@ -851,20 +826,20 @@ for i = 1:length(Names)
     randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
     ResSigm.Paths = ResSigm.Paths(randinds,:);
     ResSigm.Thetas = ResSigm.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Add.mat'])
-    ResAdd = Res;
-    randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
-    ResAdd.Paths = ResAdd.Paths(randinds,:,:);
-    ResAdd.Thetas = ResAdd.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
-    ResBer = Res;
-    randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
-    ResBer.Paths = ResBer.Paths(randinds,:,:);
-    ResBer.Thetas = ResBer.Thetas(:,randinds);
+%     load([SavePath '/HIV_' Names{i} 'Add.mat'])
+%     ResAdd = Res;
+%     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
+%     ResAdd.Paths = ResAdd.Paths(randinds,:,:);
+%     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
+%     load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
+%     ResBer = Res;
+%     randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
+%     ResBer.Paths = ResBer.Paths(randinds,:,:);
+%     ResBer.Thetas = ResBer.Thetas(:,randinds);
+%     
+%     
     
-    
-    
-    indend = ResAdd.Data.Instants(end);
+    indend = ResDet.Data.Instants(end);
     
     FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
     FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
@@ -872,19 +847,19 @@ for i = 1:length(Names)
     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
     
-    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
-    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
-    FtsAdd = (exp(tmp)./(1+exp(tmp)));
-
-    tmp = squeeze(ResBer.Paths(:,3,1:indend));
-    beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
-    mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
-    ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
-    ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
-    Bs = 1-(beta0s./mus).^(1-ms);
-    ks = 1./ts.*log(Bs./(1-ms));
-    FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-    FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+%     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+%     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+%     FtsAdd = (exp(tmp)./(1+exp(tmp)));
+% 
+%     tmp = squeeze(ResBer.Paths(:,3,1:indend));
+%     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
+%     mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
+%     ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
+%     ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
+%     Bs = 1-(beta0s./mus).^(1-ms);
+%     ks = 1./ts.*log(Bs./(1-ms));
+%     FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+%     FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
 
     
     q = 0.5;
@@ -943,10 +918,10 @@ for i = 1:length(Names)
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 3;
-    PlotResHIV(ResBer,ResBer.Parameters)
-    ResAdd.Parameters.TypeWork = 'Boston Examples';
-    ResAdd.Parameters.PlotIndex = 4;
-    PlotResHIV(ResAdd,ResAdd.Parameters)
+%     PlotResHIV(ResBer,ResBer.Parameters)
+%     ResAdd.Parameters.TypeWork = 'Boston Examples';
+%     ResAdd.Parameters.PlotIndex = 4;
+%     PlotResHIV(ResAdd,ResAdd.Parameters)
 end
 
 save([SavePath '/AllRegionsEstimates.mat'],'ests')

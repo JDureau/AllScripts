@@ -44,19 +44,7 @@ function Data = HIV_CreateData(Fts,Parameters,Model,Data)
     end    
 
     
-    subplot(3,1,1)
-    xis = TStep:Parameters.ComputationTStep:NbTSteps*TStep;
-    plot(xis,Record(:,7))
-    title('FSWs')
-    
-    subplot(3,1,2)
-    plot(xis,Record(:,8))
-    title('Clients')
-    
-    subplot(3,1,3)
-    plot(xis,Fts(1:length(xis)))
-    title('Condom Use')
-    ylim([0 1])
+   
 %     TellParsValues(Parameters)
     
     Data.Parameters = Parameters;
@@ -64,13 +52,51 @@ function Data = HIV_CreateData(Fts,Parameters,Model,Data)
     Data.Observations = [];
     for i = 2:length(Data.Instants)
         inds = Data.ObservedVariables(i);
-        Data.Observations(inds,i) = Record(sum(Data.NbComputingSteps(1:i)),inds)*(1 + randn(1,1)*Parameters.MultNoise);
+        if Parameters.MultNoise
+            Data.Observations(inds,i) = binornd(425,Record(sum(Data.NbComputingSteps(1:i)),inds)/100)/4.25;  
+        else
+            Data.Observations(inds,i) = Record(sum(Data.NbComputingSteps(1:i)),inds)*(1 + randn(1,1)*Parameters.MultNoise);
+        end
     end
     
     baseline = Parameters.BRbase.Value;
     m = Parameters.BRmm1.Value+1;
     mu = Parameters.BRmu.Value;
 
+    
+    subplot(3,1,1)
+    xis = TStep:Parameters.ComputationTStep:NbTSteps*TStep;
+    plot(xis,Record(:,7))
+    hold on
+    try
+        for i = 2:length(Data.Instants)
+            if Data.ObservedVariables(i)==7
+                plot(sum(Data.NbComputingSteps(1:i))*Parameters.ComputationTStep,Data.Observations(7,i),'or')
+            end
+        end
+    end
+    hold off
+    title('FSWs')
+    
+    subplot(3,1,2)
+    plot(xis,Record(:,8))
+    hold on
+    try
+        for i = 2:length(Data.Instants)
+            if Data.ObservedVariables(i)==8
+                plot(sum(Data.NbComputingSteps(1:i))*Parameters.ComputationTStep,Data.Observations(8,i),'or')
+            end
+        end
+    end
+    hold off
+    title('Clients')
+    
+    subplot(3,1,3)
+    plot(xis,Fts(1:length(xis)))
+    title('Condom Use')
+    ylim([0 1])
+    
+    
         
 %     if mean(not(isreal(Fts))
 %         crash = 1;

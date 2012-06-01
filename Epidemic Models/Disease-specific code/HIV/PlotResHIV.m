@@ -432,7 +432,7 @@ end
         xlim([0 620])
         hold on
         ciplot(smooth(quantile(squeeze(Paths),0.25),SmLgth,'median'),smooth(quantile(squeeze(Paths),0.75),SmLgth,'median'),[100,153,251]/255)
-        plot(smooth(median(squeeze(Paths(:,ToPlot(3),:))),SmLgth,'median'),'k','LineWidth',2)
+        plot(smooth(median(squeeze(Paths)),SmLgth,'median'),'k','LineWidth',2)
         tmp = quantile(squeeze(Paths),0.975);    
 
     end
