@@ -112,7 +112,9 @@ cpt = 0;
 ParsRecord = [];
 ResGens = {};
 NSamples = 100;
-Boxlimits = 0:0.05:0.5;
+MaxValue = 0.6;
+step = MaxValue/10;
+Boxlimits = 0:step:MaxValue;
 MaxEff = ceil(NSamples/(length(Boxlimits)-1));
 BoxCpt = zeros(1,length(Boxlimits)-1);
 while cpt < NSamples;
@@ -124,14 +126,14 @@ while cpt < NSamples;
 
         
         if strcmp(ModelType,'Bert')
-            asympt = 0.4+0.59*rand(1,1);
+            asympt = 0.3+0.59*rand(1,1)^(((100-cpt)/100)^2);
 %             m = 1+30*rand(1,1)^0.8; % when m not informed
-            m = 6+50*rand(1,1)^0.8;
-            baseline = min(0.6*rand(1,1),0.999*asympt*m^(1/(1-m)));
+            m = 6+60*rand(1,1);%^(((100-cpt)/100)^2);
+            baseline = min(0.3*rand(1,1)^((2*(cpt)/100)^2),0.999*asympt*m^(1/(1-m)));
 %             baseline = min(0.1*rand(1,1),0.999*asympt*m^(1/(1-m)));
 
             % m = 0.9*rand(1,1);
-            inflpt = (300 + 250*rand(1,1)^(0.5))*Parameters.ComputationTStep;
+            inflpt = (300 + 280*rand(1,1)^(((100-cpt)/100)^0))*Parameters.ComputationTStep;
 
             B  = (1 - (baseline/asympt)^(1-m));
             k = (1/inflpt*log(B/(1-m)));
@@ -165,7 +167,7 @@ while cpt < NSamples;
             asympt = 0.4+0.59*rand(1,1);
 %             baseline = min(0.6*rand(1,1),asympt);
             baseline = min(0.1*rand(1,1),asympt);
-            inflpt = (300 + 250*rand(1,1)^(0.8))*Parameters.ComputationTStep;   
+            inflpt = (300 + 280*rand(1,1)^(0.8))*Parameters.ComputationTStep;   
             
             Fts =  baseline + (asympt-baseline).*(tis>inflpt);
           
@@ -227,16 +229,20 @@ while cpt < NSamples;
 %                 die
 %             end
 %         end
-        
+               pause(0.01)
+
         if strcmp(ModelType,'Bert')
             x = Fts(end)-Fts(456);
-            indbox = find(and(x<Boxlimits(2:end),x>=Boxlimits(1:end-1)));
-            if or(isempty(indbox),BoxCpt(indbox)>MaxEff)
+            indbox = find(and(x<Boxlimits(2:end),x>=Boxlimits(1:end-1)),1);
+            if or(isempty(indbox),BoxCpt(indbox)>=MaxEff)
                 die
             else
+                indbox(1)
                 BoxCpt(indbox) = BoxCpt(indbox)+1;
                 disp(indbox)
                 disp(BoxCpt)
+                cpt = cpt+1;
+                disp([cpt sum(BoxCpt)])
             end
         end
                 
@@ -245,7 +251,6 @@ while cpt < NSamples;
        pause(0.01)
        disp(cpt)
 
-       cpt = cpt+1;
        ResGens{end+1} = ResGen;
     end
 end

@@ -6,7 +6,8 @@ HIVModel.InitializeParameters = @HIV_Initialize;
 HIVModel.SMC_projection = @HIV_SMC_projection;
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 
-try if Parameters.RealData
+try 
+    if Parameters.RealData
 
         
         Parameters.NbVariables = 9;
@@ -456,7 +457,7 @@ Res.Parameters = Parameters;
 for i = 1:5
     disp(['MCMC ' num2str(i)])
     if Res.AccRate>0.05
-        Cov =  2.38^2/length(Names)*cov(Res.TransfThetas');
+        Cov =  cov(Res.TransfThetas');
         Parameters.G = Cov^-1;
     end
     Parameters.NoPaths = 1;
@@ -505,7 +506,7 @@ Names = Parameters.Names.Estimated;
 
 disp(['Final MCMC'])
 
-Cov =  2.38^2/length(Names)*cov(Res.TransfThetas');
+Cov =  cov(Res.TransfThetas');
 % OldCov = Cov;
 % Cov =  2.38^2/length(Names)*DetCov;
 % Cov(Parameters.SigmaRW.Index,Parameters.SigmaRW.Index) = OldCov(13,13);
