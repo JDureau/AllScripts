@@ -11,6 +11,7 @@ Parameters.NbTSteps = length(xis);
 % end
 it = 0;
 test = 0;
+
 while not(test)
     ampl = rand(1,1);
     baseline = rand(1,1)*(1-ampl);

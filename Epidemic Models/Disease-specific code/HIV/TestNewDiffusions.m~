@@ -111,8 +111,11 @@ Ress = {};
 cpt = 0;
 ParsRecord = [];
 ResGens = {};
-while cpt < 100
-    disp(cpt)
+NSamples = 100;
+Boxlimits = 0:0.05:0.5;
+MaxEff = ceil(NSamples/(length(Boxlimits)-1));
+BoxCpt = zeros(1,length(Boxlimits)-1);
+while cpt < NSamples;
     try
         
         
@@ -219,24 +222,31 @@ while cpt < 100
         Parameters = DefinePriors(Parameters);
         Parameters = UpdateParsNoTransfToTransf(Parameters);
         ResGen = GenerateDataForGivenSig(Data,Parameters,HIVModel,Fts);
-        if(Fts(end)-Fts(1)<0.3)
-            if rand(1,1)<0.7
-                die
-            end
-        end
+%         if(Fts(end)-Fts(1)<0.3)
+%             if rand(1,1)<0.7
+%                 die
+%             end
+%         end
         
         if strcmp(ModelType,'Bert')
-            if rand(1,1)>(Fts(end)-Fts(456))^2
+            x = Fts(end)-Fts(456);
+            indbox = find(and(x<Boxlimits(2:end),x>=Boxlimits(1:end-1)));
+            if or(isempty(indbox),BoxCpt(indbox)>MaxEff)
                 die
+            else
+                BoxCpt(indbox) = BoxCpt(indbox)+1;
+                disp(indbox)
+                disp(BoxCpt)
             end
         end
                 
       
         
        pause(0.01)
-       
-            cpt = cpt+1;
-            ResGens{end+1} = ResGen;
+       disp(cpt)
+
+       cpt = cpt+1;
+       ResGens{end+1} = ResGen;
     end
 end
 subplot(3,1,1)

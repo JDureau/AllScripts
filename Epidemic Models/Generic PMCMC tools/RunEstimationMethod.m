@@ -93,7 +93,7 @@ for IndIt = startind:NbIterations
             if IndIt > 100
                 if rand(1,1)>Parameters.AdMetBeta
                     try
-%                         chol(cov(TransfThetas'))
+                        chol(cov(TransfThetas'));
                         TempPar.Cov = cov(TransfThetas');
 %                         disp('changed cov')
 %                         disp(eig(TempPar.Cov))
