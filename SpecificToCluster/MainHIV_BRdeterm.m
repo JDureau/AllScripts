@@ -31,7 +31,7 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
 
 if strcmp(ModelType,'Bert')
-    load([SavePath '/ResGenBR.mat'])    
+    load([SavePath '/ResGenBR_v2.mat'])    
 elseif strcmp(ModelType,'Bert10')
     load([SavePath '/ResGenBR10.mat'])
 elseif strcmp(ModelType,'BertmInf')
