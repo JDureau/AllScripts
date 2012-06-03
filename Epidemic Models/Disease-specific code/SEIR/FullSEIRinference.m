@@ -6,8 +6,8 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 200;
-NbItersPrep = 200;
+NbIters = 500;
+NbItersPrep = 500;
 
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
@@ -609,6 +609,7 @@ if IndModel>1
 else
     Parameters.PathsToKeep = [1:7]';
 end
+Parameters.SaveSpace = 1;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
