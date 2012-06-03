@@ -6,8 +6,8 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 500;
-NbItersPrep = 500;
+NbIters = 30000;
+NbItersPrep = 5000;
 
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
