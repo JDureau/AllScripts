@@ -303,7 +303,7 @@ for i = 1:5
         [i j]
         Ress{i,j}.AutoCorr = {};
         for k = 1:size(Ress{i,j}.TransfThetas,1)
-            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,50000:end));
+            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,100000:end));
             Ress{i,j}.ESSTransf(k) = 100000/(1+2*sum(temp(2:end)));
             Ress{i,j}.RelESSTransf(k) = 1/(1+2*sum(temp(2:end)))*100;
             Ress{i,j}.AutoCorr{k} = temp;

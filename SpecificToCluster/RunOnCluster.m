@@ -68,7 +68,7 @@ for i = inds(1):inds(end)
     elseif IndDiff == 2
         Parameters.DiffusionType = 'Bertallanfy';
     elseif IndDiff == 3
-        Parameters.DiffusionType = 'AddConstr';
+        Parameters.DiffusionType = 'Sigmoid';
     elseif IndDiff == 4
         Parameters.DiffusionType = 'BertallanfyConstr';
     else
