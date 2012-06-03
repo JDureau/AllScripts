@@ -90,7 +90,7 @@ catch
         HIVModel.LikFunction = 'binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
     end
         % HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime))/400)).*(Res.WentOutOrNot)';
-    NbItsPMCMC = 30000;
+    NbItsPMCMC = 75000;
 end
 
     
