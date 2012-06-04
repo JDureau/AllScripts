@@ -841,18 +841,22 @@ for i = 1:length(Names)
     randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
     ResSigm.Paths = ResSigm.Paths(randinds,:);
     ResSigm.Thetas = ResSigm.Thetas(:,randinds);
-%     load([SavePath '/HIV_' Names{i} 'Add.mat'])
-%     ResAdd = Res;
-%     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
-%     ResAdd.Paths = ResAdd.Paths(randinds,:,:);
-%     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
-%     load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
-%     ResBer = Res;
-%     randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
-%     ResBer.Paths = ResBer.Paths(randinds,:,:);
-%     ResBer.Thetas = ResBer.Thetas(:,randinds);
-%     
-%     
+    load([SavePath '/HIV_' Names{i} 'Add.mat'])
+    ResAdd = Res;
+    randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
+    ResAdd.Paths = ResAdd.Paths(randinds,:,:);
+    ResAdd.Thetas = ResAdd.Thetas(:,randinds);
+    load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
+    ResBer = Res;
+    randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
+    ResBer.Paths = ResBer.Paths(randinds,:,:);
+    ResBer.Thetas = ResBer.Thetas(:,randinds);
+    load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
+    ResSigmSto = Res;
+    randinds = randsample(size(ResSigmSto.Paths,1),min(size(ResSigmSto.Paths,1),4000));
+    ResSigmSto.Paths = ResSigmSto.Paths(randinds,:,:);
+    ResSigmSto.Thetas = ResSigmSto.Thetas(:,randinds);
+    
     
     indend = ResDet.Data.Instants(end);
     
@@ -862,20 +866,30 @@ for i = 1:length(Names)
     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
     
-%     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
-%     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
-%     FtsAdd = (exp(tmp)./(1+exp(tmp)));
-% 
-%     tmp = squeeze(ResBer.Paths(:,3,1:indend));
-%     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
-%     mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
-%     ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
-%     ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
-%     Bs = 1-(beta0s./mus).^(1-ms);
-%     ks = 1./ts.*log(Bs./(1-ms));
-%     FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-%     FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+    FtsAdd = (exp(tmp)./(1+exp(tmp)));
 
+    tmp = squeeze(ResBer.Paths(:,3,1:indend));
+    beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
+    mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
+    ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
+    ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
+    Bs = 1-(beta0s./mus).^(1-ms);
+    ks = 1./ts.*log(Bs./(1-ms));
+    FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+    FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+
+    tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
+    rates = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrates.Index,:));
+    base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
+    mu = squeeze(ResSigmSto.Thetas(ResSigmmu.Parameters.Sigmrates.Index,:));
+    tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
+    c = 1./(1+exp(tinfl./rate));
+    b = (mu-base).*c./(1-c);
+    a = base - b;
+    FtSigmSto = mean(a + b./(c*(1+tmp)));
+    FtsSigmSto = (a + b./(c*(1+tmp)));
     
     q = 0.5;
     disp('q50 delta')
@@ -925,18 +939,22 @@ for i = 1:length(Names)
     
     
     clf
+    ResAdd.Parameters.TypeWork = 'Boston Examples';
+    ResAdd.Parameters.PlotIndex = 5;
+    PlotResHIV(ResAdd,ResAdd.Parameters)
     ResDet.Parameters.TypeWork = 'Boston Examples';
-    ResDet.Parameters.PlotIndex = 1;
+    ResDet.Parameters.PlotIndex = 2;
     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
-    ResSigm.Parameters.PlotIndex = 2;
+    ResSigm.Parameters.PlotIndex = 1;
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
-    ResBer.Parameters.PlotIndex = 3;
-%     PlotResHIV(ResBer,ResBer.Parameters)
-%     ResAdd.Parameters.TypeWork = 'Boston Examples';
-%     ResAdd.Parameters.PlotIndex = 4;
-%     PlotResHIV(ResAdd,ResAdd.Parameters)
+    ResBer.Parameters.PlotIndex = 4;
+    PlotResHIV(ResBer,ResBer.Parameters)
+    ResSigmSto.Parameters.TypeWork = 'Boston Examples';
+    ResSigmSto.Parameters.PlotIndex = 3;
+    PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
+    
 end
 
 save([SavePath '/AllRegionsEstimates.mat'],'ests')

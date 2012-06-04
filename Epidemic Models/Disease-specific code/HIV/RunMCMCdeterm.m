@@ -161,10 +161,10 @@ for  j = 1:NbIts
     LogPosts(j) = LogPost;
     LogLiks(j) = LogLik;
     Paths(j,:) = TempSim.BuiltTraj(:,9)';
-    if j >150
-        if rand(1,1)<0.1
+    if j >30
+%         if rand(1,1)<0.1
             Epsil = exp(log(Epsil) + AdaptC^j*(mean(Accepted)-0.23));
-        end
+%         end
     end
     if rand(1,1)<0.05
         disp([num2str(j) '    ' num2str(mean(Accepted)) ])

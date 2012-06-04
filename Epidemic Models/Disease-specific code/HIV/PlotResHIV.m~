@@ -105,6 +105,11 @@ clf
 
             elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                 Paths(:,ToPlot(3),:) = exp(Paths(:,ToPlot(3),:))./(1+exp(Paths(:,ToPlot(3),:)));
+            elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+                base = Parameters.Sigmbase.Value;
+                rate = Parameters.Sigmrate.Value;
+                mu = Parameters.Sigmmu.Value;
+                Paths = base + (mu-base)./(1+(Paths));
             end
             ciplot(quantile(squeeze(Paths(:,ToPlot(3),:)),0.025),quantile(squeeze(Paths(:,ToPlot(3),:)),0.975),[172,215,255]/255)
             xlim([0 620])
@@ -164,11 +169,7 @@ clf
 
                 elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                     Paths = exp(Paths)./(1+exp(Paths));
-                elseif strcmp(Parameters.DiffusionType,'Sigmoid')
-                    base = Parameters.Sigmbase.Value;
-                    rate = Parameters.Sigmrate.Value;
-                    mu = Parameters.Sigmmu.Value;
-                    Paths = base + (mu-base)./(1+(Paths));
+                
                 end
                 clf
                 ciplot(quantile(squeeze(Paths),0.025),quantile(squeeze(Paths),0.975),[172,215,255]/255)
@@ -317,8 +318,8 @@ elseif strcmp(Parameters.TypeWork,'Boston Examples')
 
 
 %  clf
-if Parameters.PlotIndex == 3
-    subplot(6,1,1)
+if Parameters.PlotIndex == 4
+    subplot(4,2,1)
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
@@ -345,7 +346,7 @@ if Parameters.PlotIndex == 3
 %     legend('95% C.I','50% C.I.','Mean','Data')
     
 
-    subplot(6,1,2)
+    subplot(4,2,2)
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
@@ -376,7 +377,7 @@ end
 
 
     try
-        subplot(6,1,2+Parameters.PlotIndex)
+        subplot(4,2,2+Parameters.PlotIndex)
     catch
         clf
     end
@@ -401,12 +402,27 @@ end
                 
             else
                 Paths = (squeeze(Paths));
-
+                tmp = squeeze(Paths(:,3,1:indend));
+                rates = squeeze(Res.Thetas(ResSigmSto.Parameters.Sigmrates.Index,:));
+                base = squeeze(Res.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
+                mu = squeeze(Res.Thetas(ResSigmmu.Parameters.Sigmrates.Index,:));
+                tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
+                c = 1./(1+exp(tinfl./rate));
+                b = (mu-base).*c./(1-c);
+                a = base - b;
+                FtSigmSto = mean(a + b./(c*(1+tmp)));
+                FtsSigmSto = (a + b./(c*(1+tmp)));
             end
 
 %             m = Parameters.BRm.Value;
 %             mu = Parameters.BRmu.Value;
 %             k = Parameters.k;
+        elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+            if Parameters.Sigmsigma.Estimated
+                
+            else
+                Paths = (squeeze(Paths));
+            end
 
         elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
             Paths(:,ToPlot(3),:) = exp(Paths(:,ToPlot(3),:))./(1+exp(Paths(:,ToPlot(3),:)));
@@ -431,7 +447,7 @@ end
         xlim([0 620])
         hold on
         ciplot(smooth(quantile(squeeze(Paths),0.25),SmLgth,'median'),smooth(quantile(squeeze(Paths),0.75),SmLgth,'median'),[100,153,251]/255)
-        plot(smooth(median(squeeze(Paths(:,ToPlot(3),:))),SmLgth,'median'),'k','LineWidth',2)
+        plot(smooth(median(squeeze(Paths)),SmLgth,'median'),'k','LineWidth',2)
         tmp = quantile(squeeze(Paths),0.975);    
 
     end
