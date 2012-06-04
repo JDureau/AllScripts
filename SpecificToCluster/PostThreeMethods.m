@@ -3,10 +3,10 @@ function [] = PostThreeMethods(Constr)
 Med = 0; % use median trajectory instead of mean
 
 %ModelType = 'mInf';
-% ModelType = '';%Bert
+ModelType = '';%Bert
 %ModelType = '10';
 % ModelType = 'Affine'; 
- ModelType = 'Step';
+%  ModelType = 'Step';
 % ModelType = 'Logist10';
 %ModelType = 'Sigm';
 
