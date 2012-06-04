@@ -102,6 +102,24 @@ clf
     %             m = Parameters.BRm.Value;
     %             mu = Parameters.BRmu.Value;
     %             k = Parameters.k;
+            elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+                if Parameters.Sigmsigma.Estimated
+                    tmp = squeeze(Paths(:,3,:));
+                    rate = squeeze(Res.Thetas(Parameters.Sigmrate.Index,:));
+                    base = squeeze(Res.Thetas(Parameters.Sigmbase.Index,:));
+                    mu = squeeze(Res.Thetas(Parameters.Sigmmu.Index,:));
+                    tinfl = squeeze(Res.Thetas(Parameters.Sigmtinfl.Index,:));
+                    c = 1./(1+exp(tinfl./rate));
+                    b = (mu-base).*c./(1-c);
+                    a = base - b;
+                    indend = size(tmp,2);
+                    a = repmat(a',1,indend);
+                    b = repmat(b',1,indend);
+                    c = repmat(c',1,indend);
+    %                 FtSigmSto = mean(a + b./(c*(1+tmp)));
+                    Paths(:,ToPlot(3),:) = (a + b./(c.*(1+tmp)));
+                end
+            
 
             elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
                 Paths(:,ToPlot(3),:) = exp(Paths(:,ToPlot(3),:))./(1+exp(Paths(:,ToPlot(3),:)));

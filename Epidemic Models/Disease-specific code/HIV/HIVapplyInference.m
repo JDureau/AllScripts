@@ -454,7 +454,7 @@ Parameters.AdMetBeta = 0.05;
 Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
 Res.Parameters = Parameters;
 
-for i = 1:5
+for i = 1:3
     disp(['MCMC ' num2str(i)])
     if Res.AccRate>0.05
         Cov =  cov(Res.TransfThetas');
@@ -477,9 +477,9 @@ for i = 1:5
     Parameters.Correction = 1;
     TempPar = Res.TempPar;
 %     Parameters.Kee»ßpAll = 1;
-    Parameters.AdaptC = 0.98;
+    Parameters.AdaptC = 0.999;
     % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-    Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
+    Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);
     Res.Parameters = Parameters;
 end
 
@@ -528,7 +528,7 @@ Parameters.ModelType = 'SMC';
 Parameters.Correction = 1;
 TempPar = Res.TempPar;
 % Parameters.KeepAll = 1;
-Parameters.AdaptC = 0.99;
+Parameters.AdaptC = 0.999;
 % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
 Parameters.SaveSpace = 1;
 Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,NbItsPMCMC);

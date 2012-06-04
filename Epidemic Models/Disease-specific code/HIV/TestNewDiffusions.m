@@ -486,20 +486,22 @@ figure(7)
 
 clf
 for i = 1:length(ResAggr.ampls)
-    plot(ResGens{i}.Data.Fts)
-    hold on
-    plot(2*[ResGens{i}.Parameters.BRtinfl.Value ResGens{i}.Parameters.BRtinfl.Value],[0 1],'g')
-    hold off
-    
-%     plot(squeeze(ResAggr.sigms(4,i,:)),'g')
+%     plot(ResGens{i}.Data.Fts)
 %     hold on
-%     plot(squeeze(ResAggr.sigms(1,i,:)),'k')
-%     plot(squeeze(ResAggr.sigms(3,i,:)),'b')
-%     plot(squeeze(ResAggr.sigms(2,i,:)),'r')
-%     plot([ResAggr.ParsMeds(1,16,i) ResAggr.ParsMeds(1,16,i)],[0 1],'k')
-%     plot([ResAggr.ParsMeds(3,16,i) ResAggr.ParsMeds(3,16,i)],[0 1],'b')
 %     plot(2*[ResGens{i}.Parameters.BRtinfl.Value ResGens{i}.Parameters.BRtinfl.Value],[0 1],'g')
 %     hold off
+    
+    plot(squeeze(ResAggr.sigms(4,i,:)),'g')
+    hold on
+    plot(squeeze(ResAggr.sigms(1,i,:)),'k')
+    plot(squeeze(ResAggr.sigms(3,i,:)),'b')
+    plot(squeeze(ResAggr.sigms(2,i,:)),'r')
+    plot(squeeze(ResAggr.sigms(5,i,:)),'y')
+    plot(squeeze(ResAggr.sigms(6,i,:)),'c')
+    plot([ResAggr.ParsMeds(1,16,i) ResAggr.ParsMeds(1,16,i)],[0 1],'k')
+    plot([ResAggr.ParsMeds(3,16,i) ResAggr.ParsMeds(3,16,i)],[0 1],'b')
+%     plot(2*[ResGens{i}.Parameters.BRtinfl.Value ResGens{i}.Parameters.BRtinfl.Value],[0 1],'g')
+    hold off
 %     title([ResAggr.ParsMeds(1,16,i) ResAggr.ParsMeds(3,16,i) ResAggr.ParsMeds(4,16,i)] )
     ylim([0 1])
 %     legend('true','det','Ber','Add')
@@ -888,8 +890,11 @@ for i = 1:length(Names)
     c = 1./(1+exp(tinfl./rate));
     b = (mu-base).*c./(1-c);
     a = base - b;
-    FtSigmSto = mean(a + b./(c*(1+tmp)));
-    FtsSigmSto = (a + b./(c*(1+tmp)));
+    a = repmat(a',1,indend);
+    b = repmat(b',1,indend);
+    c = repmat(c',1,indend);
+    FtSigmSto = mean(a + b./(c.*(1+tmp)));
+    FtsSigmSto = (a + b./(c.*(1+tmp)));
     
     q = 0.5;
     disp('q50 delta')
