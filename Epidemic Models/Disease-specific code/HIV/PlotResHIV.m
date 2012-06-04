@@ -411,13 +411,16 @@ end
         elseif strcmp(Parameters.DiffusionType,'Sigmoid')
             if Parameters.Sigmsigma.Estimated
                 tmp = squeeze(Paths(:,3,1:indend));
-                rates = squeeze(Res.Thetas(Parameters.Sigmrates.Index,:));
+                rate = squeeze(Res.Thetas(Parameters.Sigmrate.Index,:));
                 base = squeeze(Res.Thetas(Parameters.Sigmbase.Index,:));
-                mu = squeeze(Res.Thetas(Parameters.Sigmrates.Index,:));
+                mu = squeeze(Res.Thetas(Parameters.Sigmmu.Index,:));
                 tinfl = squeeze(Res.Thetas(Parameters.Sigmtinfl.Index,:));;
                 c = 1./(1+exp(tinfl./rate));
                 b = (mu-base).*c./(1-c);
                 a = base - b;
+                a = repmat(a',1,indend);
+                b = repmat(b',1,indend);
+                c = repmat(c',1,indend);
 %                 FtSigmSto = mean(a + b./(c*(1+tmp)));
                 Paths(:,ToPlot(3),:) = (a + b./(c*(1+tmp)));
             else

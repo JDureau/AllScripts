@@ -1,0 +1,9 @@
+
+for i = 2:100
+    i
+    try
+        load(['VIH_PlayingWithSigm_ResultsAddConstr__1_' num2str(i) '.mat'])
+        save(['VIH_PlayingWithSigm_ResultsSigmoid__1_' num2str(i) '.mat'],'Ress')
+    
+    end
+end

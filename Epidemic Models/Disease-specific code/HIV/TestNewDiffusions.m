@@ -881,9 +881,9 @@ for i = 1:length(Names)
     FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
 
     tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
-    rates = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrates.Index,:));
+    rate = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrate.Index,:));
     base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
-    mu = squeeze(ResSigmSto.Thetas(ResSigmmu.Parameters.Sigmrates.Index,:));
+    mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
     tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
     c = 1./(1+exp(tinfl./rate));
     b = (mu-base).*c./(1-c);

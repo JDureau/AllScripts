@@ -25,7 +25,7 @@ addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 
 if strcmp(ModelType,'')
-    load([SavePath '/ResGenBR.mat'])    
+    load([SavePath '/ResGenBR_v2.mat'])    
 elseif strcmp(ModelType,'10')
     load([SavePath '/ResGenBR10.mat'])
 elseif strcmp(ModelType,'mInf')
@@ -156,6 +156,20 @@ try
           disp('BR crash')
         end
         ResBer = Ress{1};
+        
+        
+        try
+	  if Constr
+	    load([SavePath 'VIH_PlayingWithSigm' ModelType '_ResultsSigmoidConstr__1_' num2str(i) '.mat'])
+          else
+	    load([SavePath 'VIH_PlayingWithSigm' ModelType '_ResultsSigmoid__1_' num2str(i) '.mat'])
+	  end
+        catch
+	  die = 1;
+          disp('BR crash')
+        end
+        ResSigmSto = Ress{1};
+        
 
 
 	if or(mean(not(ResDet.Data.BuiltTraj(1:585,9) == ResSigm.Data.BuiltTraj(1:585,9))),mean(not(ResDet.Data.BuiltTraj(1:585,9) == ResBer.Data.BuiltTraj(1:585,9))))
@@ -195,6 +209,14 @@ try
           vect(j) = length(v)/(1+2*sum(tmp(2:end)));
         end
 	NbSamples(cpt+1,5) = round(size(ResSigm,2)/5);
+    vect = [];
+        Names = ResSigmSto.Parameters.Names.Estimated;
+        for j = 1:length(Names)
+          v = ResSigm.StoThetas(ResSigmSto.Parameters.(Names{j}).Index,:);
+          tmp = AutoCorrelation(v,100);
+          vect(j) = length(v)/(1+2*sum(tmp(2:end)));
+        end
+	NbSamples(cpt+1,6) = round(size(ResSigm,2)/5);
     
     
 
@@ -238,8 +260,6 @@ try
     FtsAdd = (exp(tmp)./(1+exp(tmp)));
 
     tmp = squeeze(ResBer.Paths(:,3,1:585));
-
-
     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
     mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
     ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
@@ -253,11 +273,31 @@ try
     end
     FtsBer = ((repmat(1-ms',1,585).*tmp+repmat(mus.^(1-ms)',1,585)).^(repmat(1./(1-ms)',1,585)));
     
+    tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
+    rate = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrate.Index,:));
+    base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
+    mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
+    tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
+    c = 1./(1+exp(tinfl./rate));
+    b = (mu-base).*c./(1-c);
+    a = base - b;
+    a = repmat(a',1,indend);
+    b = repmat(b',1,indend);
+    c = repmat(c',1,indend);
+    FtsSigmSto = (a + b./(c.*(1+tmp)));
+    if Med
+      FtSigmSto = median();
+    else
+      FtSigmSto = mean((repmat(1-ms',1,585).*tmp+repmat(mus.^(1-ms)',1,585)).^(repmat(1./(1-ms)',1,585)));
+    end
+    
+    
     FtTrue = squeeze(ResBer.Data.BuiltTraj(1:585,9));
     ampls(1,cpt) = max(FtDet)-min(FtDet);
     ampls(2,cpt) = max(FtAdd)-min(FtAdd);
     ampls(3,cpt) = max(FtBer)-min(FtBer);
     ampls(5,cpt) = max(FtSigm)-min(FtSigm);
+    ampls(6,cpt) = max(FtSigmSto)-min(FtSigmSto);
     ampls(4,cpt) = max(FtTrue)-min(FtTrue);
     partampls2003(1,cpt) = FtDet(584)-FtDet(end-168);
     partampls2003(2,cpt) = FtAdd(584)-FtAdd(end-168);
@@ -289,10 +329,10 @@ try
 
 
 
-    NPartsDet = size(FtsDet,1)
-    NPartsAdd = size(FtsAdd,1)   
-    NPartsBer = size(FtsBer,1)
-    NPartsSigm = size(FtsSigm,1)
+%     NPartsDet = size(FtsDet,1)
+%     NPartsAdd = size(FtsAdd,1)   
+%     NPartsBer = size(FtsBer,1)
+%     NPartsSigm = size(FtsSigm,1)
     NbSamples(cpt,:) = [NPartsDet NPartsAdd NPartsBer 0 NPartsSigm];
     amplsALL{1}(cpt,1:NPartsDet) = max(FtsDet')-min(FtsDet');
     amplsALL{2}(cpt,1:NPartsAdd) = max(FtsAdd')-min(FtsAdd');
@@ -305,13 +345,15 @@ try
     partampls1995ALL{1}(cpt,1:NPartsDet) = FtsDet(:,585)-FtsDet(:,585-360);
     partampls1995ALL{2}(cpt,1:NPartsAdd) = FtsAdd(:,585)-FtsAdd(:,585-360);
     partampls1995ALL{3}(cpt,1:NPartsBer) = FtsBer(:,585)-FtsBer(:,585-360);
-    partampls1995ALL{5}(cpt,1:NPartsSigm) = FtsBer(:,585)-FtsBer(:,585-360);
+    partampls1995ALL{5}(cpt,1:NPartsSigm) = FtsSigm(:,585)-FtsSigm(:,585-360);
     baselinesALL{1}(cpt,1:NPartsDet) = FtsDet(:,1);
     baselinesALL{2}(cpt,1:NPartsAdd) = FtAdd(:,1); 
     baselinesALL{3}(cpt,1:NPartsBer) = FtBer(:,1);  
+    baselinesALL{5}(cpt,1:NPartsSigm) = FtSigm(:,1);  
     asymptsALL{1}(cpt,1:NPartsDet) = FtsDet(:,585);
     asymptsALL{2}(cpt,1:NPartsAdd) = FtsAdd(:,585);
     asymptsALL{3}(cpt,1:NPartsBer) = FtsBer(:,585);
+    asymptsALL{5}(cpt,1:NPartsSigm) = FtsSigm(:,585);
 
     qs = 0.01:0.01:1; 
 
@@ -319,22 +361,27 @@ try
       amplsROC(1,j,cpt) = quantile(amplsALL{1}(cpt,1:NPartsDet),qs(j));
       amplsROC(2,j,cpt) = quantile(amplsALL{2}(cpt,1:NPartsAdd),qs(j));
       amplsROC(3,j,cpt) = quantile(amplsALL{3}(cpt,1:NPartsBer),qs(j));
+      amplsROC(5,j,cpt) = quantile(amplsALL{5}(cpt,1:NPartsSigm),qs(j));
       amplsROC(4,j,cpt) = max(FtTrue)-min(FtTrue);
       partampls2003ROC(1,j,cpt) = quantile(partampls2003ALL{1}(cpt,1:NPartsDet),qs(j));
       partampls2003ROC(2,j,cpt) = quantile(partampls2003ALL{2}(cpt,1:NPartsAdd),qs(j));
       partampls2003ROC(3,j,cpt) = quantile(partampls2003ALL{3}(cpt,1:NPartsBer),qs(j));
+      partampls2003ROC(5,j,cpt) = quantile(partampls2003ALL{5}(cpt,1:NPartsSigm),qs(j));
       partampls2003ROC(4,j,cpt) = FtTrue(end)-FtTrue(end-168);
       partampls1995ROC(1,j,cpt) = quantile(partampls1995ALL{1}(cpt,1:NPartsDet),qs(j));
       partampls1995ROC(2,j,cpt) = quantile(partampls1995ALL{2}(cpt,1:NPartsAdd),qs(j));
       partampls1995ROC(3,j,cpt) = quantile(partampls1995ALL{3}(cpt,1:NPartsBer),qs(j));
+      partampls1995ROC(5,j,cpt) = quantile(partampls1995ALL{5}(cpt,1:NPartsSigm),qs(j));
       partampls1995ROC(4,j,cpt) = FtTrue(end)-FtTrue(end-360);
       baselinesROC(1,j,cpt) = quantile(baselinesALL{1}(cpt,1:NPartsDet),qs(j));
       baselinesROC(2,j,cpt) = quantile(baselinesALL{2}(cpt,1:NPartsAdd),qs(j));
       baselinesROC(3,j,cpt) = quantile(baselinesALL{3}(cpt,1:NPartsBer),qs(j));
+      baselinesROC(5,j,cpt) = quantile(baselinesALL{5}(cpt,1:NPartsSigm),qs(j));
       baselinesROC(4,j,cpt) = FtTrue(1);
       asymptsROC(1,j,cpt) = quantile(asymptsALL{1}(cpt,1:NPartsDet),qs(j));
       asymptsROC(2,j,cpt) = quantile(asymptsALL{2}(cpt,1:NPartsAdd),qs(j));
       asymptsROC(3,j,cpt) = quantile(asymptsALL{3}(cpt,1:NPartsBer),qs(j));
+      asymptsROC(5,j,cpt) = quantile(asymptsALL{5}(cpt,1:NPartsSigm),qs(j));
       asymptsROC(4,j,cpt) = FtTrue(end);
     end
     
@@ -344,10 +391,11 @@ try
         inddet = ResDet.Parameters.(Names{j}).Index;
         indadd = ResAdd.Parameters.(Names{j}).Index;
         indber = ResBer.Parameters.(Names{j}).Index;
+        indSigm = ResSigm.Parameters.(Names{j}).Index;
 
-	disp(Names{j})
-        disp(inddet)
-	disp(indber)
+% 	disp(Names{j})
+%         disp(inddet)
+% 	disp(indber)
 
         ParsMeans(1,inddet,cpt) = mean(ResDet.Thetas(inddet,:));
         ParsMeds(1,inddet,cpt) = median(ResDet.Thetas(inddet,:));
@@ -356,24 +404,35 @@ try
         try
             ParsMeans(2,inddet,cpt) = mean(ResAdd.Thetas(indadd,:));
             ParsMeds(2,inddet,cpt) = median(ResAdd.Thetas(indadd,:));
-	    Pars2p5(2,inddet,cpt) = quantile(ResAdd.Thetas(indadd,:),0.025);
-	    Pars97p5(2,inddet,cpt) = quantile(ResAdd.Thetas(indadd,:),0.975);
+            Pars2p5(2,inddet,cpt) = quantile(ResAdd.Thetas(indadd,:),0.025);
+            Pars97p5(2,inddet,cpt) = quantile(ResAdd.Thetas(indadd,:),0.975);
        catch
             ParsMeans(2,inddet,cpt) = NaN;
             ParsMeds(2,inddet,cpt) = NaN;
             Pars2p5(2,inddet,cpt) = NaN;
             Pars97p5(2,inddet,cpt) = NaN;
         end
+        try
+            ParsMeans(5,inddet,cpt) = mean(ResSigm.Thetas(indadd,:));
+            ParsMeds(5,inddet,cpt) = median(ResSigm.Thetas(indadd,:));
+            Pars2p5(5,inddet,cpt) = quantile(ResSigm.Thetas(indadd,:),0.025);
+            Pars97p5(5,inddet,cpt) = quantile(ResSigm.Thetas(indadd,:),0.975);
+        catch
+            ParsMeans(5,inddet,cpt) = NaN;
+            ParsMeds(5,inddet,cpt) = NaN;
+            Pars2p5(5,inddet,cpt) = NaN;
+            Pars97p5(5,inddet,cpt) = NaN;
+        end
         ParsMeans(3,inddet,cpt) = mean(ResBer.Thetas(indber,:));
-	ParsMeds(3,inddet,cpt) = median(ResBer.Thetas(indber,:));
+        ParsMeds(3,inddet,cpt) = median(ResBer.Thetas(indber,:));
         Pars2p5(3,inddet,cpt) = quantile(ResBer.Thetas(indber,:),0.025);
         Pars97p5(3,inddet,cpt) = quantile(ResBer.Thetas(indber,:),0.975);
-	ParsMeans(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
-	ParsMeds(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
-	Pars2p5(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
-	Pars97p5(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
+        ParsMeans(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
+        ParsMeds(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
+        Pars2p5(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
+        Pars97p5(4,inddet,cpt) = ResGens{cpt}.Parameters.(Names{j}).Value;
     end
-    Pars
+%     Pars
 end
 end
 

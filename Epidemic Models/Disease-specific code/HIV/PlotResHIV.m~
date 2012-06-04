@@ -318,7 +318,7 @@ elseif strcmp(Parameters.TypeWork,'Boston Examples')
 
 
 %  clf
-if Parameters.PlotIndex == 4
+if Parameters.PlotIndex == 5
     subplot(4,2,1)
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
     xlim([0 620])
@@ -402,16 +402,7 @@ end
                 
             else
                 Paths = (squeeze(Paths));
-                tmp = squeeze(Paths(:,3,1:indend));
-                rates = squeeze(Res.Thetas(ResSigmSto.Parameters.Sigmrates.Index,:));
-                base = squeeze(Res.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
-                mu = squeeze(Res.Thetas(ResSigmmu.Parameters.Sigmrates.Index,:));
-                tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
-                c = 1./(1+exp(tinfl./rate));
-                b = (mu-base).*c./(1-c);
-                a = base - b;
-                FtSigmSto = mean(a + b./(c*(1+tmp)));
-                FtsSigmSto = (a + b./(c*(1+tmp)));
+                
             end
 
 %             m = Parameters.BRm.Value;
@@ -419,7 +410,19 @@ end
 %             k = Parameters.k;
         elseif strcmp(Parameters.DiffusionType,'Sigmoid')
             if Parameters.Sigmsigma.Estimated
-                
+                tmp = squeeze(Paths(:,3,1:indend));
+                rate = squeeze(Res.Thetas(Parameters.Sigmrate.Index,:));
+                base = squeeze(Res.Thetas(Parameters.Sigmbase.Index,:));
+                mu = squeeze(Res.Thetas(Parameters.Sigmmu.Index,:));
+                tinfl = squeeze(Res.Thetas(Parameters.Sigmtinfl.Index,:));;
+                c = 1./(1+exp(tinfl./rate));
+                b = (mu-base).*c./(1-c);
+                a = base - b;
+                a = repmat(a',1,indend);
+    b = repmat(b',1,indend);
+    c = repmat(c',1,indend);
+%                 FtSigmSto = mean(a + b./(c*(1+tmp)));
+                Paths(:,ToPlot(3),:) = (a + b./(c*(1+tmp)));
             else
                 Paths = (squeeze(Paths));
             end

@@ -881,23 +881,18 @@ for i = 1:length(Names)
     FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
 
     tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
-    rates = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrates.Index,:));
+    rate = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrate.Index,:));
     base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
-    mu = squeeze(ResSigmSto.Thetas(ResSigmmu.Parameters.Sigmrates.Index,:));
+    mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
     tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
-    c = 1/(1+exp(tinfl/rate));
-        b = (mu-base)*c/(1-c);
-        a = base - b;
-    beta0s = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.BRbase.Index,:));
-    mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
-    ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
-    ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
-    Bs = 1-(beta0s./mus).^(1-ms);
-    ks = 1./ts.*log(Bs./(1-ms));
-    FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-    FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-    
-    
+    c = 1./(1+exp(tinfl./rate));
+    b = (mu-base).*c./(1-c);
+    a = base - b;
+    a = repmat(a',1,indend);
+    b = repmat(b',1,indend);
+    c = repmat(c',1,indend);
+    FtSigmSto = mean(a + b./(c.*(1+tmp)));
+    FtsSigmSto = (a + b./(c.*(1+tmp)));
     
     q = 0.5;
     disp('q50 delta')
@@ -948,17 +943,20 @@ for i = 1:length(Names)
     
     clf
     ResAdd.Parameters.TypeWork = 'Boston Examples';
-    ResAdd.Parameters.PlotIndex = 4;
+    ResAdd.Parameters.PlotIndex = 5;
     PlotResHIV(ResAdd,ResAdd.Parameters)
     ResDet.Parameters.TypeWork = 'Boston Examples';
-    ResDet.Parameters.PlotIndex = 1;
+    ResDet.Parameters.PlotIndex = 2;
     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
-    ResSigm.Parameters.PlotIndex = 2;
+    ResSigm.Parameters.PlotIndex = 1;
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
-    ResBer.Parameters.PlotIndex = 3;
+    ResBer.Parameters.PlotIndex = 4;
     PlotResHIV(ResBer,ResBer.Parameters)
+    ResSigmSto.Parameters.TypeWork = 'Boston Examples';
+    ResSigmSto.Parameters.PlotIndex = 3;
+    PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
     
 end
 
