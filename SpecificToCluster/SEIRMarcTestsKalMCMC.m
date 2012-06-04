@@ -75,7 +75,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 2
             % eps, no AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 3
@@ -87,7 +87,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 4
             % eps and AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.AdMet = 1;
             Parameters.AdMetBeta = 0.05;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
@@ -112,7 +112,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 2
             % eps, no AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 3
@@ -124,7 +124,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 4
             % eps and AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.AdMet = 1;
             Parameters.AdMetBeta = 0.05;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
@@ -141,18 +141,18 @@ switch ind
             Parameters.G = Cov^-1;
             Parameters.NoPaths = 1;
             Parameters.ModelType='SMC';
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.NbVariables = 7;
             Parameters.aim = 0.23;
             Parameters.Epsil = 1;
             TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
             Parameters.ModelType='Kalman';
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
             Cov = cov(ResKal.TransfThetas');
             Parameters.G = Cov^-1;
             Parameters.ModelType='Kalman';
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
             save([SavePath 'TestingDifferentCovs_ResKal_' num2str(ind) '_' num2str(indeps) '.mat'], 'ResKal');
         end
@@ -174,7 +174,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 2
             % eps, no AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 3
@@ -186,7 +186,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 4
             % eps and AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.AdMet = 1;
             Parameters.AdMetBeta = 0.05;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
@@ -211,7 +211,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 2
             % eps, no AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 3
@@ -223,7 +223,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 4
             % eps and AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.AdMet = 1;
             Parameters.AdMetBeta = 0.05;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
@@ -249,7 +249,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 2
             % eps, no AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 3
@@ -261,7 +261,7 @@ switch ind
             save([SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2str(indeps) '.mat'], 'Res');
         elseif indeps == 4
             % eps and AM
-            Parameters.AdaptC = 0.99;
+            Parameters.AdaptC = 0.999;
             Parameters.AdMet = 1;
             Parameters.AdMetBeta = 0.05;
             Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
@@ -303,7 +303,7 @@ for i = 1:5
         [i j]
         Ress{i,j}.AutoCorr = {};
         for k = 1:size(Ress{i,j}.TransfThetas,1)
-            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,100000:end));
+            temp = AutoCorrelation(Ress{i,j}.TransfThetas(k,25000:end));
             Ress{i,j}.ESSTransf(k) = 100000/(1+2*sum(temp(2:end)));
             Ress{i,j}.RelESSTransf(k) = 1/(1+2*sum(temp(2:end)))*100;
             Ress{i,j}.AutoCorr{k} = temp;
