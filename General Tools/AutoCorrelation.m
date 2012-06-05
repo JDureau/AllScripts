@@ -20,7 +20,7 @@ while not(test)
         test = 1;
     end
     if k>300
-        if sum(AutoCor(min(end-300,round(end/2)):end))<0.01
+        if sum(AutoCor(min(end-300,round(end/2)):end))<0.05
             test = 1;
         end
     end
