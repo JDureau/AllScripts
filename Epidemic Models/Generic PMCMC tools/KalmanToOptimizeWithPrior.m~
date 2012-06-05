@@ -70,6 +70,22 @@ if strcmp(Parameters.Problem,'ImperialHIV2')
             tmp = min(0,Temp.Posterior025(9,:));
             plot(Data.Instants,((1-m)*tmp+mu^(1-m)).^(1/(1-m)),'r')
             hold off
+        elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+            base = Parameters.Sigmbase.Value;
+            mu   = Parameters.Sigmmu.Value;
+            rate = Parameters.Sigmrate.Value;
+            tinfl = Parameters.Sigmbase.Value;
+            tmp = max(0,Temp.PosteriorMeans(9,:));
+            c = 1/(1+exp(tinfl/rate));
+            b = (mu-base)*c/(1-c);
+            a = base - b;
+            plot(Data.Instants, a + b./(c*(1+tmp)),'g')
+            hold on
+            tmp =  max(0,Temp.Posterior975(9,:));
+            plot(Data.Instants, a + b./(c*(1+tmp)),'r')
+            tmp =  max(0,Temp.Posterior025(9,:));
+            plot(Data.Instants, a + b./(c*(1+tmp)),'r')
+            hold off
         else
             tmp = Temp.PosteriorMeans(9,:);
             plot(Data.Instants,exp(tmp)./(1+exp(tmp)),'g')
@@ -183,10 +199,6 @@ elseif strcmp(Parameters.Problem,'Marc2diff')
         hold on
         plot(Temp.PosteriorMeans(10,:))
         hold off
-        beta11 = exp(TempVariables(:,11));
-        beta12 = Parameters.beta12init.Value;
-        beta21 = Parameters.adultsmult.Value*Parameters.beta12init.Value;
-        beta22 = exp(TempVariables(:,12));
         subplot(4,1,3)
         plot(exp(Temp.PosteriorMeans(11,:)))
         subplot(4,1,4)
@@ -194,23 +206,6 @@ elseif strcmp(Parameters.Problem,'Marc2diff')
         title(Temp.LogLik)
         pause(0.001)
         
-elseif strcmp(Parameters.Problem,'Marc2diffb')
-        subplot(4,1,1)
-        plot(Data.Observations(9,:),'g')
-        hold on
-        plot(Temp.PosteriorMeans(9,:))
-        hold off
-        subplot(4,1,2)
-        plot(Data.Observations(10,:),'g')
-        hold on
-        plot(Temp.PosteriorMeans(10,:))
-        hold off
-        subplot(4,1,3)
-        plot(Parameters.kidsadd.Value+Parameters.kidsmult.Value*exp(Temp.PosteriorMeans(11,:)))
-        subplot(4,1,4)
-        plot(Parameters.adultsadd.Value+Parameters.adultsmult.Value*exp(Temp.PosteriorMeans(12,:)))
-        title(Temp.LogLik)
-        pause(0.001)
  elseif strcmp(Parameters.Problem,'Marc3diff')
         subplot(5,1,1)
         plot(Data.Observations(9,:),'g')

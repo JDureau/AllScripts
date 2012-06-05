@@ -74,14 +74,17 @@ if strcmp(Parameters.Problem,'ImperialHIV2')
             base = Parameters.Sigmbase.Value;
             mu   = Parameters.Sigmmu.Value;
             rate = Parameters.Sigmrate.Value;
-            tinfl = Parameters.Sigmbase.Value;
+            tinfl = Parameters.Sigmtinfl.Value;
             tmp = max(0,Temp.PosteriorMeans(9,:));
-            plot(Data.Instants,base+(mu-base)./(1+tmp),'g')
+            c = 1/(1+exp(tinfl/rate));
+            b = (mu-base)*c/(1-c);
+            a = base - b;
+            plot(Data.Instants, a + b./(c*(1+tmp)),'g')
             hold on
             tmp =  max(0,Temp.Posterior975(9,:));
-            plot(Data.Instants,base+(mu-base)./(1+tmp),'r')
+            plot(Data.Instants, a + b./(c*(1+tmp)),'r')
             tmp =  max(0,Temp.Posterior025(9,:));
-            plot(Data.Instants,base+(mu-base)./(1+tmp),'r')
+            plot(Data.Instants, a + b./(c*(1+tmp)),'r')
             hold off
         else
             tmp = Temp.PosteriorMeans(9,:);

@@ -491,6 +491,7 @@ for i = 1:length(ResAggr.ampls)
 %     plot(2*[ResGens{i}.Parameters.BRtinfl.Value ResGens{i}.Parameters.BRtinfl.Value],[0 1],'g')
 %     hold off
     
+
     plot(squeeze(ResAggr.sigms(4,i,:)),'g')
     hold on
     plot(squeeze(ResAggr.sigms(1,i,:)),'k')

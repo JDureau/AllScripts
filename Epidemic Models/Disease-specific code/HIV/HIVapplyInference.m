@@ -202,6 +202,8 @@ if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
     ParametersKalman.BRsigma.Estimated = 1;
     ParametersKalman.BRsigma.TransfType = 'Logit';
     ParametersKalman.BRsigma.Init = 0;
+    ParametersKalman.BRmm1.Value = 10;
+    ParametersKalman.BRmu.Value = 0.8;
 elseif strcmp(ParametersKalman.DiffusionType,'Sigmoid')
  
     ParametersKalman.InitialIPropF.Estimated = 1;
@@ -319,6 +321,21 @@ while not(Test)
 end
 
 ParametersKalman.KalCov = Cov;
+
+% ParametersKalman.Correction = 0;
+% Initialization = [];
+% for i = 1:length(Names)
+%     Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
+% end
+% % ParametersKalman.RWinEKF = 1;
+% [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+% Names = ParametersKalman.Names.Estimated;
+% for i = 1:length(Names)
+%     ParametersKalman.(Names{i}).TransfValue = (x(i));
+% end
+% ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+% TellParsValues(ParametersKalman)
+% ParametersKalman.Correction = 1;
 
 
 Temp = struct();
@@ -451,7 +468,7 @@ Parameters.AdaptC = 0.99;
 Parameters.AdMet = 0;
 Parameters.AdMetBeta = 0.05;
 % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
+Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,30);
 Res.Parameters = Parameters;
 
 for i = 1:3

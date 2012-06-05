@@ -162,11 +162,11 @@ for IndIt = startind:NbIterations
             die
             Parameters.AccRate = 100;
         end
-        if IndIt>30
-%             if rand(1,1)<0.2
+        if IndIt>150
+            if rand(1,1)<0.2
                 Parameters.Epsil = exp(log(Parameters.Epsil) + Parameters.AdaptC^IndIt*(Parameters.AccRate-0.23));
 
-%             end
+            end
         end
     
     end
