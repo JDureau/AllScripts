@@ -108,8 +108,6 @@ Names = Parameters.Names.Estimated;
 for j = 1:length(Names)
     Parameters.(Names{j}).Estimated = 0;
 end
-Parameters.km1.Estimated = 1;
-Parameters.gammam1.Estimated = 1;
 % Parameters.betainit.Estimated = 1;
 switch IndModel
     case 1
@@ -119,12 +117,25 @@ switch IndModel
         Parameters.RInitProp.Estimated = 1;
     case 2
         Parameters.SigmaRW11.Estimated = 1;
+        Parameters.E1InitProp.Estimated = 1;
+        Parameters.I1InitProp.Estimated = 1;
+        Parameters.R1InitProp.Estimated = 1;
+        Parameters.E2InitProp.Estimated = 1;
+        Parameters.I2InitProp.Estimated = 1;
+        Parameters.R2InitProp.Estimated = 1;
+%         Parameters.beta11init.Estimated = 1;
+%         Parameters.beta22init.Estimated = 1;
+        Parameters.adultsmult.Estimated = 1;
+        Parameters.kidsmult.Estimated = 1;
+%         Parameters.adultsadd.Estimated = 1;
+%         Parameters.kidsadd.Estimated = 1;
     case 3
         Parameters.SigmaRW11.Estimated = 1;
         Parameters.SigmaRW22.Estimated = 1;
     case 4
         Parameters.SigmaRW11.Estimated = 1;
         Parameters.SigmaRW22.Estimated = 1;
+        
     case 5
         Parameters.SigmaRW11.Estimated = 1;
         Parameters.SigmaRW22.Estimated = 1;
@@ -137,9 +148,6 @@ switch IndModel
         Parameters.R2InitProp.Estimated = 1;
 end
 
-if strcmp(ObsType,'Estimated')
-    Parameters.SigmaObs.Estimated = 1;
-end
 
 Parameters = DefineEstimatedParametersIndexes(Parameters);
 Parameters = DefineTransfFunctions(Parameters);
@@ -149,7 +157,7 @@ Parameters = UpdateParsNoTransfToTransf(Parameters);
 Test = 0;
 try
     Temp = EstimationEKFGen(Data, SEIRModel, Parameters);    
-    if (Temp.LogLik>-600)
+    if (Temp.LogLik>-300)
         Test = 1;
     end
 end
@@ -159,16 +167,21 @@ while not(Test)
     if IndModel>2
         Parameters.SigmaRW11.Value = rand(1,1)*2;
         Parameters.SigmaRW22.Value = rand(1,1)*2;
+    elseif IndModel==2
+        Parameters.SigmaRW11.Value = rand(1,1)*2;
+        Parameters.adultsmult.Value = rand(1,1);
+        Parameters.kidsmult.Value = rand(1,1);
+
     else
         Parameters.SigmaRW.Value = rand(1,1)*2;
     end
     Parameters = UpdateParsNoTransfToTransf(Parameters);
-    Parameters.InitialCov = rand(1,1)*0.4;
+%     Parameters.InitialCov = rand(1,1)*0.4;
 
     try
         Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
         Temp.LogLik
-        if (Temp.LogLik>-22000)
+        if (Temp.LogLik>-3000)
             Test = 1;
         end
     end
@@ -255,9 +268,14 @@ end
 % Parameters.EInitPropNoise.Estimated = 1;
 % Parameters.IInitPropNoise.Estimated = 1;
 % Parameters.RInitPropNoise.Estimated = 1;
+Parameters.km1.Estimated = 1;
+Parameters.gammam1.Estimated = 1;
 if strcmp(Parameters.DiffusionType,'IBM')
     Parameters.betaderinit.Estimated = 1;
 end
+% if strcmp(ObsType,'Estimated')
+%     Parameters.SigmaObs.Estimated = 1;
+% end
 Parameters = DefineEstimatedParametersIndexes(Parameters);
 Parameters = DefineTransfFunctions(Parameters);
 Parameters = DefinePriors(Parameters);

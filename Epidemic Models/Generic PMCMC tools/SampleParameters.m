@@ -18,7 +18,7 @@ for i = 1:length(Names)
                 M = Parameters.(Names{i}).MaxLim;
                 sig = (M-m)/4;
                 tmp = Parameters.(Names{i}).Min + rand(1,1)*(Parameters.(Names{i}).Max - Parameters.(Names{i}).Min);
-                Parameters.(Names{i}).Value = max(m+0.001*sig,min(M-0.001*sig,tmp));;
+                Parameters.(Names{i}).Value = max(m+0.001*sig,min(M-0.001*sig,tmp));
                 Parameters.(Names{i}).Value = m+ 0.05*(M-m) + 0.9*rand(1,1)*(M-m);
             end
         elseif strcmp(Parameters.(Names{i}).TransfType,'Log')

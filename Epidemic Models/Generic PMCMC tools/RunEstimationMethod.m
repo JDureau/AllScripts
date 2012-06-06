@@ -265,8 +265,8 @@ end
 try
     if Parameters.SaveSpace
         miness = round(min(Res.ESSTransf));
-        NbWeKeep = min(NbIterations,miness*5);
-        inds = (randsample(NbIterations,NbWeKeep));
+        NbWeKeep = min(NbIterations/10,miness*5);
+        inds = sort(randsample(NbIterations,NbWeKeep));
         Res.Thetas = Res.Thetas(:,inds);
         Res.TransfThetas = Res.TransfThetas(:,inds);
         Res.Paths = Res.Paths(inds,:,:);

@@ -228,7 +228,7 @@ for IndTime = 2:length(ObservationInstants)
         %             t = 0;%sum(log(normpdf(diff(Res.deltabetas)/Parameters.ComputationTStep,0,sqrt(Parameters.ComputationTStep)*max(eps,Parameters.SigmaRW.Value))));
         %             tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
         %         else
-        Sk = max(0.1,Sk);
+        Sk = max(0.1,Sk); %Just commented it june 6th
                     tempLogLik = max(-700,log(not(Res.Crash)*mvnpdf(vk,zeros(size(vk)),Sk)));
         %         end
             catch

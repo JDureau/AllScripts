@@ -26,7 +26,7 @@ Parameters = UpdateParsNoTransfToTransf(Parameters);
 try
     n = Parameters.NbParticules;
 catch
-    n = 1000;
+    n = 10;
 %     disp('NbParticules temporarily set to 1000')
 end
 
