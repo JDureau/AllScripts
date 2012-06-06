@@ -171,7 +171,8 @@ while not(Test)
         Parameters.SigmaRW11.Value = rand(1,1)*2;
         Parameters.adultsmult.Value = rand(1,1);
         Parameters.kidsmult.Value = rand(1,1);
-
+        Parameters.R2InitProp.Value = 0.5;
+        Parameters.R2InitProp.Value = 0.1;
     else
         Parameters.SigmaRW.Value = rand(1,1)*2;
     end
@@ -181,7 +182,7 @@ while not(Test)
     try
         Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
         Temp.LogLik
-        if (Temp.LogLik>-1000)
+        if (Temp.LogLik>-900)
             Test = 1;
         end
     end

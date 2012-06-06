@@ -30,7 +30,7 @@ try
         mPost = -(Temp.LogLik+LogPrior);%-Temp.LogCorr);
     end
 %     mPost
-  
+    disp([])
 catch
     mPost= -Inf;
 end
@@ -74,7 +74,7 @@ if strcmp(Parameters.Problem,'ImperialHIV2')
             base = Parameters.Sigmbase.Value;
             mu   = Parameters.Sigmmu.Value;
             rate = Parameters.Sigmrate.Value;
-            tinfl = Parameters.Sigmbase.Value;
+            tinfl = Parameters.Sigmtinfl.Value;
             tmp = max(0,Temp.PosteriorMeans(9,:));
             c = 1/(1+exp(tinfl/rate));
             b = (mu-base)*c/(1-c);
