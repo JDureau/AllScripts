@@ -181,7 +181,7 @@ while not(Test)
     try
         Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
         Temp.LogLik
-        if (Temp.LogLik>-3000)
+        if (Temp.LogLik>-1000)
             Test = 1;
         end
     end
