@@ -337,7 +337,7 @@ for i = 1:length(Names)
     Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
 end
 % ParametersKalman.RWinEKF = 1;
-[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-2,'TolFun',1e-8,'MaxFunEvals',5000));
 Names = ParametersKalman.Names.Estimated;
 for i = 1:length(Names)
     ParametersKalman.(Names{i}).TransfValue = (x(i));
