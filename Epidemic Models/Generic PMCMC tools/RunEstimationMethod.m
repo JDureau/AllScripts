@@ -34,6 +34,13 @@ catch
     Parameters.AdMet = 0;
 end
 
+try 
+    disp(Parameters.EpsAdaptRate)
+catch
+    Parameters.EpsAdaptRate = 0.1;
+end
+
+
 try
     if not(Parameters.SaveForMarcMCMC)
         Parameters.SaveForMarcMCMC = 0;

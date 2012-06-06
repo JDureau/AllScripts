@@ -54,6 +54,7 @@ Parameters.NameToSave = [SavePath 'TestingDifferentCovs_' num2str(ind) '_' num2s
 
 
     
+Parameters.EpsAdaptRate = 1;
 
 switch ind
     case 1

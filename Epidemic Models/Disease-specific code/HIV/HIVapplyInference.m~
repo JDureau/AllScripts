@@ -468,7 +468,7 @@ Parameters.AdaptC = 0.99;
 Parameters.AdMet = 0;
 Parameters.AdMetBeta = 0.05;
 % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,30);
+Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
 Res.Parameters = Parameters;
 
 for i = 1:3
