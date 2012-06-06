@@ -53,8 +53,8 @@ try
         HIVModel.ObservationMeasurementNoise = {};
         Obs = Parameters.Obs*100;
         for i = 1:length(ObsVars)
-%             HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
-            HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/400);
+            HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
+%             HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/425);
        end
         NbItsPMCMC = 150000;
         Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
@@ -202,8 +202,8 @@ if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
     ParametersKalman.BRsigma.Estimated = 1;
     ParametersKalman.BRsigma.TransfType = 'Logit';
     ParametersKalman.BRsigma.Init = 0;
-    ParametersKalman.BRmm1.Value = 10;
-    ParametersKalman.BRmu.Value = 0.8;
+    ParametersKalman.BRmm1.Value = 3;
+%     ParametersKalman.BRmu.Value = 0.8;
 elseif strcmp(ParametersKalman.DiffusionType,'Sigmoid')
  
     ParametersKalman.InitialIPropF.Estimated = 1;
