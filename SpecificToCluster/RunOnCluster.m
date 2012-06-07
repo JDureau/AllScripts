@@ -88,7 +88,8 @@ for i = inds(1):inds(end)
 %          Parameters.NameToSave = [SavePath '/VIH_PlayingWithSigmSigm_Results' Diffs{IndDiff} '_' Modes{IndMode} '_' num2str(BigInd) '_' num2str(SmallInd) '.mat'];
 %       end
     Parameters.RealData = 0 ;   
-
+    Parameters.NameToSave = [SavePath '/VIH_PlayingWithSigm_Results' Diffs{IndDiff} '_' Modes{IndMode} '_' num2str(BigInd) '_' num2str(SmallInd) '.mat'];
+    
     Res = HIVapplyInference(ResGens{i}.Data,Parameters);
     
     Ress{end+1} = Res;
