@@ -333,6 +333,7 @@ Parameters.CF1.MaxLim = 20.08;
 Parameters.CF2.Value = 110;
 Parameters.CF2.MinLim = 81.18;
 Parameters.CF2.MaxLim =  122.08;
+Parameters.InitialFt.Value = 0.4;
 
 % SavePath = 'S:\Results';
 save([SavePath '/ParametersBellary.mat'],'Parameters') 
