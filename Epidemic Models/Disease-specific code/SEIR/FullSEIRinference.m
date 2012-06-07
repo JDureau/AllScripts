@@ -420,7 +420,7 @@ while not(Test)
     end
 end
 
-if IndModel = 1
+if IndModel == 1
     Temp = struct();
     Temp.Parameters = Parameters;
     save([SavePath '/Temp_' NameToSave],'Temp')
