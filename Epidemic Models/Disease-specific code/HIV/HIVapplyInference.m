@@ -550,6 +550,11 @@ Parameters.GMeth = 'cst given';
 % catch    
 %     Parameters.DiffusionType = 'Add';
 % end
+SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
+
+Parameters.SaveForMarcMCMC = 1;
+Parameters.NameToSave = [SavePath Parameters.NameToSave '.mat'];
+
 Parameters.aim = 0.23;
 Parameters.Epsil = 1;
 Parameters.ModelType = 'SMC';
@@ -563,7 +568,6 @@ Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,NbItsPMCMC);
 Res.Parameters = Parameters;
 
 try
-    SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
     save([SavePath Parameters.NameToSave '.mat'],'Res')
     disp('saved')
 end

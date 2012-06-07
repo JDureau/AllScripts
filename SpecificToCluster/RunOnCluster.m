@@ -21,7 +21,7 @@ addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 Modes = {'','_Biased','_Restricted','_AddingObs'};
-Diffs = {'Add','Bertallanfy','AddConstr','BertallanfyConstr'};
+Diffs = {'Add','Bertallanfy','Sigmoid','BertallanfyConstr'};
 
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 %SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';

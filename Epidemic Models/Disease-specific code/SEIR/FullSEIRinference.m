@@ -25,6 +25,21 @@ switch IndModel
         tmp = load([SavePath '/ParametersSEIR2_3diff.mat']);
 end
 
+
+
+switch IndModel
+    case 1
+        NameToSave = ['MarcData_StructModel_normal.mat'];
+    case 2
+        NameToSave = ['MarcData_StructModel_1diff.mat'];
+    case 3
+        NameToSave = ['MarcData_StructModel_2diff.mat'];
+    case 4
+        NameToSave = ['MarcData_StructModel_2diffb.mat'];
+    case 5
+        NameToSave = ['MarcData_StructModel_3diff.mat'];
+end
+
 Parameters = tmp.Parameters;
 
 Data.Instants = [1:size(Data.Observations,2)]*size(Data.Observations,1)/Parameters.ComputationTStep;
@@ -405,6 +420,20 @@ while not(Test)
     end
 end
 
+if IndModel = 1
+    Temp = struct();
+    Temp.Parameters = Parameters;
+    save([SavePath '/Temp_' NameToSave],'Temp')
+end
+
+SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc';
+% SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/Temp'
+
+load([SavePath '/Temp_' NameToSave])
+Parameters = Temp.Parameters;
+KalHess = Parameters.KalHess;
+
+
 
 Cov = (-KalHess)^-1;
 
@@ -632,18 +661,6 @@ Parameters.SaveSpace = 1;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
-switch IndModel
-    case 1
-        Name = [SavePath '/MarcData_StructModel_normal.mat'];
-    case 2
-        Name = [SavePath '/MarcData_StructModel_1diff.mat'];
-    case 3
-        Name = [SavePath '/MarcData_StructModel_2diff.mat'];
-    case 4
-        Name = [SavePath '/MarcData_StructModel_2diffb.mat'];
-    case 5
-        Name = [SavePath '/MarcData_StructModel_3diff.mat'];
-end
-save(Name,'Res3')
+save([SavePath '/' NameToSave],'Res3')
 
 
