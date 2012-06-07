@@ -30,7 +30,7 @@ try
         mPost = -(Temp.LogLik+LogPrior);%-Temp.LogCorr);
     end
 %     mPost
-    disp([Temp.LogLik LogPrior -Temp.LogCorr])
+%     disp([Temp.LogLik LogPrior -Temp.LogCorr])
 catch
     mPost= -Inf;
 end
