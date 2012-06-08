@@ -10,6 +10,7 @@ NbIters = 30000;
 NbItersPrep = 5000;
 
 
+
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
 
 switch IndModel
@@ -74,6 +75,15 @@ elseif strcmp(ObsType,'CoeffStudy')
 end
 Parameters.Correction = 1;
 
+
+try
+    load([SavePath '/Temp_' NameToSave])
+    AlreadySomething = 1;
+catch
+    AlreadySomething = 0;
+end
+
+
 SEIRModel = struct();
 
 switch IndModel
@@ -118,312 +128,313 @@ Parameters = SEIRModel.InitializeParameters(Parameters);
 %     SEIRModel.ObservationMeasurementNoise{i} = (Parameters.SigmaObs.Value*Data.Observations(5,i))^2;
 % end
 
-
-Names = Parameters.Names.Estimated;
-for j = 1:length(Names)
-    Parameters.(Names{j}).Estimated = 0;
-end
-% Parameters.betainit.Estimated = 1;
-switch IndModel
-    case 1
-        Parameters.SigmaRW.Estimated = 1;
-        Parameters.EInitProp.Estimated = 1;
-        Parameters.IInitProp.Estimated = 1;
-        Parameters.RInitProp.Estimated = 1;
-    case 2
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-%         Parameters.beta11init.Estimated = 1;
-%         Parameters.beta22init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.kidsmult.Estimated = 1;
-%         Parameters.adultsadd.Estimated = 1;
-%         Parameters.kidsadd.Estimated = 1;
-    case 3
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-    case 4
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        
-    case 5
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.SigmaRW12.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-end
-
-
-Parameters = DefineEstimatedParametersIndexes(Parameters);
-Parameters = DefineTransfFunctions(Parameters);
-Parameters = DefinePriors(Parameters);
-Parameters = UpdateParsNoTransfToTransf(Parameters);
-
-Test = 0;
-try
-    Temp = EstimationEKFGen(Data, SEIRModel, Parameters);    
-    if (Temp.LogLik>-300)
-        Test = 1;
+if not(AlreadySomething)
+    Names = Parameters.Names.Estimated;
+    for j = 1:length(Names)
+        Parameters.(Names{j}).Estimated = 0;
     end
-end
-NbIts = 0;
-while not(Test)
-    Parameters = SampleParameters(Parameters);
-    if IndModel>2
-        Parameters.SigmaRW11.Value = rand(1,1)*2;
-        Parameters.SigmaRW22.Value = rand(1,1)*2;
-    elseif IndModel==2
-        Parameters.SigmaRW11.Value = rand(1,1)*2;
-        Parameters.adultsmult.Value = rand(1,1);
-        Parameters.kidsmult.Value = rand(1,1);
-        Parameters.R2InitProp.Value = 0.5;
-        Parameters.R2InitProp.Value = 0.1;
-    else
-        Parameters.SigmaRW.Value = rand(1,1)*2;
+    % Parameters.betainit.Estimated = 1;
+    switch IndModel
+        case 1
+            Parameters.SigmaRW.Estimated = 1;
+            Parameters.EInitProp.Estimated = 1;
+            Parameters.IInitProp.Estimated = 1;
+            Parameters.RInitProp.Estimated = 1;
+        case 2
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+    %         Parameters.beta11init.Estimated = 1;
+    %         Parameters.beta22init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.kidsmult.Estimated = 1;
+    %         Parameters.adultsadd.Estimated = 1;
+    %         Parameters.kidsadd.Estimated = 1;
+        case 3
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+        case 4
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+
+        case 5
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.SigmaRW12.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
     end
+
+
+    Parameters = DefineEstimatedParametersIndexes(Parameters);
+    Parameters = DefineTransfFunctions(Parameters);
+    Parameters = DefinePriors(Parameters);
     Parameters = UpdateParsNoTransfToTransf(Parameters);
-%     Parameters.InitialCov = rand(1,1)*0.4;
 
+    Test = 0;
     try
-        Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
-        Temp.LogLik
-        if (Temp.LogLik>-900)
+        Temp = EstimationEKFGen(Data, SEIRModel, Parameters);    
+        if (Temp.LogLik>-300)
             Test = 1;
         end
     end
-    NbIts = NbIts + 1;
-    if NbIts>20000
-        disp('Can''t initialize IBM')
-        die
+    NbIts = 0;
+    while not(Test)
+        Parameters = SampleParameters(Parameters);
+        if IndModel>2
+            Parameters.SigmaRW11.Value = rand(1,1)*2;
+            Parameters.SigmaRW22.Value = rand(1,1)*2;
+        elseif IndModel==2
+            Parameters.SigmaRW11.Value = rand(1,1)*2;
+            Parameters.adultsmult.Value = rand(1,1);
+            Parameters.kidsmult.Value = rand(1,1);
+            Parameters.R2InitProp.Value = 0.5;
+            Parameters.R2InitProp.Value = 0.1;
+        else
+            Parameters.SigmaRW.Value = rand(1,1)*2;
+        end
+        Parameters = UpdateParsNoTransfToTransf(Parameters);
+    %     Parameters.InitialCov = rand(1,1)*0.4;
+
+        try
+            Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
+            Temp.LogLik
+            if (Temp.LogLik>-900)
+                Test = 1;
+            end
+        end
+        NbIts = NbIts + 1;
+        if NbIts>20000
+            disp('Can''t initialize IBM')
+            die
+        end
     end
-end
 
-Names = Parameters.Names.Estimated;
-for j = 1:length(Names)
-    Parameters.(Names{j}).Estimated = 0;
-end
-switch IndModel
-    case 1
-        Parameters.SigmaRW.Estimated = 1;
-        Parameters.betainit.Estimated = 1;
-        Parameters.Problem = 'Marc1diff';
-    case 2
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.kidsmult.Estimated = 1;
-        Parameters.adultsadd.Estimated = 1;
-        Parameters.kidsadd.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diff';
-
-    case 3
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diff';
-
-    case 4
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.kidsmult.Estimated = 1;
-        Parameters.adultsadd.Estimated = 1;
-        Parameters.kidsadd.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diff';
-
-    case 5
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.SigmaRW12.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc3diff';
-end
-% Parameters.EInitPropNoise.Estimated = 1;
-% Parameters.IInitPropNoise.Estimated = 1;
-% Parameters.RInitPropNoise.Estimated = 1;
-Parameters.km1.Estimated = 1;
-Parameters.gammam1.Estimated = 1;
-if strcmp(Parameters.DiffusionType,'IBM')
-    Parameters.betaderinit.Estimated = 1;
-end
-% if strcmp(ObsType,'Estimated')
-%     Parameters.SigmaObs.Estimated = 1;
-% end
-Parameters = DefineEstimatedParametersIndexes(Parameters);
-Parameters = DefineTransfFunctions(Parameters);
-Parameters = DefinePriors(Parameters);
-Parameters = UpdateParsNoTransfToTransf(Parameters);
-
-Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
-
-
-
-Names = Parameters.Names.Estimated;
-for j = 1:length(Names)
-    Parameters.(Names{j}).Estimated = 0;
-end
-switch IndModel
-    case 1
-        Parameters.SigmaRW.Estimated = 1;
-        Parameters.betainit.Estimated = 1;
-        Parameters.EInitProp.Estimated = 1;
-        Parameters.IInitProp.Estimated = 1;
-        Parameters.RInitProp.Estimated = 1;
-    case 2
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.kidsmult.Estimated = 1;
-        Parameters.adultsadd.Estimated = 1;
-        Parameters.kidsadd.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diff';
-
-    case 3
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diff';
-
-    case 4
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.kidsmult.Estimated = 1;
-        Parameters.adultsadd.Estimated = 1;
-        Parameters.kidsadd.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc2diffb';
-
-    case 5
-        Parameters.SigmaRW11.Estimated = 1;
-        Parameters.SigmaRW22.Estimated = 1;
-        Parameters.SigmaRW12.Estimated = 1;
-        Parameters.beta11init.Estimated = 1;
-        Parameters.beta22init.Estimated = 1;
-        Parameters.beta12init.Estimated = 1;
-        Parameters.adultsmult.Estimated = 1;
-        Parameters.E1InitProp.Estimated = 1;
-        Parameters.I1InitProp.Estimated = 1;
-        Parameters.R1InitProp.Estimated = 1;
-        Parameters.E2InitProp.Estimated = 1;
-        Parameters.I2InitProp.Estimated = 1;
-        Parameters.R2InitProp.Estimated = 1;
-        Parameters.Problem = 'Marc3diff';
-end
-Parameters.km1.Estimated = 1;
-Parameters.gammam1.Estimated = 1;
-if strcmp(ObsType,'Estimated')
-    Parameters.SigmaObs.Estimated = 1 ;
-elseif strcmp(ObsType,'CoeffEst')
-    Parameters.MultCoeff.Estimated = 1 ;
-end
-if strcmp(Parameters.DiffusionType,'IBM')
-    Parameters.betaderinit.Estimated = 0;
-    %     Parameters.betaderinitNoise.Estimated = 1;
-end
-Parameters = DefineEstimatedParametersIndexes(Parameters);
-Parameters = DefineTransfFunctions(Parameters);
-Parameters = DefinePriors(Parameters);
-Parameters = UpdateParsNoTransfToTransf(Parameters);
-
-Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
-KalHess = Parameters.KalHess;
-
-
-% Parameters.InitialCov = 0;
-% Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
-
-
-Test = 0;
-
-NbIts = 0;
-
-while not(Test)
-    
-    Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
-
-    try
-        KalHess = Parameters.KalHess;
-        Test = Parameters.KalmMaxReached;
+    Names = Parameters.Names.Estimated;
+    for j = 1:length(Names)
+        Parameters.(Names{j}).Estimated = 0;
     end
-    
-    NbIts = NbIts + 1;
-    disp(NbIts)
-    if NbIts>50
-        return
-    end
-end
+    switch IndModel
+        case 1
+            Parameters.SigmaRW.Estimated = 1;
+            Parameters.betainit.Estimated = 1;
+            Parameters.Problem = 'Marc1diff';
+        case 2
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.kidsmult.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diff';
 
-if IndModel == 1
-    Temp = struct();
-    Temp.Parameters = Parameters;
-    save([SavePath '/Temp_' NameToSave],'Temp')
+        case 3
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.beta12init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diff';
+
+        case 4
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.kidsmult.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diff';
+
+        case 5
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.SigmaRW12.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.beta12init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc3diff';
+    end
+    % Parameters.EInitPropNoise.Estimated = 1;
+    % Parameters.IInitPropNoise.Estimated = 1;
+    % Parameters.RInitPropNoise.Estimated = 1;
+    Parameters.km1.Estimated = 1;
+    Parameters.gammam1.Estimated = 1;
+    if strcmp(Parameters.DiffusionType,'IBM')
+        Parameters.betaderinit.Estimated = 1;
+    end
+    % if strcmp(ObsType,'Estimated')
+    %     Parameters.SigmaObs.Estimated = 1;
+    % end
+    Parameters = DefineEstimatedParametersIndexes(Parameters);
+    Parameters = DefineTransfFunctions(Parameters);
+    Parameters = DefinePriors(Parameters);
+    Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+    Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+
+
+
+    Names = Parameters.Names.Estimated;
+    for j = 1:length(Names)
+        Parameters.(Names{j}).Estimated = 0;
+    end
+    switch IndModel
+        case 1
+            Parameters.SigmaRW.Estimated = 1;
+            Parameters.betainit.Estimated = 1;
+            Parameters.EInitProp.Estimated = 1;
+            Parameters.IInitProp.Estimated = 1;
+            Parameters.RInitProp.Estimated = 1;
+        case 2
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.kidsmult.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diff';
+
+        case 3
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.beta12init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diff';
+
+        case 4
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.kidsmult.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc2diffb';
+
+        case 5
+            Parameters.SigmaRW11.Estimated = 1;
+            Parameters.SigmaRW22.Estimated = 1;
+            Parameters.SigmaRW12.Estimated = 1;
+            Parameters.beta11init.Estimated = 1;
+            Parameters.beta22init.Estimated = 1;
+            Parameters.beta12init.Estimated = 1;
+            Parameters.adultsmult.Estimated = 1;
+            Parameters.E1InitProp.Estimated = 1;
+            Parameters.I1InitProp.Estimated = 1;
+            Parameters.R1InitProp.Estimated = 1;
+            Parameters.E2InitProp.Estimated = 1;
+            Parameters.I2InitProp.Estimated = 1;
+            Parameters.R2InitProp.Estimated = 1;
+            Parameters.Problem = 'Marc3diff';
+    end
+    Parameters.km1.Estimated = 1;
+    Parameters.gammam1.Estimated = 1;
+    if strcmp(ObsType,'Estimated')
+        Parameters.SigmaObs.Estimated = 1 ;
+    elseif strcmp(ObsType,'CoeffEst')
+        Parameters.MultCoeff.Estimated = 1 ;
+    end
+    if strcmp(Parameters.DiffusionType,'IBM')
+        Parameters.betaderinit.Estimated = 0;
+        %     Parameters.betaderinitNoise.Estimated = 1;
+    end
+    Parameters = DefineEstimatedParametersIndexes(Parameters);
+    Parameters = DefineTransfFunctions(Parameters);
+    Parameters = DefinePriors(Parameters);
+    Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+    Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+    KalHess = Parameters.KalHess;
+
+
+    % Parameters.InitialCov = 0;
+    % Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+
+
+    Test = 0;
+
+    NbIts = 0;
+
+    while not(Test)
+
+        Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+
+        try
+            KalHess = Parameters.KalHess;
+            Test = Parameters.KalmMaxReached;
+        end
+
+        NbIts = NbIts + 1;
+        disp(NbIts)
+        if NbIts>50
+            return
+        end
+    end
+
+    if IndModel == 1
+        Temp = struct();
+        Temp.Parameters = Parameters;
+        save([SavePath '/Temp_' NameToSave],'Temp')
+    end
 end
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc';
@@ -606,12 +617,16 @@ Parameters.AdaptC = 0.99;
 Parameters.AdMet = 1;
 Parameters.AdMetBeta = 0.05;
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
+save([SavePath '/Temp1_' NameToSave],'Res2')
+
+
 TempRes = Res2;
 
-dim = length(Parameters.Names.Estimated);
+Parameters = TempRes.Parameters;
 try
     Cov = cov(TempRes.TransfThetas');
 end
@@ -630,6 +645,8 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
 % SavePath = 'S:\Results\';
 % save([Name '_NoPaths.mat'],'Res2')
+
+save([SavePath '/Temp2_' NameToSave],'Res2')
 
 
 TempRes = Res2;
