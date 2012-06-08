@@ -9,7 +9,8 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 try 
     if Parameters.RealData
 
-        
+        Parameters.PathsToKeep = [7 8 9];
+
         Parameters.NbVariables = 9;
         Parameters.Problem = 'ImperialHIV';
         Parameters.ObservationLength = 25*12;
@@ -71,6 +72,9 @@ catch
     Parameters.ComputationTStep = 0.5;
     Parameters.TypeWork = 'Normal';
 
+    Parameters.PathsToKeep = [9];
+
+    
     %%% CORRECT LIKE IN REAL DATA
     Parameters.NbVariables = 9;
     temp7 = zeros(1,9);
@@ -550,7 +554,6 @@ Cov =  cov(Res.TransfThetas');
 % Cov(Parameters.SigmaRW.Index,Parameters.SigmaRW.Index) = OldCov(13,13);
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 0;
-Parameters.PathsToKeep = [7 8 9];
 Parameters.MCMCType = 'Rand';
 Parameters.GMeth = 'cst given';
 % try
