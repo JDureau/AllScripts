@@ -110,6 +110,12 @@ Parameters = DefineTransfFunctions(Parameters);
 Parameters = UpdateParsNoTransfToTransf(Parameters);
 Parameters = DefinePriors(Parameters);
 
+try
+    load([SavePath '/' Parameters.TempName])
+    AlreadySomething = 1;
+catch
+    AlreadySomething = 0;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  disp('Initialize maxim. alg.')
 %  Names = Parameters.Names.All;
@@ -176,141 +182,115 @@ Parameters = DefinePriors(Parameters);
 %  end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ParametersKalman = Parameters;
 
-disp('EKF Maxim. alg. all pars for Hess')
-Names = ParametersKalman.Names.All;
-for i = 1:length(Names);
-    ParametersKalman.(Names{i}).Estimated = 0;
-end
-if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
- 
-    ParametersKalman.InitialIPropF.Estimated = 1;
-    ParametersKalman.InitialIPropM.Estimated = 1;
-    ParametersKalman.TotMFactor.Estimated = 1;
-    ParametersKalman.Alpham1.Estimated = 1;
-    ParametersKalman.MuFm1.Estimated = 1;
-    ParametersKalman.MuMm1.Estimated = 1;
-    ParametersKalman.BetaMFPerAct.Estimated = 1;
-    ParametersKalman.BetaFMPerAct.Estimated = 1;
-    ParametersKalman.NumberActsPerClient.Estimated = 1;
-    ParametersKalman.eHIV.Estimated = 1;
-    ParametersKalman.CF1.Estimated = 1;
-    ParametersKalman.CF2.Estimated = 1;
-    ParametersKalman.BRbase.Estimated = 1;
-    ParametersKalman.BRmu.Estimated = 1;
-    ParametersKalman.BRtinfl.Estimated = 1;
-    ParametersKalman.BRmm1.Estimated = 1;
-    ParametersKalman.BRsigma.Value = 0.1;
-    ParametersKalman.BRsigma.Min = -10^14;
-    ParametersKalman.BRsigma.Max = 10^14;
-    ParametersKalman.BRsigma.MinLim = 0;
-    ParametersKalman.BRsigma.MaxLim = 2;
-    ParametersKalman.BRsigma.Estimated = 1;
-    ParametersKalman.BRsigma.TransfType = 'Logit';
-    ParametersKalman.BRsigma.Init = 0;
-%     ParametersKalman.BRmm1.Value = 3;
-%     ParametersKalman.BRmu.Value = 0.8;
-elseif strcmp(ParametersKalman.DiffusionType,'Sigmoid')
- 
-    ParametersKalman.InitialIPropF.Estimated = 1;
-    ParametersKalman.InitialIPropM.Estimated = 1;
-    ParametersKalman.TotMFactor.Estimated = 1;
-    ParametersKalman.Alpham1.Estimated = 1;
-    ParametersKalman.MuFm1.Estimated = 1;
-    ParametersKalman.MuMm1.Estimated = 1;
-    ParametersKalman.BetaMFPerAct.Estimated = 1;
-    ParametersKalman.BetaFMPerAct.Estimated = 1;
-    ParametersKalman.NumberActsPerClient.Estimated = 1;
-    ParametersKalman.eHIV.Estimated = 1;
-    ParametersKalman.CF1.Estimated = 1;
-    ParametersKalman.CF2.Estimated = 1;
-    ParametersKalman.Sigmbase.Estimated = 1;
-    ParametersKalman.Sigmmu.Estimated = 1;
-    ParametersKalman.Sigmtinfl.Estimated = 1;
-    ParametersKalman.Sigmrate.Estimated = 1;
-    ParametersKalman.Sigmsigma.Value = 0.1;
-    ParametersKalman.Sigmsigma.Min = -10^14;
-    ParametersKalman.Sigmsigma.Max = 10^14;
-    ParametersKalman.Sigmsigma.MinLim = 0;
-    ParametersKalman.Sigmsigma.MaxLim = 2;
-    ParametersKalman.Sigmsigma.Estimated = 1;
-    ParametersKalman.Sigmsigma.TransfType = 'Logit';
-    ParametersKalman.Sigmsigma.Init = 0;
-elseif strcmp(ParametersKalman.DiffusionType,'BertallanfyConstr')
-    ParametersKalman.BRmm1.Estimated = 1;
-    ParametersKalman.BRbase.Estimated = 1;
-    ParametersKalman.BRmu.Estimated = 1;
-    ParametersKalman.BRtinfl.Estimated = 1;
-    ParametersKalman.SigmaRW.Estimated = 1;
-elseif strcmp(ParametersKalman.DiffusionType,'Add')
-    ParametersKalman.InitialFt.Estimated = 1;
-    ParametersKalman.InitialIPropF.Estimated = 1;
-    ParametersKalman.InitialIPropM.Estimated = 1;
-    ParametersKalman.TotMFactor.Estimated = 1;
-    ParametersKalman.Alpham1.Estimated = 1;
-    ParametersKalman.MuFm1.Estimated = 1;
-    ParametersKalman.MuMm1.Estimated = 1;
-    ParametersKalman.BetaMFPerAct.Estimated = 1;
-    ParametersKalman.BetaFMPerAct.Estimated = 1;
-    ParametersKalman.NumberActsPerClient.Estimated = 1;
-    ParametersKalman.eHIV.Estimated = 1;
-    ParametersKalman.CF1.Estimated = 1;
-    ParametersKalman.CF2.Estimated = 1;
-    ParametersKalman.SigmaRW.Estimated = 1;
-elseif strcmp(ParametersKalman.DiffusionType,'AddConstr')
-    ParametersKalman.InitialFt.Estimated = 1;
-    ParametersKalman.SigmaRW.Estimated = 1;
-end
-ParametersKalman = DefineEstimatedParametersIndexes(ParametersKalman);
-ParametersKalman = DefineTransfFunctions(ParametersKalman);
-ParametersKalman = UpdateParsNoTransfToTransf(ParametersKalman);
-ParametersKalman = DefinePriors(ParametersKalman);
-Names = ParametersKalman.Names.Estimated;
+if not(AlreadySomething)
+    ParametersKalman = Parameters;
 
-ParametersKalmanBeforeOpt = ParametersKalman;
-disp('EKF Maxim. alg. for Hess')
-ParametersKalman.Correction = 1;
-Initialization = [];
-for i = 1:length(Names)
-    Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
-end
-% ParametersKalman.RWinEKF = 1;
-[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',2000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',4000));
-Names = ParametersKalman.Names.Estimated;
-for i = 1:length(Names)
-    ParametersKalman.(Names{i}).TransfValue = (x(i));
-end
-ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
-ParametersKalman = HIVModel.InitializeParameters(ParametersKalman);
-TellParsValues(ParametersKalman)
+    disp('EKF Maxim. alg. all pars for Hess')
+    Names = ParametersKalman.Names.All;
+    for i = 1:length(Names);
+        ParametersKalman.(Names{i}).Estimated = 0;
+    end
+    if strcmp(ParametersKalman.DiffusionType,'Bertallanfy')
 
-ParametersKalman.Finalx = x;
-ResKal = KalmanNumericDerivativesWithPrior(Data,HIVModel,ParametersKalman);
-try
-    Test = mean(eig(-ResKal.Hess)>0)==1;
-    Test = Test*sum(sum(isreal(ResKal.Hess)));
+        ParametersKalman.InitialIPropF.Estimated = 1;
+        ParametersKalman.InitialIPropM.Estimated = 1;
+        ParametersKalman.TotMFactor.Estimated = 1;
+        ParametersKalman.Alpham1.Estimated = 1;
+        ParametersKalman.MuFm1.Estimated = 1;
+        ParametersKalman.MuMm1.Estimated = 1;
+        ParametersKalman.BetaMFPerAct.Estimated = 1;
+        ParametersKalman.BetaFMPerAct.Estimated = 1;
+        ParametersKalman.NumberActsPerClient.Estimated = 1;
+        ParametersKalman.eHIV.Estimated = 1;
+        ParametersKalman.CF1.Estimated = 1;
+        ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.BRbase.Estimated = 1;
+        ParametersKalman.BRmu.Estimated = 1;
+        ParametersKalman.BRtinfl.Estimated = 1;
+        ParametersKalman.BRmm1.Estimated = 1;
+        ParametersKalman.BRsigma.Value = 0.1;
+        ParametersKalman.BRsigma.Min = -10^14;
+        ParametersKalman.BRsigma.Max = 10^14;
+        ParametersKalman.BRsigma.MinLim = 0;
+        ParametersKalman.BRsigma.MaxLim = 2;
+        ParametersKalman.BRsigma.Estimated = 1;
+        ParametersKalman.BRsigma.TransfType = 'Logit';
+        ParametersKalman.BRsigma.Init = 0;
+    %     ParametersKalman.BRmm1.Value = 3;
+    %     ParametersKalman.BRmu.Value = 0.8;
+    elseif strcmp(ParametersKalman.DiffusionType,'Sigmoid')
 
-    Cov = (-ResKal.Hess)^-1;
-catch
-    Test = 0;
-end
-Test
+        ParametersKalman.InitialIPropF.Estimated = 1;
+        ParametersKalman.InitialIPropM.Estimated = 1;
+        ParametersKalman.TotMFactor.Estimated = 1;
+        ParametersKalman.Alpham1.Estimated = 1;
+        ParametersKalman.MuFm1.Estimated = 1;
+        ParametersKalman.MuMm1.Estimated = 1;
+        ParametersKalman.BetaMFPerAct.Estimated = 1;
+        ParametersKalman.BetaFMPerAct.Estimated = 1;
+        ParametersKalman.NumberActsPerClient.Estimated = 1;
+        ParametersKalman.eHIV.Estimated = 1;
+        ParametersKalman.CF1.Estimated = 1;
+        ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.Sigmbase.Estimated = 1;
+        ParametersKalman.Sigmmu.Estimated = 1;
+        ParametersKalman.Sigmtinfl.Estimated = 1;
+        ParametersKalman.Sigmrate.Estimated = 1;
+        ParametersKalman.Sigmsigma.Value = 0.1;
+        ParametersKalman.Sigmsigma.Min = -10^14;
+        ParametersKalman.Sigmsigma.Max = 10^14;
+        ParametersKalman.Sigmsigma.MinLim = 0;
+        ParametersKalman.Sigmsigma.MaxLim = 2;
+        ParametersKalman.Sigmsigma.Estimated = 1;
+        ParametersKalman.Sigmsigma.TransfType = 'Logit';
+        ParametersKalman.Sigmsigma.Init = 0;
+    elseif strcmp(ParametersKalman.DiffusionType,'BertallanfyConstr')
+        ParametersKalman.BRmm1.Estimated = 1;
+        ParametersKalman.BRbase.Estimated = 1;
+        ParametersKalman.BRmu.Estimated = 1;
+        ParametersKalman.BRtinfl.Estimated = 1;
+        ParametersKalman.SigmaRW.Estimated = 1;
+    elseif strcmp(ParametersKalman.DiffusionType,'Add')
+        ParametersKalman.InitialFt.Estimated = 1;
+        ParametersKalman.InitialIPropF.Estimated = 1;
+        ParametersKalman.InitialIPropM.Estimated = 1;
+        ParametersKalman.TotMFactor.Estimated = 1;
+        ParametersKalman.Alpham1.Estimated = 1;
+        ParametersKalman.MuFm1.Estimated = 1;
+        ParametersKalman.MuMm1.Estimated = 1;
+        ParametersKalman.BetaMFPerAct.Estimated = 1;
+        ParametersKalman.BetaFMPerAct.Estimated = 1;
+        ParametersKalman.NumberActsPerClient.Estimated = 1;
+        ParametersKalman.eHIV.Estimated = 1;
+        ParametersKalman.CF1.Estimated = 1;
+        ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.SigmaRW.Estimated = 1;
+    elseif strcmp(ParametersKalman.DiffusionType,'AddConstr')
+        ParametersKalman.InitialFt.Estimated = 1;
+        ParametersKalman.SigmaRW.Estimated = 1;
+    end
+    ParametersKalman = DefineEstimatedParametersIndexes(ParametersKalman);
+    ParametersKalman = DefineTransfFunctions(ParametersKalman);
+    ParametersKalman = UpdateParsNoTransfToTransf(ParametersKalman);
+    ParametersKalman = DefinePriors(ParametersKalman);
+    Names = ParametersKalman.Names.Estimated;
 
-cpt = 1;
-while not(Test)
+    ParametersKalmanBeforeOpt = ParametersKalman;
+    disp('EKF Maxim. alg. for Hess')
     ParametersKalman.Correction = 1;
     Initialization = [];
     for i = 1:length(Names)
         Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
     end
     % ParametersKalman.RWinEKF = 1;
-    [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+    [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',2000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',4000));
     Names = ParametersKalman.Names.Estimated;
     for i = 1:length(Names)
         ParametersKalman.(Names{i}).TransfValue = (x(i));
     end
     ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+    ParametersKalman = HIVModel.InitializeParameters(ParametersKalman);
     TellParsValues(ParametersKalman)
 
     ParametersKalman.Finalx = x;
@@ -318,51 +298,79 @@ while not(Test)
     try
         Test = mean(eig(-ResKal.Hess)>0)==1;
         Test = Test*sum(sum(isreal(ResKal.Hess)));
+
         Cov = (-ResKal.Hess)^-1;
+    catch
+        Test = 0;
     end
     Test
-    cpt = cpt+1;
-    if cpt >10
-        Test = 1;
-        die
+
+    cpt = 1;
+    while not(Test)
+        ParametersKalman.Correction = 1;
+        Initialization = [];
+        for i = 1:length(Names)
+            Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
+        end
+        % ParametersKalman.RWinEKF = 1;
+        [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-8,'TolFun',1e-8,'MaxFunEvals',10000));
+        Names = ParametersKalman.Names.Estimated;
+        for i = 1:length(Names)
+            ParametersKalman.(Names{i}).TransfValue = (x(i));
+        end
+        ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+        TellParsValues(ParametersKalman)
+
+        ParametersKalman.Finalx = x;
+        ResKal = KalmanNumericDerivativesWithPrior(Data,HIVModel,ParametersKalman);
+        try
+            Test = mean(eig(-ResKal.Hess)>0)==1;
+            Test = Test*sum(sum(isreal(ResKal.Hess)));
+            Cov = (-ResKal.Hess)^-1;
+        end
+        Test
+        cpt = cpt+1;
+        if cpt >10
+            Test = 1;
+            die
+        end
     end
+
+
+
+    ParametersKalman = ParametersKalmanBeforeOpt;
+    ParametersKalman.Correction = 0;
+    Initialization = [];
+    for i = 1:length(Names)
+        Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
+    end
+    % ParametersKalman.RWinEKF = 1;
+    [x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-2,'TolFun',1e-8,'MaxFunEvals',5000));
+    Names = ParametersKalman.Names.Estimated;
+    for i = 1:length(Names)
+        ParametersKalman.(Names{i}).TransfValue = (x(i));
+    end
+    ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
+    TellParsValues(ParametersKalman)
+    ParametersKalman.Correction = 1;
+
+    ParametersKalman.KalCov = Cov;
+
+
+    Temp = struct();
+    Temp.ParametersKalman = ParametersKalman;
+    save([SavePath '/' Parameters.TempName],'Temp')
+
+    %  die
+
+
+    SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
+    % SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/Temp'
+
+    load([SavePath '/' Parameters.TempName])
+
+    Parameters = Temp.ParametersKalman;
 end
-
-
-
-ParametersKalman = ParametersKalmanBeforeOpt;
-ParametersKalman.Correction = 0;
-Initialization = [];
-for i = 1:length(Names)
-    Initialization(i) = ParametersKalman.(Names{i}).TransfValue ;
-end
-% ParametersKalman.RWinEKF = 1;
-[x,fval,exitflag,output] = fminsearch(@(x) KalmanToOptimizeWithPrior(x,Data,HIVModel,ParametersKalman),Initialization,optimset('MaxIter',5000,'TolX',1e-2,'TolFun',1e-8,'MaxFunEvals',5000));
-Names = ParametersKalman.Names.Estimated;
-for i = 1:length(Names)
-    ParametersKalman.(Names{i}).TransfValue = (x(i));
-end
-ParametersKalman = UpdateParsTransfToNoTransf(ParametersKalman);
-TellParsValues(ParametersKalman)
-ParametersKalman.Correction = 1;
-
-ParametersKalman.KalCov = Cov;
-
-
-Temp = struct();
-Temp.ParametersKalman = ParametersKalman;
-save([SavePath '/' Parameters.TempName],'Temp')
-
-%  die
-
-
-SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
-% SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/Temp'
-
-load([SavePath '/' Parameters.TempName])
-
-Parameters = Temp.ParametersKalman;
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % disp('SMC Maxim. alg. only sigma')
@@ -372,122 +380,94 @@ Parameters = Temp.ParametersKalman;
 % Parameters.PathsToKeep = [7 8 9];
 % 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('Quick PMCMC')
-Names = Parameters.Names.Estimated;
-for i = 1:length(Names);
-    Parameters.(Names{i}).Estimated = 0;
-end
-if strcmp(Parameters.DiffusionType,'Bertallanfy')
-    Parameters.BRmm1.Estimated = 1;    
-    Parameters.InitialIPropF.Estimated = 1;
-    Parameters.InitialIPropM.Estimated = 1;
-    Parameters.TotMFactor.Estimated = 1;
-    Parameters.Alpham1.Estimated = 1;
-    Parameters.MuFm1.Estimated = 1;
-    Parameters.MuMm1.Estimated = 1;
-    Parameters.BetaMFPerAct.Estimated = 1;
-    Parameters.BetaFMPerAct.Estimated = 1;
-    Parameters.NumberActsPerClient.Estimated = 1;
-    Parameters.eHIV.Estimated = 1;
-    Parameters.CF1.Estimated = 1;
-    Parameters.CF2.Estimated = 1;
-    Parameters.BRbase.Estimated = 1;
-    Parameters.BRmu.Estimated = 1;
-    Parameters.BRtinfl.Estimated = 1;
-    Parameters.BRsigma.Estimated = 1;
-elseif strcmp(Parameters.DiffusionType,'Sigmoid')
-    Parameters.InitialIPropF.Estimated = 1;
-    Parameters.InitialIPropM.Estimated = 1;
-    Parameters.TotMFactor.Estimated = 1;
-    Parameters.Alpham1.Estimated = 1;
-    Parameters.MuFm1.Estimated = 1;
-    Parameters.MuMm1.Estimated = 1;
-    Parameters.BetaMFPerAct.Estimated = 1;
-    Parameters.BetaFMPerAct.Estimated = 1;
-    Parameters.NumberActsPerClient.Estimated = 1;
-    Parameters.eHIV.Estimated = 1;
-    Parameters.CF1.Estimated = 1;
-    Parameters.CF2.Estimated = 1;
-    Parameters.Sigmbase.Estimated = 1;
-    Parameters.Sigmmu.Estimated = 1;
-    Parameters.Sigmtinfl.Estimated = 1;
-    Parameters.Sigmrate.Estimated = 1;
-    Parameters.Sigmsigma.Estimated = 1;
-elseif strcmp(Parameters.DiffusionType,'BertallanfyConstr')
-    Parameters.BRmm1.Estimated = 1;
-    Parameters.BRbase.Estimated = 1;
-    Parameters.BRmu.Estimated = 1;
-    Parameters.BRtinfl.Estimated = 1;
-    Parameters.SigmaRW.Estimated = 1;
-elseif strcmp(Parameters.DiffusionType,'Add')
-    Parameters.InitialFt.Estimated = 1;
-    Parameters.InitialIPropF.Estimated = 1;
-    Parameters.InitialIPropM.Estimated = 1;
-    Parameters.TotMFactor.Estimated = 1;
-    Parameters.Alpham1.Estimated = 1;
-    Parameters.MuFm1.Estimated = 1;
-    Parameters.MuMm1.Estimated = 1;
-    Parameters.BetaMFPerAct.Estimated = 1;
-    Parameters.BetaFMPerAct.Estimated = 1;
-    Parameters.NumberActsPerClient.Estimated = 1;
-    Parameters.eHIV.Estimated = 1;
-    Parameters.CF1.Estimated = 1;
-    Parameters.CF2.Estimated = 1;
-    Parameters.SigmaRW.Estimated = 1;
-elseif strcmp(Parameters.DiffusionType,'AddConstr')
-    Parameters.InitialFt.Estimated = 1;
-    Parameters.SigmaRW.Estimated = 1;
-end
-Parameters = DefineEstimatedParametersIndexes(Parameters);
-Parameters = DefineTransfFunctions(Parameters);
-Parameters = UpdateParsNoTransfToTransf(Parameters);
-Parameters = DefinePriors(Parameters);
-Names = Parameters.Names.Estimated;
 
-% SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
-% if strcmp(Parameters.DiffusionType,'Bertallanfy')
-%     load([SavePath '/BestBertCov.mat'])
-% elseif  strcmp(Parameters.DiffusionType,'BertallanfyConstr')
-%     load([SavePath '/BestBertConstrCov.mat'])
-% else
-%     Cov =  2.38^2/length(Names)*(-ResKal.Hess)^-1;%Parameters.CovInit;
-% %     die
-% end
-Cov =  Parameters.KalCov;
-
-disp('First MCMC')
-Parameters.NbParticules  = 1000;
-Parameters.G = Cov^-1;
-Parameters.NoPaths = 1;
-Parameters.PathsToKeep = [7 8 9];
-Parameters.MCMCType = 'Rand';
-Parameters.GMeth = 'cst given';
-% try
-%     if Parameters.SwitchToIBM == 1
-%         Parameters.DiffusionType = 'IBM';
-%     end
-% catch    
-%     Parameters.DiffusionType = 'Add';
-% end
-Parameters.aim = 0.23;
-Parameters.Epsil = 1;
-Parameters.ModelType = 'SMC';
-Parameters.Correction = 1;
-TempPar = ProposeInitialParameter(Data, HIVModel, Parameters);
-% Parameters.KeepAll = 1;
-Parameters.AdaptC = 0.99;
-Parameters.AdMet = 0;
-Parameters.AdMetBeta = 0.05;
-% [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
-Res.Parameters = Parameters;
-
-for i = 1:3
-    disp(['MCMC ' num2str(i)])
-    if Res.AccRate>0.05
-        Cov =  cov(Res.TransfThetas');
-        Parameters.G = Cov^-1;
+if not(AlreadySomething)
+    disp('Quick PMCMC')
+    Names = Parameters.Names.Estimated;
+    for i = 1:length(Names);
+        Parameters.(Names{i}).Estimated = 0;
     end
+    if strcmp(Parameters.DiffusionType,'Bertallanfy')
+        Parameters.BRmm1.Estimated = 1;    
+        Parameters.InitialIPropF.Estimated = 1;
+        Parameters.InitialIPropM.Estimated = 1;
+        Parameters.TotMFactor.Estimated = 1;
+        Parameters.Alpham1.Estimated = 1;
+        Parameters.MuFm1.Estimated = 1;
+        Parameters.MuMm1.Estimated = 1;
+        Parameters.BetaMFPerAct.Estimated = 1;
+        Parameters.BetaFMPerAct.Estimated = 1;
+        Parameters.NumberActsPerClient.Estimated = 1;
+        Parameters.eHIV.Estimated = 1;
+        Parameters.CF1.Estimated = 1;
+        Parameters.CF2.Estimated = 1;
+        Parameters.BRbase.Estimated = 1;
+        Parameters.BRmu.Estimated = 1;
+        Parameters.BRtinfl.Estimated = 1;
+        Parameters.BRsigma.Estimated = 1;
+    elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        Parameters.InitialIPropF.Estimated = 1;
+        Parameters.InitialIPropM.Estimated = 1;
+        Parameters.TotMFactor.Estimated = 1;
+        Parameters.Alpham1.Estimated = 1;
+        Parameters.MuFm1.Estimated = 1;
+        Parameters.MuMm1.Estimated = 1;
+        Parameters.BetaMFPerAct.Estimated = 1;
+        Parameters.BetaFMPerAct.Estimated = 1;
+        Parameters.NumberActsPerClient.Estimated = 1;
+        Parameters.eHIV.Estimated = 1;
+        Parameters.CF1.Estimated = 1;
+        Parameters.CF2.Estimated = 1;
+        Parameters.Sigmbase.Estimated = 1;
+        Parameters.Sigmmu.Estimated = 1;
+        Parameters.Sigmtinfl.Estimated = 1;
+        Parameters.Sigmrate.Estimated = 1;
+        Parameters.Sigmsigma.Estimated = 1;
+    elseif strcmp(Parameters.DiffusionType,'BertallanfyConstr')
+        Parameters.BRmm1.Estimated = 1;
+        Parameters.BRbase.Estimated = 1;
+        Parameters.BRmu.Estimated = 1;
+        Parameters.BRtinfl.Estimated = 1;
+        Parameters.SigmaRW.Estimated = 1;
+    elseif strcmp(Parameters.DiffusionType,'Add')
+        Parameters.InitialFt.Estimated = 1;
+        Parameters.InitialIPropF.Estimated = 1;
+        Parameters.InitialIPropM.Estimated = 1;
+        Parameters.TotMFactor.Estimated = 1;
+        Parameters.Alpham1.Estimated = 1;
+        Parameters.MuFm1.Estimated = 1;
+        Parameters.MuMm1.Estimated = 1;
+        Parameters.BetaMFPerAct.Estimated = 1;
+        Parameters.BetaFMPerAct.Estimated = 1;
+        Parameters.NumberActsPerClient.Estimated = 1;
+        Parameters.eHIV.Estimated = 1;
+        Parameters.CF1.Estimated = 1;
+        Parameters.CF2.Estimated = 1;
+        Parameters.SigmaRW.Estimated = 1;
+    elseif strcmp(Parameters.DiffusionType,'AddConstr')
+        Parameters.InitialFt.Estimated = 1;
+        Parameters.SigmaRW.Estimated = 1;
+    end
+    Parameters = DefineEstimatedParametersIndexes(Parameters);
+    Parameters = DefineTransfFunctions(Parameters);
+    Parameters = UpdateParsNoTransfToTransf(Parameters);
+    Parameters = DefinePriors(Parameters);
+    Names = Parameters.Names.Estimated;
+
+    % SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
+    % if strcmp(Parameters.DiffusionType,'Bertallanfy')
+    %     load([SavePath '/BestBertCov.mat'])
+    % elseif  strcmp(Parameters.DiffusionType,'BertallanfyConstr')
+    %     load([SavePath '/BestBertConstrCov.mat'])
+    % else
+    %     Cov =  2.38^2/length(Names)*(-ResKal.Hess)^-1;%Parameters.CovInit;
+    % %     die
+    % end
+    Cov =  Parameters.KalCov;
+
+    disp('First MCMC')
+    Parameters.NbParticules  = 1000;
+    Parameters.G = Cov^-1;
     Parameters.NoPaths = 1;
     Parameters.PathsToKeep = [7 8 9];
     Parameters.MCMCType = 'Rand';
@@ -503,19 +483,49 @@ for i = 1:3
     Parameters.Epsil = 1;
     Parameters.ModelType = 'SMC';
     Parameters.Correction = 1;
-    TempPar = Res.TempPar;
-%     Parameters.Kee»ßpAll = 1;
-    Parameters.AdaptC = 0.999;
+    TempPar = ProposeInitialParameter(Data, HIVModel, Parameters);
+    % Parameters.KeepAll = 1;
+    Parameters.AdaptC = 0.99;
+    Parameters.AdMet = 0;
+    Parameters.AdMetBeta = 0.05;
     % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-    Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);
+    Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
     Res.Parameters = Parameters;
+
+    for i = 1:3
+        disp(['MCMC ' num2str(i)])
+        if Res.AccRate>0.05
+            Cov =  cov(Res.TransfThetas');
+            Parameters.G = Cov^-1;
+        end
+        Parameters.NoPaths = 1;
+        Parameters.PathsToKeep = [7 8 9];
+        Parameters.MCMCType = 'Rand';
+        Parameters.GMeth = 'cst given';
+        % try
+        %     if Parameters.SwitchToIBM == 1
+        %         Parameters.DiffusionType = 'IBM';
+        %     end
+        % catch    
+        %     Parameters.DiffusionType = 'Add';
+        % end
+        Parameters.aim = 0.23;
+        Parameters.Epsil = 1;
+        Parameters.ModelType = 'SMC';
+        Parameters.Correction = 1;
+        TempPar = Res.TempPar;
+    %     Parameters.Kee»ßpAll = 1;
+        Parameters.AdaptC = 0.999;
+        % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
+        Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);
+        Res.Parameters = Parameters;
+    end
+
+    load([SavePath '/' Parameters.TempName])
+    Temp.ParametersPMCMC = Parameters;
+    Temp.ResPMCMCNoPaths = Res;
+    save([SavePath '/' Parameters.TempName],'Temp')
 end
-
-load([SavePath '/' Parameters.TempName])
-Temp.ParametersPMCMC = Parameters;
-Temp.ResPMCMCNoPaths = Res;
-save([SavePath '/' Parameters.TempName],'Temp')
-
 
 % die
 
@@ -550,10 +560,8 @@ Parameters.GMeth = 'cst given';
 % catch    
 %     Parameters.DiffusionType = 'Add';
 % end
-SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
 Parameters.SaveForMarcMCMC = 1;
-Parameters.NameToSave = [SavePath Parameters.NameToSave '.mat'];
 
 Parameters.aim = 0.23;
 Parameters.Epsil = 1;
@@ -568,7 +576,7 @@ Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,NbItsPMCMC);
 Res.Parameters = Parameters;
 
 try
-    save([SavePath Parameters.NameToSave '.mat'],'Res')
+    save([SavePath Parameters.NameToSave],'Res')
     disp('saved')
 end
 
