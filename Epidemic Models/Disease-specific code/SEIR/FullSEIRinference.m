@@ -437,7 +437,6 @@ if not(AlreadySomething)
     end
 end
 
-SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc';
 % SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/Temp'
 
 load([SavePath '/Temp_' NameToSave])
@@ -478,20 +477,20 @@ end
 Parameters.MCMCType = 'frfr';
 Names = Parameters.Names.Estimated;
 
-Initialization = [];
-Names = Parameters.Names.Estimated;
-for i = 1:length(Names)
-    Initialization(i) = Parameters.(Names{i}).TransfValue ;
-%         Initialization(i) =  tempPars.(Names{i}).TransfValue ;
-end
-Parameters.Correction = 1;
-[x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizewithPrior(x,Data,SEIRModel,Parameters),Initialization,optimset('MaxIter',20,'TolX',1e-8,'TolFun',1e-8));
-Names = Parameters.Names.Estimated;
-for i = 1:length(Names)
-    Parameters.(Names{i}).TransfValue = (x(i));
-end
-Parameters = UpdateParsTransfToNoTransf(Parameters);
-TellParsValues(Parameters)  
+% Initialization = [];
+% Names = Parameters.Names.Estimated;
+% for i = 1:length(Names)
+%     Initialization(i) = Parameters.(Names{i}).TransfValue ;
+% %         Initialization(i) =  tempPars.(Names{i}).TransfValue ;
+% end
+% Parameters.Correction = 1;
+% [x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizewithPrior(x,Data,SEIRModel,Parameters),Initialization,optimset('MaxIter',20,'TolX',1e-8,'TolFun',1e-8));
+% Names = Parameters.Names.Estimated;
+% for i = 1:length(Names)
+%     Parameters.(Names{i}).TransfValue = (x(i));
+% end
+% Parameters = UpdateParsTransfToNoTransf(Parameters);
+% TellParsValues(Parameters)  
 
 % Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
 % Temp.LogLik
@@ -614,7 +613,7 @@ Parameters.ComputeRWsamplCov = 0;
 Parameters.aim = 0.23;
 Parameters.Epsil = 0.8;
 Parameters.AdaptC = 0.99;
-Parameters.AdMet = 1;
+Parameters.AdMet = 0;
 Parameters.AdMetBeta = 0.05;
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
