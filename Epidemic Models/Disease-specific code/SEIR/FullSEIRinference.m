@@ -208,7 +208,7 @@ if not(AlreadySomething)
         try
             Temp = EstimationEKFGen(Data, SEIRModel, Parameters);
             Temp.LogLik
-            if (Temp.LogLik>-900)
+            if (Temp.LogLik>-600)
                 Test = 1;
             end
         end
@@ -585,8 +585,8 @@ else
     Parameters.ComputationTStep = 1/3;
 end
     
-if IndModel >2
-    Parameters.NbParticules = 6000;
+if IndModel >=2
+    Parameters.NbParticules = 3000;
 end
 
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;

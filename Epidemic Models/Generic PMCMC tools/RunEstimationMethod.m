@@ -147,6 +147,8 @@ for IndIt = startind:NbIterations
                 Paths(IndIt,:,:) = TempPar.Paths;
             end
         end
+        TempPar.LogPost
+        StarPar.LogPost
         LogLiks(IndIt) = TempPar.LogLik;
         LogPosts(IndIt) = TempPar.LogPost;
         PropLogLiks(IndIt) = StarPar.LogLik;
