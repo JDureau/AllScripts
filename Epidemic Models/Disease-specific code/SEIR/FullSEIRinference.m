@@ -83,7 +83,7 @@ try
 catch
     AlreadySomething = 0;
 end
-
+ AlreadySomething 
 
 SEIRModel = struct();
 
