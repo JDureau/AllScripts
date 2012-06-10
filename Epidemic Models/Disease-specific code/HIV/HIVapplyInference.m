@@ -564,7 +564,7 @@ Parameters.GMeth = 'cst given';
 %     Parameters.DiffusionType = 'Add';
 % end
 
-Parameters.SaveForMarcMCMC = 1;
+Parameters.SaveForMarcMCMC = 0;
 
 Parameters.aim = 0.23;
 Parameters.Epsil = 1;
