@@ -385,7 +385,7 @@ end
 % 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if not(AlreadySomething)
+if 1%not(AlreadySomething)
     disp('Quick PMCMC')
     Names = Parameters.Names.Estimated;
     for i = 1:length(Names);
