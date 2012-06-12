@@ -463,22 +463,26 @@ ToBar = [];
 xis = [];
 TempRes = Res;
 tab = TempRes.partampls2003;
-for  i = 1:6
-    q1 = quantile(tab(4,:),0.16*(i-1));
-    q2 = quantile(tab(4,:),0.16*(i));
+qs = [];
+for  i = 1:5
+    q1 = quantile(tab(4,:),0.2*(i-1));
+    q2 = quantile(tab(4,:),0.2*(i));
+    qs(i) = (q1+q2)/2;
     inds = find(and((tab(4,:)<q2),(tab(4,:)>q1)));
     ToBar(i,1) = mean(tab(1,inds) - tab(4,inds));
     ToBar(i,2) = mean(tab(3,inds) - tab(4,inds));
     ToBar(i,3) = mean(tab(2,inds) - tab(4,inds));
+    ToBar(i,4) = mean(tab(5,inds) - tab(4,inds));
+    ToBar(i,5) = mean(tab(6,inds) - tab(4,inds));
     xis(i) = mean([q1 q2]);
 end
-bar(1:5,ToBar(2:end,:)./repmat(xis(2:end)',1,3))
-% bar(xis,ToBar)
+% bar(1:5,ToBar(1:end,:)./repmat(xis(1:end)',1,5))
+bar(xis,ToBar)
 xlabel('"True" \DeltaCU')
 ylabel('Relative bias')
-legend('dBR','sBR','BM')
-set(gca,'XTick',[0:(600)/5:(600)])
-set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'])
+legend('dBR','sBR','BM','dSigm','sSigm')
+% set(gca,'XTick',(q1+q2)/2)
+set(gca,'XTickLabel',{'0-0.2','0.2-0.4','0.4-0.6','0.6-0.8','0.8-1.0'})
 
 Title('Relative bias in CU estimate as a function of \DeltaCU')
 

@@ -4,7 +4,7 @@ HIVModel = struct();
 HIVModel.EKF_projection = @HIV_EKF_projection;
 HIVModel.InitializeParameters = @HIV_Initialize;
 HIVModel.SMC_projection = @HIV_SMC_projection;
-SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
+SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
 try 
     if Parameters.RealData

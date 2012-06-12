@@ -48,7 +48,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
        
         mtemp = mpred;
         if or(strcmp(difftype,'Bertallanfy'),strcmp(difftype,'BertallanfyConstr'))
-            mtemp(9) = max(-10^6,min(-0.01,mtemp(9)));
+            mtemp(9) = max(-10^6,min(-0.000001,mtemp(9)));
             beta = ((1-m)*mtemp(9)+mu^(1-m))^(1/(1-m));
             if or(Parameters.BRbase.Value>m^(1/(1-m))*mu,not(isreal(k)))
                 Crash = 1;

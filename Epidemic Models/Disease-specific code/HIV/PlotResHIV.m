@@ -406,7 +406,7 @@ end
     Paths = Paths(1:n,:,:);
 
     try
-        if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'Sigmoid'))
+        if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),and(strcmp(Parameters.DiffusionType,'Sigmoid'),not(Parameters.Sigmsigma.Estimated)))
             if Parameters.BRsigma.Estimated
                 tmp = squeeze(Paths(:,ToPlot(3),:));
                 beta0s = squeeze(Res.Thetas(Parameters.BRbase.Index,:));
@@ -428,19 +428,19 @@ end
 %             k = Parameters.k;
         elseif strcmp(Parameters.DiffusionType,'Sigmoid')
             if Parameters.Sigmsigma.Estimated
-                tmp = squeeze(Paths(:,3,1:indend));
+                tmp = squeeze(Paths(:,3,:));
                 rate = squeeze(Res.Thetas(Parameters.Sigmrate.Index,:));
                 base = squeeze(Res.Thetas(Parameters.Sigmbase.Index,:));
                 mu = squeeze(Res.Thetas(Parameters.Sigmmu.Index,:));
-                tinfl = squeeze(Res.Thetas(Parameters.Sigmtinfl.Index,:));;
+                tinfl = squeeze(Res.Thetas(Parameters.Sigmtinfl.Index,:));
                 c = 1./(1+exp(tinfl./rate));
                 b = (mu-base).*c./(1-c);
                 a = base - b;
-                a = repmat(a',1,indend);
-                b = repmat(b',1,indend);
-                c = repmat(c',1,indend);
+                a = repmat(a',1,size(Paths,3));
+                b = repmat(b',1,size(Paths,3));
+                c = repmat(c',1,size(Paths,3));
 %                 FtSigmSto = mean(a + b./(c*(1+tmp)));
-                Paths(:,ToPlot(3),:) = (a + b./(c*(1+tmp)));
+                Paths(:,ToPlot(3),:) = (a + b./(c.*(1+tmp)));
             else
                 Paths = (squeeze(Paths));
             end
