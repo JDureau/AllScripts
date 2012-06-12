@@ -117,6 +117,7 @@ Parameters = DefinePriors(Parameters);
 try
     load([SavePath '/' Parameters.TempName])
     AlreadySomething = 1;
+    Parameters = Temp.Parameters;
 catch
     AlreadySomething = 0;
 end
