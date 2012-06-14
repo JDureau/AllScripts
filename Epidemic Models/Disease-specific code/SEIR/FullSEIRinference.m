@@ -598,9 +598,35 @@ end
 Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
+
+
+ Cov = (-KalHess)^-1;
+Parameters.G = Cov^-1;
+Parameters.NoPaths = 1;
+Parameters.ModelType='SMC';
+Parameters.AdaptC = 0.999;
+Parameters.NbVariables = 7;
+Parameters.aim = 0.23;
+Parameters.Epsil = 1;
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Parameters.ModelType='Kalman';
+Parameters.AdaptC = 0.999;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+Cov = cov(Res.TransfThetas');
+Parameters.G = Cov^-1;
+Parameters.ModelType='Kalman';
+Parameters.AdaptC = 0.999;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+
+
+
+save([SavePath '/Temp0_' NameToSave],'Res')
+
+
+
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
-Cov = (-KalHess)^(-1);
+Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 1;
 % if strcmp(Parameters.PMCMC,'Gibbs')
@@ -674,7 +700,7 @@ if IndModel>1
 else
     Parameters.PathsToKeep = [1:7]';
 end
-Parameters.SaveSpace = 1;
+Parameters.SaveSpace = 0;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
