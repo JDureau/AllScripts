@@ -628,7 +628,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 load([SavePath '/Temp0_' NameToSave])
 Parameters = Res.Parameters;
-Parameters.NbParticules = 1000;
+Parameters.NbParticules = 2000;
 
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
