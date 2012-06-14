@@ -449,7 +449,7 @@ KalHess = Parameters.KalHess;
 Cov = (-KalHess)^-1;
 
 Parameters.Correction = 0;
-% Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
 Parameters.Correction = 1;
 
 
@@ -610,9 +610,11 @@ Parameters.aim = 0.23;
 Parameters.Epsil = 1;
 Parameters.MCMCType = 'Rand';
 Parameters.GMeth = 'cst given';
+Parameters.MCMCType
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
+Parameters.AdMet = 0;
 Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
 Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
