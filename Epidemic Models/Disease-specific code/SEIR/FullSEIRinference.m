@@ -586,7 +586,7 @@ else
 end
     
 if IndModel >=2
-    Parameters.NbParticules = 3000;
+    Parameters.NbParticules = 1000;
 end
 
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;
@@ -628,6 +628,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 load([SavePath '/Temp0_' NameToSave])
 Parameters = Res.Parameters;
+Parameters.NbParticules = 1000;
 
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
