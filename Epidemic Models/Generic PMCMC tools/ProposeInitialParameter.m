@@ -21,6 +21,7 @@ elseif strcmp(Parameters.MCMCType, 'GMM')
         StarPar.Par(Parameters.(Names{i}).Index,1) = StarPar.(Names{i}).TransfValue;
     end
 elseif strcmp(Parameters.MCMCType, 'Rand')
+    'in'
     Cov = Parameters.G^-1;
     StarPar.Par = [0];
     for i = 1:length(Names)

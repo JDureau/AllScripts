@@ -449,7 +449,7 @@ KalHess = Parameters.KalHess;
 Cov = (-KalHess)^-1;
 
 Parameters.Correction = 0;
-Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+% Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
 Parameters.Correction = 1;
 
 
