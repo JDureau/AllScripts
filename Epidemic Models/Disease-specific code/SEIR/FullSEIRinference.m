@@ -464,7 +464,7 @@ Parameters.NoPaths = 1;
 switch IndModel
     case 1
         Parameters.PathsToKeep = [1:7]';
-    case [2 3 4]
+    case {2, 3, 4}
         Parameters.PathsToKeep = [1:12]';
     case 5
         Parameters.PathsToKeep = [1:13]';
@@ -706,11 +706,12 @@ paths = [];
 thetas = [];
 names = Parameters.Names.Estimated;
 for i = 1:10
+    i
     ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
     RandInd = ceil(rand(1,1)*Parameters.NbParticules);
     paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
     for j = 1:length(names)
-        thetas(j,i) = Parameters.(names{i}).Value;
+        thetas(Parameters.(names{j}).Index,i) = Parameters.(names{i}).Value;
     end
 end
 Res.Paths = paths;
