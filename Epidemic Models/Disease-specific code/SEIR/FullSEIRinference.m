@@ -696,6 +696,7 @@ switch IndModel
     case 1
         Parameters.PathsToKeep = [1:7]';
     case [2 3 4]
+        'you'
         Parameters.PathsToKeep = [1:12]';
     case 5
         Parameters.PathsToKeep = [1:13]';
