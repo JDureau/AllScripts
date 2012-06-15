@@ -258,15 +258,20 @@ if not(AlreadySomething)
                 Parameters.SigmaRW.Value = rand(1,1)*2;
             case 2
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
-                Parameters.adultsmult.Value = rand(1,1);
-                Parameters.kidsmult.Value = rand(1,1);
+                Parameters.adultsmult.Value = rand(1,1)*2;
+                Parameters.kidsmult.Value = rand(1,1)*2;
+                Parameters.adultsadd.Value = rand(1,1);
+                Parameters.kidsadd.Value = rand(1,1);
                 Parameters.R2InitProp.Value = 0.5;
                 Parameters.R2InitProp.Value = 0.1;
             case 3
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
-                Parameters.adultsmult.Value = rand(1,1);
-                Parameters.adultsadultsmult.Value = rand(1,1);
-                Parameters.kidsmult.Value = rand(1,1);
+                Parameters.adultsmult.Value = rand(1,1)*2;
+                Parameters.adultsadultsmult.Value = rand(1,1)*2;
+                Parameters.kidsmult.Value = rand(1,1)*2;
+                Parameters.adultsadd.Value = rand(1,1);
+                Parameters.adultsadultsadd.Value = rand(1,1);
+                Parameters.kidsadd.Value = rand(1,1);
                 Parameters.R2InitProp.Value = 0.5;
                 Parameters.R2InitProp.Value = 0.1;
             case 4
@@ -496,7 +501,6 @@ Cov = (-KalHess)^-1;
 Parameters.Correction = 0;
 Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
 Parameters.Correction = 1;
-
 
 %% SMC Optimization
 
