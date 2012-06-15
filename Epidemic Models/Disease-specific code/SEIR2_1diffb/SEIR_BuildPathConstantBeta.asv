@@ -1,0 +1,10 @@
+function ParametersStar = SEIR_BuildPathConstantBeta(ParametersStar,Data)
+
+% should give the path of log(beta)
+Path = ones(1,714);
+Path(1:sum(Data.NbComputingSteps(1:8))) = ParametersStar.FirstBeta.TransfValue*ones(size(sum(Data.NbComputingSteps(1:8))));
+Path(sum(Data.NbComputingSteps(1:8))+1:sum(Data.NbComputingSteps(1:14))) = ParametersStar.SecondBeta.TransfValue*ones(size(sum(Data.NbComputingSteps(1:8)+1:sum(Data.NbComputingSteps(1:14)))));
+Path(sum(Data.NbComputingSteps(1:14))+1:sum(Data.NbComputingSteps(1:end))) = ParametersStar.ThirdBeta.TransfValue*ones(size(sum(Data.NbComputingSteps(1:14)+1:sum(Data.NbComputingSteps(1:end)))));
+
+ParametersStar.Pars = [Path ParametersStar.Pars];
+ParametersStar.LengthPaths = 714;
