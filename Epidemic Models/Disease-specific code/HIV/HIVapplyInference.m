@@ -575,7 +575,7 @@ TempPar = Res.TempPar;
 % Parameters.KeepAll = 1;
 Parameters.AdaptC = 0.999;
 % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
-Parameters.SaveSpace = 1;
+Parameters.SaveSpace = 0;
 Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,NbItsPMCMC);
 Res.Parameters = Parameters;
 
