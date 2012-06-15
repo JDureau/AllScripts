@@ -711,7 +711,7 @@ for i = 1:10
     RandInd = ceil(rand(1,1)*Parameters.NbParticules);
     paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
     for j = 1:length(names)
-        thetas(Parameters.(names{j}).Index,i) = Parameters.(names{i}).Value;
+        thetas(Parameters.(names{j}).Index,i) = Parameters.(names{j}).Value;
     end
 end
 Res.Paths = paths;
