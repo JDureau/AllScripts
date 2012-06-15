@@ -13,9 +13,11 @@ addpath([pwd '/Epidemic Models/Disease-specific code/SEIR'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/ResultsMarc/';
 addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_1diff'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_1diffb'])
 addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_2diff'])
 addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_2diffb'])
 addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_3diff'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_4diff'])
 
 
 
