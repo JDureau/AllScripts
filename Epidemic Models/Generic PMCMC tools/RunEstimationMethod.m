@@ -128,7 +128,7 @@ for IndIt = startind:NbIterations
         if LogRand <= StarPar.LogAccRate
             TempPar = StarPar;
             Accepted(IndIt) = 1;
-        elseif and(StarPar.LogAccRate>-10,mean(Accepted(end-min(100,length(Accepted))+1:end))==0)
+        elseif and(StarPar.LogAccRate>-10,and(length(Accepted)>100,mean(Accepted(end-min(100,length(Accepted))+1:end))==0))
             TempPar = StarPar;
             Accepted(IndIt) = 1;
             disp('forced it')

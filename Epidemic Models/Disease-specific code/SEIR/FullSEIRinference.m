@@ -628,7 +628,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 load([SavePath '/Temp0_' NameToSave])
 Parameters = Res.Parameters;
-Parameters.NbParticules = 2000;
+Parameters.NbParticules = 3000;
 
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
@@ -651,10 +651,11 @@ Parameters.AdMetBeta = 0.05;
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
-Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
+% Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
-save([SavePath '/Temp1_' NameToSave],'Res2')
+% save([SavePath '/Temp1_' NameToSave],'Res2')
 
+load([SavePath '/Temp1_' NameToSave]) 
 
 TempRes = Res2;
 
@@ -673,12 +674,14 @@ Parameters.AdMet = 0;
 Parameters.AdMetBeta = 0.05;
 TempPar = TempRes.TempPar;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
-Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
+% Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
 % SavePath = 'S:\Results\';
 % save([Name '_NoPaths.mat'],'Res2')
 
-save([SavePath '/Temp2_' NameToSave],'Res2')
+% save([SavePath '/Temp2_' NameToSave],'Res2')
+
+load([SavePath '/Temp2_' NameToSave]) 
 
 
 
@@ -688,6 +691,14 @@ TempRes = Res2;
 % Running SMC from there
 Parameters = TempRes.Parameters;
 Parameters.NoPaths = 0;
+switch IndModel
+    case 1
+        Parameters.PathsToKeep = [1:7]';
+    case [2 3 4]
+        Parameters.PathsToKeep = [1:12]';
+    case 5
+        Parameters.PathsToKeep = [1:13]';
+end
 paths = [];
 thetas = [];
 names = Parameters.Names.Estimated;
