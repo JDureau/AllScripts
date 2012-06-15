@@ -700,6 +700,7 @@ switch IndModel
     case 5
         Parameters.PathsToKeep = [1:13]';
 end
+Parameters.PathsToKeep 
 paths = [];
 thetas = [];
 names = Parameters.Names.Estimated;
