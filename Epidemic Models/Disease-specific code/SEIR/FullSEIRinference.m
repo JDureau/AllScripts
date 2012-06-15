@@ -171,8 +171,8 @@ if not(AlreadySomething)
     %         Parameters.beta22init.Estimated = 1;
             Parameters.adultsmult.Estimated = 1;
             Parameters.kidsmult.Estimated = 1;
-    %         Parameters.adultsadd.Estimated = 1;
-    %         Parameters.kidsadd.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
         case 3
             Parameters.SigmaRW11.Estimated = 1;
             Parameters.E1InitProp.Estimated = 1;
@@ -186,8 +186,9 @@ if not(AlreadySomething)
             Parameters.adultsmult.Estimated = 1;
             Parameters.adultsadultsmult.Estimated = 1;
             Parameters.kidsmult.Estimated = 1;
-    %         Parameters.adultsadd.Estimated = 1;
-    %         Parameters.kidsadd.Estimated = 1;
+            Parameters.adultsadd.Estimated = 1;
+            Parameters.kidsadd.Estimated = 1;
+            Parameters.adultsadultsadd.Estimated = 1;
         case 4
             Parameters.SigmaRW11.Estimated = 1;
             Parameters.SigmaRW22.Estimated = 1;
@@ -246,7 +247,7 @@ if not(AlreadySomething)
     Test = 0;
     try
         Temp = EstimationEKFGen(Data, SEIRModel, Parameters);    
-        if (Temp.LogLik>-300)
+        if (Temp.LogLik>-600)
             Test = 1;
         end
     end
@@ -257,13 +258,13 @@ if not(AlreadySomething)
             case 1
                 Parameters.SigmaRW.Value = rand(1,1)*2;
             case 2
-                Parameters.SigmaRW11.Value = rand(1,1)*2;
-                Parameters.adultsmult.Value = rand(1,1)*2;
-                Parameters.kidsmult.Value = rand(1,1)*2;
-                Parameters.adultsadd.Value = rand(1,1);
-                Parameters.kidsadd.Value = rand(1,1);
+                Parameters.SigmaRW11.Value = 0.1+0.01*rand(1,1)*2;
+                Parameters.adultsmult.Value = 1.7+0.1*rand(1,1)*2;
+                Parameters.kidsmult.Value = 0.96+0.1*rand(1,1)*2;
+                Parameters.adultsadd.Value = 0.19+0.1*rand(1,1)*2;
+                Parameters.kidsadd.Value = 0.98+0.1*rand(1,1)*2;
                 Parameters.R2InitProp.Value = 0.5;
-                Parameters.R2InitProp.Value = 0.1;
+                Parameters.R1InitProp.Value = 0.1;
             case 3
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.adultsmult.Value = rand(1,1)*2;
@@ -702,7 +703,7 @@ TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
-% save([SavePath '/Temp1_' NameToSave],'Res2')
+save([SavePath '/Temp1_' NameToSave],'Res2')
 
 load([SavePath '/Temp1_' NameToSave]) 
 
@@ -728,7 +729,7 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 % SavePath = 'S:\Results\';
 % save([Name '_NoPaths.mat'],'Res2')
 
-% save([SavePath '/Temp2_' NameToSave],'Res2')
+save([SavePath '/Temp2_' NameToSave],'Res2')
 
 load([SavePath '/Temp2_' NameToSave]) 
 
