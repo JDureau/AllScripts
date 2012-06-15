@@ -449,7 +449,7 @@ KalHess = Parameters.KalHess;
 Cov = (-KalHess)^-1;
 
 Parameters.Correction = 0;
-Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+% Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
 Parameters.Correction = 1;
 
 
@@ -586,7 +586,7 @@ else
 end
     
 if IndModel >=2
-    Parameters.NbParticules = 3000;
+    Parameters.NbParticules = 1000;
 end
 
 Data.Instants = [0:size(Data.Observations,2)-1]*7/Parameters.ComputationTStep;
@@ -600,7 +600,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
 
- Cov = (-KalHess)^-1;
+Cov = (-KalHess)^-1;
 Parameters.G = Cov^-1;
 Parameters.NoPaths = 1;
 Parameters.ModelType='SMC';
@@ -627,7 +627,8 @@ Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
 save([SavePath '/Temp0_' NameToSave],'Res')
 
 load([SavePath '/Temp0_' NameToSave])
-Pa
+Parameters = Res.Parameters;
+Parameters.NbParticules = 2000;
 
 Parameters.ModelType = 'SMC';
 dim = length(Parameters.Names.Estimated);
@@ -680,7 +681,25 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 save([SavePath '/Temp2_' NameToSave],'Res2')
 
 
+
 TempRes = Res2;
+
+
+% Running SMC from there
+Parameters = TempRes.Parameters;
+Parameters.NoPaths = 0;
+paths = [];
+thetas = [];
+names = Parameters.Names.Estimated;
+for i = 1:1000
+    ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
+    RandInd = ceil(rand(1,1)*Parameters.NbParticules);
+    paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
+    for j = 1:length(names)
+        thetas(j,i) = 
+end
+Res.Paths = paths;
+
 
 Cov = cov(TempRes.TransfThetas');
 Parameters.G = Cov^-1;

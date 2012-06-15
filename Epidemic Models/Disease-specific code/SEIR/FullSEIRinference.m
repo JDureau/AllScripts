@@ -7,7 +7,7 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 4 -> 3diff
         
 NbIters = 30000;
-NbItersPrep = 5000;
+NbItersPrep = 300;
 
 
 
@@ -600,7 +600,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
 
-%  Cov = (-KalHess)^-1;
+% Cov = (-KalHess)^-1;
 % Parameters.G = Cov^-1;
 % Parameters.NoPaths = 1;
 % Parameters.ModelType='SMC';
@@ -621,9 +621,9 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 % Parameters.ModelType='Kalman';
 % Parameters.AdaptC = 0.999;
 % Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
-
-
-
+% 
+% 
+% 
 % save([SavePath '/Temp0_' NameToSave],'Res')
 
 load([SavePath '/Temp0_' NameToSave])
@@ -681,7 +681,28 @@ Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 save([SavePath '/Temp2_' NameToSave],'Res2')
 
 
+
 TempRes = Res2;
+
+
+% Running SMC from there
+Parameters = TempRes.Parameters;
+Parameters.NoPaths = 0;
+paths = [];
+thetas = [];
+names = Parameters.Names.Estimated;
+for i = 1:10
+    ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
+    RandInd = ceil(rand(1,1)*Parameters.NbParticules);
+    paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
+    for j = 1:length(names)
+        thetas(j,i) = Parameters.(names{i}).Value;
+    end
+end
+Res.Paths = paths;
+Res.Thetas = thetas;
+save([SavePath '/TempSmoothed_' NameToSave],'Res')
+
 
 Cov = cov(TempRes.TransfThetas');
 Parameters.G = Cov^-1;
