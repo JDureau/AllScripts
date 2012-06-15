@@ -7,6 +7,7 @@ function Res = SEIR2_3diff_SMC_projection(Variables,IndIt,NbIts,Data,Parameters,
     SigmaRW11 = Parameters.SigmaRW11.Value;
     SigmaRW22 = Parameters.SigmaRW22.Value;
     SigmaRW12 = Parameters.SigmaRW12.Value;
+    SigmaRW21 = Parameters.SigmaRW21.Value;
     TotPop1 = Parameters.TotalPopulation1;
     TotPop2 = Parameters.TotalPopulation2;
     TempVariables = Variables;
