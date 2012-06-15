@@ -24,6 +24,7 @@ function Res = SEIR2_3diff_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Paramet
     mpred(11,1) = m(11);
     mpred(12,1) = m(12);
     mpred(13,1) = m(13);
+    mpred(14,1) = m(14);
     mpred(9) = 0;
     mpred(10) = 0;
     Cov(9,:) = 0;

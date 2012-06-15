@@ -300,7 +300,7 @@ if not(AlreadySomething)
             end
         end
         NbIts = NbIts + 1;
-        if NbIts>20000
+        if NbIts>40000
             disp('Can''t initialize IBM')
             die
         end
@@ -476,12 +476,11 @@ if not(AlreadySomething)
             return
         end
     end
-
-    if IndModel == 1
-        Temp = struct();
-        Temp.Parameters = Parameters;
-        save([SavePath '/Temp_' NameToSave],'Temp')
-    end
+    
+    
+    Temp = struct();
+    Temp.Parameters = Parameters;
+    save([SavePath '/Temp_' NameToSave],'Temp')
 end
 
 % SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/Temp'
