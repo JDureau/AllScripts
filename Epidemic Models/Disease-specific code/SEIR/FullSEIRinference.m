@@ -691,6 +691,7 @@ TempRes = Res2;
 % Running SMC from there
 Parameters = TempRes.Parameters;
 Parameters.NoPaths = 0;
+IndModel
 switch IndModel
     case 1
         Parameters.PathsToKeep = [1:7]';
