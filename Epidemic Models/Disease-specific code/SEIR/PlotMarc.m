@@ -290,34 +290,59 @@ catch
             
             subplot(length(toplot)+2,2,length(toplot)*2+2)
             nsmooth = 35;
-            add = Res.Thetas(Parameters.kidsadd.Index,:);
-            mult = Res.Thetas(Parameters.kidsmult.Index,:);
-            ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
-            hold on
-            ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
-            plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            if strcmp(Parameters.Problem,'Marc3diff')
+                toplotdiff = 12;
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            else
+                add = Res.Thetas(Parameters.kidsadd.Index,:);
+                mult = Res.Thetas(Parameters.kidsmult.Index,:);
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            end
             title('adults to kids')
             ylabel('\beta_{21}(t)')
             xlabel('t (weeks)')
             
             subplot(length(toplot)+2,2,length(toplot)*2+3)
             nsmooth = 35;
-            add = Res.Thetas(Parameters.adultsadd.Index,:);
-            mult = Res.Thetas(Parameters.adultsmult.Index,:);
-            ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
-            hold on
-            ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
-            plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            if strcmp(Parameters.Problem,'Marc3diff')
+                toplotdiff = 11;
+                mult = Res.Thetas(Parameters.adultsmult.Index,:);
+                ciplot(smooth(quantile(repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            else
+                add = Res.Thetas(Parameters.adultsadd.Index,:);
+                mult = Res.Thetas(Parameters.adultsmult.Index,:);
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            end
             title('kids to adults')
             ylabel('\beta_{12}(t)')
             xlabel('t (weeks)')
             
             subplot(length(toplot)+2,2,length(toplot)*2+4)
             nsmooth = 35;
-            ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.025),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.975),1,size(Paths,3)),[172,215,255]/255)
-            hold on
-            ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.25),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.75),1,size(Paths,3)),[100,153,251]/255)
-            plot(repmat(median(squeeze(Res.Thetas(Parameters.beta22init.Index,:))),1,size(Paths,3)),'k','LineWidth',2)
+            if strcmp(Parameters.Problem,'Marc3diff')
+                toplotdiff = 13;
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            else
+                ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.025),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.975),1,size(Paths,3)),[172,215,255]/255)
+                hold on
+                ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.25),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.75),1,size(Paths,3)),[100,153,251]/255)
+                plot(repmat(median(squeeze(Res.Thetas(Parameters.beta22init.Index,:))),1,size(Paths,3)),'k','LineWidth',2)
+            end
             title('adults to adults')
             ylabel('\beta_{22}(t)')
             xlabel('t (weeks)')
