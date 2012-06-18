@@ -553,6 +553,8 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
 % Running SMC from there
+Cov = (-KalHess)^-1;
+Parameters.G = Cov^-1;
 Parameters.NoPaths = 0;
 Parameters.ModelType='SMC';
 Parameters.AdaptC = 0.999;
