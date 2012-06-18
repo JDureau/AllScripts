@@ -21,7 +21,7 @@
         tinfl = Parameters.Sigmtinfl.Value;
         
         c = 1/(1+exp(tinfl/rate));
-        b = (mu-base)*c/(1-c);
+        b = (mu-base)*c;
         a = base - b;
     end
     

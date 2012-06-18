@@ -19,7 +19,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         tinfl = Parameters.Sigmtinfl.Value;
         
         c = 1/(1+exp(tinfl/rate));
-        b = (mu-base)*c/(1-c);
+        b = (mu-base)*c;
         a = base - b;
     else
 %         disp('Unknown Diffusion')

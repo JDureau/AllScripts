@@ -74,7 +74,7 @@ sigs = [0.2 0.4];
 pars = [10 10];
 
 deltas = [];
-NSamples = 1000;
+NSamples = 100000;
 
 for j = 1:length(sigs)
     cpt = 1;
@@ -116,7 +116,7 @@ for j = 1:length(sigs)
                 tinfl = 600*rand(1,1)*Parameters.ComputationTStep;
 
                 c = 1/(1+exp(tinfl/rate));
-                b = (mu-base)*c/(1-c);
+                b = (mu-base)*c;
                 a = base - b;
                 xis = [];
                 xis(1) = exp(tinfl/rate);
@@ -131,9 +131,9 @@ for j = 1:length(sigs)
                 xis = [];
                 xis(1) = base;
                 for i = 2:length(tis)
-                    xis(i) = xis(i-1) -1/rate*xis(i-1)*Parameters.ComputationTStep + sigma*xis(i-1)*sqrt(Parameters.ComputationTStep).*randn(1,1);
+                    xis(i) = xis(i-1) + sigma*sqrt(Parameters.ComputationTStep).*randn(1,1);
                 end
-                Fts = xis;
+                Fts = exp(xis)./(1+exp(xis));
             end
             deltas(j,cpt) = Fts(584)-Fts(416);
             if not(isreal(Fts(584)-Fts(416)))
@@ -146,6 +146,12 @@ for j = 1:length(sigs)
 end
 save([SavePath '/PosteriorDeltas_' ModelType '.mat'],'deltas')
 
+
+
+ModelType = 'Bert';
+ModelType = 'Sigm';
+ModelType = 'BM';
+load([SavePath '/PosteriorDeltas_' ModelType '.mat'])
 
 clf
 dash = [0 1 0 1];
@@ -166,6 +172,9 @@ for i = 1:size(deltas,1)
         end
     end        
     
+    q1 = quantile(deltas(i,:),0.025);
+    q2 = quantile(deltas(i,:),0.975);
+    disp([q1 q2])
     hold on
     xlim([-0.5 0.5])
 end

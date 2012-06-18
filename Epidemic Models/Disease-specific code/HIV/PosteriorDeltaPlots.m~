@@ -70,11 +70,11 @@ sigs = [0 0.2 0 0.2];
 pars = [10 10 50 50];
 
 ModelType = 'BM';
-sigs = [0.1 0.2];
+sigs = [0.2 0.4];
 pars = [10 10];
 
 deltas = [];
-NSamples = 50000;
+NSamples = 100000;
 
 for j = 1:length(sigs)
     cpt = 1;
@@ -116,7 +116,7 @@ for j = 1:length(sigs)
                 tinfl = 600*rand(1,1)*Parameters.ComputationTStep;
 
                 c = 1/(1+exp(tinfl/rate));
-                b = (mu-base)*c/(1-c);
+                b = (mu-base)*c;
                 a = base - b;
                 xis = [];
                 xis(1) = exp(tinfl/rate);
@@ -131,7 +131,7 @@ for j = 1:length(sigs)
                 xis = [];
                 xis(1) = base;
                 for i = 2:length(tis)
-                    xis(i) = xis(i-1)  + sigma*sqrt(Parameters.ComputationTStep).*randn(1,1);
+                    xis(i) = xis(i-1) + sigma*sqrt(Parameters.ComputationTStep).*randn(1,1);
                 end
                 Fts = exp(xis)./(1+exp(xis));
             end
@@ -147,58 +147,42 @@ end
 save([SavePath '/PosteriorDeltas_' ModelType '.mat'],'deltas')
 
 
+
+ModelType = 'Bert';
+ModelType = 'Sigm';
+ModelType = 'BM';
+load([SavePath '/PosteriorDeltas_' ModelType '.mat'])
+
 clf
-ModelTypes= {'Bert','Sigm','BM'};
-for k = 1:3
-    subplot(1,3,k)
-    load([SavePath '/PosteriorDeltas_' ModelTypes{k} '.mat'])
-    if size(deltas,1) == 4
-        dash = [0 1 0 1];
-        cols = [1  1 2 2];
-    else
-        dash = [1 1];
-        cols = [1 2];
-    end
-    for i = 1:size(deltas,1)
-        [fi,xi] = ksdensity(deltas(i,:));
-        if strcmp(ModelTypes{k},'Sigm')  
-            if i == 2
-                inds = find(xi<-0.1);
-                fi(inds) = 0;
-            end
-        end
-        if dash(i)
-            if cols(i) == 1
-                plot(xi,fi,':k','LineWidth',1.5)
-            else
-                plot(xi,fi,':','LineWidth',1.5)
-            end
+dash = [0 1 0 1];
+cols = [1  1 2 2];
+for i = 1:size(deltas,1)
+    [fi,xi] = ksdensity(deltas(i,:));
+    if dash(i)
+        if cols(i) == 1
+            plot(xi,fi,':k','LineWidth',1.5)
         else
-            if cols(i) == 1
-                plot(xi,fi,'k','LineWidth',1.5)
-            else
-                plot(xi,fi,'LineWidth',1.5)
-            end
-        end        
-
-        hold on
-        xlim([-0.5 0.5])
-    %     ylim([0 100])
-    end
-    if k == 1
-        legend('m = 2, \sigma = 0','m = 2, \sigma = 0.2','m = 10, \sigma = 0','m = 10, \sigma = 0.2')
-        title('Prior for \Delta CU under dBR and sBR models')
-    elseif k == 2
-        legend('r = 10, \sigma = 0','r = 10, \sigma = 0.2','r = 100, \sigma = 0','r = 100, \sigma = 0.2')
-        title('Prior for \Delta CU under dSigm and sSigm models')
+            plot(xi,fi,':','LineWidth',1.5)
+        end
     else
-        legend(' \sigma = 0.2','\sigma = 0.4')
-        title('Prior for \Delta CU under the BM model')
-    end
-    hold off
-end
+        if cols(i) == 1
+            plot(xi,fi,'k','LineWidth',1.5)
+        else
+            plot(xi,fi,'LineWidth',1.5)
+        end
+    end        
     
-
+    q1 = quantile(deltas(i,:),0.025);
+    q2 = quantile(deltas(i,:),0.975);
+    m = median(deltas(i,:));
+    disp([q1 m q2])
+    hold on
+    xlim([-0.5 0.5])
+end
+% legend('m = 2, \sigma = 0','m = 2, \sigma = 0.2','m = 10, \sigma = 0','m = 10, \sigma = 0.2')
+% legend('r = 10, \sigma = 0','r = 10, \sigma = 0.2','r = 100, \sigma = 0','r = 100, \sigma = 0.2')
+legend(' \sigma = 0.2','\sigma = 0.4')
+hold off
 
 subplot(3,1,1)
 hist(ampls)
