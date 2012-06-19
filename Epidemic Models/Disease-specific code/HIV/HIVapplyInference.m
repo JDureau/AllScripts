@@ -550,6 +550,12 @@ Names = Parameters.Names.Estimated;
 disp(['Final MCMC'])
 
 Cov =  cov(Res.TransfThetas');
+
+
+load([SavePath Parameters.NameToSave])
+Cov = cov(Res.TransfThetas');
+
+
 % OldCov = Cov;
 % Cov =  2.38^2/length(Names)*DetCov;
 % Cov(Parameters.SigmaRW.Index,Parameters.SigmaRW.Index) = OldCov(13,13);

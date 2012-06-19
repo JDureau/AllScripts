@@ -9,6 +9,15 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 % load([SavePath '/ForCovForHIVTransfTetas.mat'])
 % Cov = cov(ResRW.TransfThetas');
 
+cd('/users/ecologie/dureau/src/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
+
+
+
 
 Parameters = struct();
 
@@ -166,7 +175,7 @@ Parameters.BRmm1.Value = 6;
 Parameters.BRmm1.Min = -10^14;
 Parameters.BRmm1.Max = 10^14;
 Parameters.BRmm1.MinLim = 0;
-Parameters.BRmm1.MaxLim = 400;
+Parameters.BRmm1.MaxLim = 60;
 % Parameters.BRmm1.MaxLim = 10;
 Parameters.BRmm1.Estimated = 1;
 Parameters.BRmm1.TransfType = 'Logit';

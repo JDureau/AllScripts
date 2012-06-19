@@ -1,16 +1,19 @@
 function [] = PlotMarc(Res,Resol,figind)
 
-Data = Res.Data;
-  
-PathsInstant = 0:Res.Parameters.ComputationTStep:sum(Data.NbComputingSteps);
- 
+try
+    Data = Res.Data;
+end
+try
+    PathsInstant = 0:Res.Parameters.ComputationTStep:sum(Data.NbComputingSteps);
+end
 try     
     Paths = Res.Paths;
 catch
     Paths = Res.CompletePaths;
 end        
-Parameters = Res.Parameters;
-
+try
+    Parameters = Res.Parameters;
+end
 dates = {};
 try
     delta = floor((length(Res.Data.Dates)-1)/Resol);
@@ -21,8 +24,10 @@ try
     end
     
 catch
-    delta = floor((length(Res.Data.Instants)-1)/Resol);
-    Resol = floor((length(Res.Data.Instants)-1)/delta);
+    try
+        delta = floor((length(Res.Data.Instants)-1)/Resol);
+        Resol = floor((length(Res.Data.Instants)-1)/delta);
+    end
 end
 
 try
