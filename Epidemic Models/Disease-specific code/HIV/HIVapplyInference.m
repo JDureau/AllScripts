@@ -114,6 +114,8 @@ Parameters = DefineTransfFunctions(Parameters);
 Parameters = UpdateParsNoTransfToTransf(Parameters);
 Parameters = DefinePriors(Parameters);
 
+
+load([SavePath '/' Parameters.TempName])
 try
     load([SavePath '/' Parameters.TempName])
     AlreadySomething = 1;

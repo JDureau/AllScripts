@@ -307,7 +307,14 @@ catch
                 hold on
                 ciplot(repmat(quantile(mult.*squeeze(Res.Thetas(Parameters.beta12init.Index,:)),0.25),1,size(Paths,3)),repmat(quantile(mult.*squeeze(Res.Thetas(Parameters.beta12init.Index,:)),0.75),1,size(Paths,3)),[100,153,251]/255)
                 plot(repmat(median(mult.*squeeze(Res.Thetas(Parameters.beta12init.Index,:))),1,size(Paths,3)),'k','LineWidth',2)
-            
+            elseif strcmp(Parameters.Problem,'Marc2diffb')
+                toplotdiff = 11;
+                add = Res.Thetas(Parameters.kidsadd.Index,:);
+                mult = Res.Thetas(Parameters.kidsmult.Index,:);
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
             else
                 add = Res.Thetas(Parameters.kidsadd.Index,:);
                 mult = Res.Thetas(Parameters.kidsmult.Index,:);
@@ -334,7 +341,15 @@ catch
                 hold on
                 ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta12init.Index,:)),0.25),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta12init.Index,:)),0.75),1,size(Paths,3)),[100,153,251]/255)
                 plot(repmat(median(squeeze(Res.Thetas(Parameters.beta12init.Index,:))),1,size(Paths,3)),'k','LineWidth',2)
-      
+            elseif strcmp(Parameters.Problem,'Marc2diffb')
+                toplotdiff = 11;
+                add = Res.Thetas(Parameters.adultsadd.Index,:);
+                mult = Res.Thetas(Parameters.adultsmult.Index,:);
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(repmat(add',1,size(Paths,3))+repmat(mult',1,size(Paths,3)).*squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+   
             else
                 add = Res.Thetas(Parameters.adultsadd.Index,:);
                 mult = Res.Thetas(Parameters.adultsmult.Index,:);
@@ -356,6 +371,12 @@ catch
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
                 plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
             elseif strcmp(Parameters.Problem,'Marc2diff')
+                toplotdiff = 12;
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                hold on
+                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+            elseif strcmp(Parameters.Problem,'Marc2diffb')
                 toplotdiff = 12;
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
                 hold on
