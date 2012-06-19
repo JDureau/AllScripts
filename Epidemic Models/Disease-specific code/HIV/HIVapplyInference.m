@@ -386,7 +386,7 @@ end
 % 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if 1%not(AlreadySomething)
+if not(AlreadySomething)
     disp('Quick PMCMC')
     Names = Parameters.Names.Estimated;
     for i = 1:length(Names);
@@ -552,8 +552,8 @@ disp(['Final MCMC'])
 Cov =  cov(Res.TransfThetas');
 
 
-load([SavePath Parameters.NameToSave])
-Cov = cov(Res.TransfThetas');
+% load([SavePath Parameters.NameToSave])
+% Cov = cov(Res.TransfThetas');
 
 
 % OldCov = Cov;
