@@ -87,8 +87,12 @@ if ind == 1
   ParametersMysore.ObsMax = ObsMysore3rdsMax;
   ParametersMysore.NameToSave = Name;
   
-  if strcmp(Diff,'Logistic')
-    ParametersMysore.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersMysore.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersMysore.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
   Res = HIVapplyInference([],ParametersMysore);

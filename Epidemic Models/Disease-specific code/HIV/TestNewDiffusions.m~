@@ -38,7 +38,7 @@ ylim([0 1])
 
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
 
-cd('/Users/dureaujoseph/Dropbox/Taf/AllScripts/')
+cd('/Users/dureaujoseph/Dropbox/AllScriptsGit/')
 addpath([pwd '/General Tools'])
 addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
