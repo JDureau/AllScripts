@@ -73,3 +73,8 @@ Name = '';
 FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 
 
+
+
+
+
+

@@ -832,6 +832,7 @@ hold off
 
 Names = {'Mysore_3rounds','Mysore_2rounds','Belgaum_3rounds','Belgaum_2rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
 ests = [];
+randinds = 1:2000;
 for i = 1:length(Names)
     disp(Names{i})
     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
@@ -851,7 +852,7 @@ for i = 1:length(Names)
     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
     load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
     ResBer = Res;
-    randinds = 1:5000;%randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
+    randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
     ResBer.Paths = ResBer.Paths(randinds,:,:);
     ResBer.Thetas = ResBer.Thetas(:,randinds);
     load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
@@ -889,7 +890,7 @@ for i = 1:length(Names)
     mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
     tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
     c = 1./(1+exp(tinfl./rate));
-    b = (mu-base).*c./(1-c);
+    b = (mu-base).*c;
     a = base - b;
     a = repmat(a',1,indend);
     b = repmat(b',1,indend);
@@ -902,19 +903,31 @@ for i = 1:length(Names)
     disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
     disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
     disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
+    disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
+    disp(quantile(FtsSigmSto(:,indend)-FtsAdd(:,585-168),q))
     ests(i,1,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
     ests(i,1,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
     ests(i,1,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
+    ests(i,1,4) = quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q);
+    ests(i,1,5) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
     
-    q = 0.05;
+    q = 0.975;
     disp('q5 delta')
     disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
     disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
     disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
+    disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
+    disp(quantile(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168),q))
     ests(i,2,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
     ests(i,2,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
     ests(i,2,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
 
+    disp(mean(FtsDet(:,indend)-FtsDet(:,585-168)))
+    disp(mean(FtsBer(:,indend)-FtsBer(:,585-168)))
+    disp(mean(FtsAdd(:,indend)-FtsAdd(:,585-168)))
+    disp(mean(FtsSigm(:,indend)-FtsSigm(:,585-168)))
+    disp(mean(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168)))
+    
     q = 0.5
     disp('q50 2010')
     quantile(FtsDet(:,indend),q)
@@ -947,18 +960,21 @@ for i = 1:length(Names)
     clf
     ResAdd.Parameters.TypeWork = 'Boston Examples';
     ResAdd.Parameters.PlotIndex = 5;
-    PlotResHIV(ResAdd,ResAdd.Parameters)
+%     PlotResHIV(ResAdd,ResAdd.Parameters)
     ResDet.Parameters.TypeWork = 'Boston Examples';
     ResDet.Parameters.PlotIndex = 2;
+    ResDet.title = 'dBR';
     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
     ResSigm.Parameters.PlotIndex = 1;
+    ResSigm.title = 'dSigm';
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 4;
-    PlotResHIV(ResBer,ResBer.Parameters)
+%     PlotResHIV(ResBer,ResBer.Parameters)
     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
     ResSigmSto.Parameters.PlotIndex = 3;
+    ResSigmSto.title=  'sSigm';
     PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
     
 end
@@ -972,7 +988,16 @@ save([SavePath '/AllRegionsEstimates.mat'],'ests')
 
 mean(FtsDet(:,582)-FtsDet(:,585-168))
 mean(FtsBer(:,582)-FtsBer(:,585-168))
+mean(FtsSigm(:,582)-FtsSigm(:,585-168))
+mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
 mean(FtsAdd(:,582)-FtsAdd(:,585-168))
+
+q = 1
+quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
+quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
+quantile(FtsSigm(:,582)-FtsSigm(:,585-168),q)
+quantile(FtsSigmSto(:,582)-FtsSigmSto(:,585-168),q)
+quantile(FtsAdd(:,582)-FtsAdd(:,585-168),q)
 
 mean(FtsDet(:,582))
 mean(FtsBer(:,582))

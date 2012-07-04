@@ -395,7 +395,7 @@ end
 
 
     try
-        subplot(4,2,2+Parameters.PlotIndex)
+        subplot(2,2,Parameters.PlotIndex)
     catch
         clf
     end
@@ -492,6 +492,7 @@ end
     if Parameters.PlotIndex == 1
         title('Estimated Condom Use','FontWeight','bold','FontSize',18)
     end
+    title(Res.title)
 %     xlabel('Time')
 %     ylabel('Condom Use','FontSize',16)
 %     legend('95% C.I','50% C.I.','Mean')

@@ -32,8 +32,9 @@
     for IndDiscr = 1:NbIts
         % Variables
         if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
+            Variables(:,9) = max(-10^6,min(-0.000001,Variables(:,9)));
             beta = ((1-m)*Variables(:,9)+mu^(1-m)).^(1/(1-m));
-            if Parameters.BRbase.Value>m^(1/(1-m))*mu
+            if or(Parameters.BRbase.Value>m^(1/(1-m))*mu,sum(not(isreal(Variables(:,9)))))
                 Crash = 1;
                 beta = Parameters.BRbase.Value;
             end
@@ -81,7 +82,7 @@
                     TempVariables(:,9) = TempVariables(:,9) - k*TempVariables(:,9)*TStep + sqrt(TStep)*Parameters.BRsigma.Value*TempVariables(:,9).*rands(:,IndDiscr);            
                     WentOutOrNot = WentOutOrNot.*(TempVariables(:,9)<0);
                     tmpinds = find(not(WentOutOrNot));
-                    TempVariables(tmpinds,9) = -0.00001;
+                    TempVariables(tmpinds,9) = Variables(tmpinds,9) ;
                 catch
                     'problem'
                 end

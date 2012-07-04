@@ -12,9 +12,15 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         mu = Parameters.BRmu.Value;
         k = Parameters.k;
     elseif strcmp(Parameters.DiffusionType,'Sigmoid')
+        % beta(t) = a + b/c(1+x_t)
         rate = Parameters.Sigmrate.Value;
         base = Parameters.Sigmbase.Value;
         mu = Parameters.Sigmmu.Value;
+        tinfl = Parameters.Sigmtinfl.Value;
+        
+        c = 1/(1+exp(tinfl/rate));
+        b = (mu-base)*c;
+        a = base - b;
     else
 %         disp('Unknown Diffusion')
 %         die
@@ -42,16 +48,18 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
        
         mtemp = mpred;
         if or(strcmp(difftype,'Bertallanfy'),strcmp(difftype,'BertallanfyConstr'))
-            mtemp(9) = max(-10^6,min(-0.01,mtemp(9)));
+            mtemp(9) = max(-10^6,min(-0.000001,mtemp(9)));
             beta = ((1-m)*mtemp(9)+mu^(1-m))^(1/(1-m));
-            if or(Parameters.BRbase.Value>m^(1/(1-m))*mu,not(isreal(k)))
+            if re
                 Crash = 1;
                 'BR forbidden beta0'
                 k = real(k);
                 beta = Parameters.BRbase.Value;
             end
         elseif strcmp(difftype,'Sigmoid')
-            beta = base + (mu-base)/(1+mtemp(9));
+            mtemp(9) = min(10^6,max(0.000001,mtemp(9)));
+%             beta = base + (mu-base)/(1+mtemp(9));
+            beta = a + b/(c*(1+mtemp(9)));
         else
             beta = exp(mtemp(9))/(1+exp(mtemp(9)));
         end
@@ -93,7 +101,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 betader = 0;
             end
         elseif strcmp(difftype,'Sigmoid')
-            
+            betader = -b*c/(c*(1+mpred(9))^2);
         else
             betader = exp(mpred(9))/((1+exp(mpred(9)))^2);
         end
@@ -162,6 +170,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             Jacobian(9,10) = 1;
         elseif or(strcmp(difftype,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
             Jacobian(9,9) = - k;
+        elseif strcmp(difftype,'Sigmoid')
+            Jacobian(9,9) = - 1/rate;
         end
         
         Q = zeros(9,9);
@@ -171,7 +181,13 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 Q(9,9) = (Parameters.BRsigma.Value)^2;
                 Crash = 1;
             end
-            
+        elseif strcmp(difftype,'Sigmoid')
+            Q(9,9) = (Parameters.Sigmsigma.Value*mpred(9))^2;
+            if isinf(Q(9,9))
+                Q(9,9) = (Parameters.Sigmsigma.Value)^2;
+                Crash = 1;
+                'crash'
+            end
 %             Q(9,9) = (Parameters.SigmaRW.Value/(mu*exp(mtemp(9))/(1+exp(mtemp(9)))^2))^2;
         elseif or(strcmp(difftype,'Add'),strcmp(difftype,'AddConstr'))
             Q(9,9) = (Parameters.SigmaRW.Value)^2;
