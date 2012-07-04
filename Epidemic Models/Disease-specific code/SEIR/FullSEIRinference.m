@@ -6,7 +6,7 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 75000;
+NbIters = 15000;
 NbItersPrep = 5000;
 
 
