@@ -8,6 +8,10 @@ if not(isfield(Parameters,'RWinEKF'))
     Parameters.RWinEKF = 0;
 end
 
+if not(isfield(Parameters,'RunningMif'))
+    Parameters.RunningMif = 0;
+end
+
 
 tic
 NbVarsTot = Parameters.NbVariables;
@@ -15,6 +19,9 @@ Observations = Data.Observations;
 ObservationInstants = Data.Instants;
 NbComputingSteps = Data.NbComputingSteps;
 Parameters.NbObs = length(ObservationInstants) ;
+
+if Parameters.RunningMif 
+    NbVarsTot = NbVarsTot + Parameters.
 
 TStep     = Parameters.ComputationTStep;
 
@@ -41,7 +48,7 @@ LogLikTheoret = 0;
 ms = repmat(m,1,length(ObservationInstants));
 Covs = [];
 Covs(1,:,:)=Cov;
-
+endit = 0;
 % disp(m(3))
 
 for IndTime = 2:length(ObservationInstants) 
@@ -83,20 +90,22 @@ for IndTime = 2:length(ObservationInstants)
     if not(mean(Cov1 == Cov1')==1)
         disp('pb')
     end
+    
+    if Res.Crash
+        endit = 1;
+    end
 
-    try if Res.Crash
-            'crash';
-            tempLogLik = -700;
-            LogLik = LogLik + tempLogLik;
+    try if endit
+            LogLik = -Inf;
         else
             die
         end    
     catch
 
-
-    %     Res.m
-    %     Res.Cov
-    %     die
+% 
+%         Res.m
+% %         Res.Cov
+%         die
 
 
         Ck = Model.ObservationJacobian{IndTime};
@@ -113,7 +122,7 @@ for IndTime = 2:length(ObservationInstants)
         if not(isempty(inds))
             IndObservedVar = Data.ObservedVariables(inds,IndTime);
             ypred = mpred(IndObservedVar);
-
+            
             vk = Observations(IndObservedVar,IndTime) - coeff*ypred; 
 
 %             'x'
@@ -226,7 +235,7 @@ for IndTime = 2:length(ObservationInstants)
         %             t = 0;%sum(log(normpdf(diff(Res.deltabetas)/Parameters.ComputationTStep,0,sqrt(Parameters.ComputationTStep)*max(eps,Parameters.SigmaRW.Value))));
         %             tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
         %         else
-        Sk = max(0.1,Sk);
+        Sk = max(0.1,Sk); %Just commented it june 6th
                     tempLogLik = max(-700,log(not(Res.Crash)*mvnpdf(vk,zeros(size(vk)),Sk)));
         %         end
             catch
@@ -281,8 +290,10 @@ Sigmas = [];
 for i = 1:NbVarsTot
     Sigmas(i,:) = sqrt(Covs(:,i,i));
 end
-Result.Posterior975 = ms + 2*Sigmas;
-Result.Posterior025 = ms - 2*Sigmas;
+try
+    Result.Posterior975 = ms + 2*Sigmas;
+    Result.Posterior025 = ms - 2*Sigmas;
+end
 Result.Likelihood = prod(Liks);
 Result.Liks = Liks;
 if not(isreal(LogLik))

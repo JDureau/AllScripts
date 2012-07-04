@@ -8,6 +8,10 @@ if not(isfield(Parameters,'RWinEKF'))
     Parameters.RWinEKF = 0;
 end
 
+if not(isfield(Parameters,'RunningMif'))
+    Parameters.RunningMif = 0;
+end
+
 
 tic
 NbVarsTot = Parameters.NbVariables;
@@ -19,6 +23,15 @@ Parameters.NbObs = length(ObservationInstants) ;
 TStep     = Parameters.ComputationTStep;
 
 InitialState = Parameters.InitialState;
+
+if Parameters.RunningMif 
+    names = Parameters.Names.Estimated;
+    NbVarsTot = NbVarsTot + length(names);
+    for i = 1:length(names)
+        InitialState(end+1) = Parameters.(names{i}).TransfValue;
+    end
+end
+    
 
 
 m = InitialState;
@@ -115,9 +128,9 @@ for IndTime = 2:length(ObservationInstants)
         if not(isempty(inds))
             IndObservedVar = Data.ObservedVariables(inds,IndTime);
             ypred = mpred(IndObservedVar);
-            
             vk = Observations(IndObservedVar,IndTime) - coeff*ypred; 
 
+           
 %             'x'
 %             ypred
 %             

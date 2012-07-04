@@ -3,11 +3,7 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
 
 
 
-    if Parameters.RunningMif 
-        temp = zeros(1,7+length(Parameters.Names.Estimated));
-    else
-        temp = zeros(1,7);
-    end
+    temp = zeros(1,7);
     temp(1,5) = 1;
     Model.ObservationJacobian = {};
     Model.ObservationMeasurementNoise = {};
@@ -21,18 +17,14 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
         Model.ObservationMeasurementNoise{i} = (Parameters.SigmaObs.Value*Data.Observations(5,i))^2; % Additional approximation here due to kalman gaussian approximation
     end
 
-    if Parameters.RunningMif 
-        mpred = m; 
-    end
     mpred(1:5,1) = max(m(1:5),0);
     mpred(1:5,1) = min(m(1:5),Parameters.TotalPopulation);
     mpred(6,1) = m(6);
     mpred(5) = 0;
     if length(m) == 6
         m(7) = 0;
-    end       
+    end
     mpred(7,1) = m(7);
-    
     Cov(5,:) = 0;
     Cov(:,5) = 0;
     TStep = Parameters.ComputationTStep;
@@ -62,13 +54,8 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
 %             mpred(7) = mtemp(7);
         end
             
-        if Parameters.RunningMif 
-            names = Parameters.Names.Estimated;
-            tempn = 7+length(names); 
-            Jacobian = zeros(tempn,tempn);
-        else
-            Jacobian = zeros(7,7);
-        end
+            
+        Jacobian = zeros(7,7);
         Jacobian(1,1) = -beta*mpred(3)/TotPop;
         Jacobian(1,3) = -beta*mpred(1)/TotPop;
         Jacobian(1,6) = -beta*mpred(3)*mpred(1)/TotPop;
@@ -84,15 +71,8 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             Jacobian(6,7) =  1;
         end    
         if Parameters.RunningMif 
-            if Parameters.km1.Estimated 
-                Jacobian(2,7+Parameters.km1.Index) =  Parameters.km1.Value^-2*mtemp(2);
-                Jacobian(3,7+Parameters.km1.Index) = -Parameters.km1.Value^-2*mtemp(2);
-                Jacobian(5,7+Parameters.km1.Index) = -Parameters.km1.Value^-2*mtemp(2);
-            end
-            if Parameters.gammam1.Estimated 
-                Jacobian(3,7+Parameters.gammam1.Index) =  Parameters.gammam1.Value^-2*mtemp(3);
-                Jacobian(4,7+Parameters.gammam1.Index) = -Parameters.gammam1.Value^-2*mtemp(3);
-            end            
+            
+            
         end
         
 %         if strcmp(Parameters.DiffusionType,'OUD')
@@ -114,7 +94,7 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             tempn = 7+length(names);
             Q = zeros(tempn,tempn);
             for i = 8:7+length(names)
-                if Parameters.(names{i-7}).Init
+                if Parameters.(names{i}).Init
                     Q(i,i) = Parameters.MIFVarInit;
                 else
                     Q(i,i) = Parameters.MIFVarNotInit;
