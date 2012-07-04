@@ -57,7 +57,7 @@ try
 %             HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
             HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/425);
        end
-        NbItsPMCMC = 50000;
+        NbItsPMCMC = 500;
         Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
 
     else
@@ -497,7 +497,7 @@ if not(AlreadySomething)
     Parameters.AdMetBeta = 0.05;
     % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
     Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
-    Res.Parameters = Parameters;
+%     Res.Parameters = Parameters;
 
     for i = 1:3
         disp(['MCMC ' num2str(i)])
@@ -525,7 +525,7 @@ if not(AlreadySomething)
         Parameters.AdaptC = 0.999;
         % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
         Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);
-        Res.Parameters = Parameters;
+%         Res.Parameters = Parameters;
     end
 
     load([SavePath '/' Parameters.TempName])
