@@ -67,7 +67,7 @@ ObsType = 'Estimated';
 Name = '';
 
 
-load([SavePath '/ParametersSEIR.mat']);
+load([SavePath 'ParametersSEIR.mat']);
 pars = {'RInitProp','km1','gammam1'};
 shift = [0.1 0.2 -0.1 -0.2];
 m = Parameters.(pars{IndPar}).Min;
@@ -81,11 +81,11 @@ Parameters = DefineTransfFunctions(Parameters);
 Parameters = DefinePriors(Parameters);
 Parameters = UpdateParsNoTransfToTransf(Parameters);
 
-save([SavePath '/ParametersSEIR_' num2str(IndPar) '_' num2str(IndShift) '.mat'],'Parameters');
+save([SavePath 'ParametersSEIR_' num2str(IndPar) '_' num2str(IndShift) '.mat'],'Parameters');
 
 Data.TwistingPriors = 1;
 Data.NameTwistedPriors =  ['/ParametersSEIR_' num2str(IndPar) '_' num2str(IndShift) '.mat'];
-Data.NameToSave = ['/MarcData_Sensitivity_' pars{IndPar} '_' num2str(IndShift) '.mat'];
+Data.NameToSave = ['MarcData_Sensitivity_' pars{IndPar} '_' num2str(IndShift) '.mat'];
 
 FullSEIRinference(Data,DiffType,ObsType,Name,1)
 
