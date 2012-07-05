@@ -30,6 +30,11 @@ switch IndModel
         tmp = load([SavePath '/ParametersSEIR2_4diff.mat']);
 end
 
+try 
+    if Data.TwistingPriors
+        tmp = load([SavePath Data.NameTwistedPriors]);
+    end
+end
 
 
 switch IndModel
@@ -48,6 +53,13 @@ switch IndModel
     case 7
         NameToSave = ['MarcData_StructModel_4diff.mat'];
 end
+
+try 
+    if Data.TwistingPriors
+        NameToSave = Data.NameToSave;
+    end
+end
+
 
 Parameters = tmp.Parameters;
 

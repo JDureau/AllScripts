@@ -6,8 +6,8 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 30000;
-NbItersPrep = 3000;
+NbIters = 15000;
+NbItersPrep = 5000;
 
 
 
@@ -30,6 +30,11 @@ switch IndModel
         tmp = load([SavePath '/ParametersSEIR2_4diff.mat']);
 end
 
+try 
+    if Data.TwistingPriors
+        tmp = load([SavePath Data.NameTwistedPriors]);
+    end
+end
 
 
 switch IndModel
@@ -48,6 +53,13 @@ switch IndModel
     case 7
         NameToSave = ['MarcData_StructModel_4diff.mat'];
 end
+
+try 
+    if Data.TwistingPriors
+        NameToSave = Data.NameToSave;
+    end
+end
+
 
 Parameters = tmp.Parameters;
 
@@ -530,104 +542,6 @@ end
 Parameters.MCMCType = 'frfr';
 Names = Parameters.Names.Estimated;
 
-% Initialization = [];
-% Names = Parameters.Names.Estimated;
-% for i = 1:length(Names)
-%     Initialization(i) = Parameters.(Names{i}).TransfValue ;
-% %         Initialization(i) =  tempPars.(Names{i}).TransfValue ;
-% end
-% Parameters.Correction = 1;
-% [x,fval,exitflag,output] = fminsearch(@(x) SMCToOptimizewithPrior(x,Data,SEIRModel,Parameters),Initialization,optimset('MaxIter',20,'TolX',1e-8,'TolFun',1e-8));
-% Names = Parameters.Names.Estimated;
-% for i = 1:length(Names)
-%     Parameters.(Names{i}).TransfValue = (x(i));
-% end
-% Parameters = UpdateParsTransfToNoTransf(Parameters);
-% TellParsValues(Parameters)  
-
-% Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
-% Temp.LogLik
-% 
-% % defining NbParts 
-% nbparts = [  100 1000 2000 3000 4000  5000 ];
-% % nbparts = [  5000 6000 7000 8000 10000];
-% NbTests = 50;
-% LogLikrecords = [];
-% for i = 1:length(nbparts)
-%     Parameters.NbParticules = nbparts(i);
-%     for j = 1:NbTests
-%         disp([i j])
-%         Temp = EstimationSMCsmoothGen(Data, SEIRModel, Parameters);
-%         LogLikrecords(i,j) = Temp.LogLik;
-%     end
-% end
-% clf
-% hold on
-% for i = 1:length(nbparts)
-%     plot(nbparts(i),std(LogLikrecords(i,:)),'o')
-% end
-% hold off
-% clf
-% hold on
-% for i = 1:length(nbparts)
-%     plot(nbparts(i),mean(LogLikrecords(i,:)),'.')
-%     plot(nbparts(i),mean(LogLikrecords(i,:))+std(LogLikrecords(i,:)),'.r')
-%     plot(nbparts(i),mean(LogLikrecords(i,:))-std(LogLikrecords(i,:)),'.r')
-% end
-% hold off
-% 
-% 
-% Parameters.NbParticules = 4000;
-% 
-% % defining TStep
-% DataTests = Data;
-% 
-% res = [2 3 10].^-1;
-% logliks = [];
-% paths = [];
-% for i = 1:length(res)
-%     disp(i)
-%     for j = 1:20
-%         Parameters.ComputationTStep = res(i);
-%         DataTests.Instants = [1:size(Data.Observations,2)]*7/Parameters.ComputationTStep;
-%         DataTests.ObservedVariables = 5*ones(1,length(DataTests.Instants));
-%         DataTests.NbComputingSteps = [0 diff(DataTests.Instants)];
-%         Temp = EstimationSMCsmoothGen(DataTests, SEIRModel, Parameters);
-%         logliks(i,j) = Temp.LogLik;
-%         paths(i,j,:) = exp(Temp.PosteriorMeansRecord(6,:));
-%     end
-% end
-% logliks'
-% clf
-% hold on
-% for i = 1:length(res)
-%     plot(res(i),mean(logliks(i,:)),'.')
-%     plot(res(i),mean(logliks(i,:))+std(logliks(i,:)),'.r')
-%     plot(res(i),mean(logliks(i,:))-std(logliks(i,:)),'.r')
-% end
-% hold off
-% 
-% cols = rand(length(res),3);
-% clf
-% hold on
-% for i = 1:length(res)
-%     plot(mean(squeeze(paths(i,:,:))),'col',cols(i,:),'LineWidth',2)
-%     plot(quantile(squeeze(paths(i,:)),0.95),'col',cols(i,:))
-%     plot(quantile(squeeze(paths(i,:)),0.05),'col',cols(i,:))
-% end
-% legend
-% hold off
-
-
-% if strcmp(Parameters.PMCMC,'Gibbs')
-%     tmpCov = (-KalHess)^-1;
-%     for i = 1:length(Names)
-%         ind = Parameters.(Names{i}).Index;
-%         Parameters.(Names{i}).GibbsSigma = sqrt(2.38^2*tmpCov(ind,ind));
-%         Parameters.(Names{i}).GibbsSampler = @GibbsRWsampler;
-%     end
-% end
-
 
 if strcmp(Parameters.DiffusionType,'IBM')
     Parameters.ComputationTStep = 1/3;
@@ -646,6 +560,38 @@ else
     Data.ObservedVariables = 5*ones(1,length(Data.Instants));
 end
 Data.NbComputingSteps = [0 diff(Data.Instants)];
+
+
+
+
+% Running SMC from there
+Cov = (-KalHess)^-1;
+Parameters.G = Cov^-1;
+Parameters.NoPaths = 0;
+Parameters.ModelType='SMC';
+Parameters.AdaptC = 0.999;
+Parameters.NbVariables = 7;
+Parameters.aim = 0.23;
+Parameters.Epsil = 1;
+Parameters.MCMCType = 'Rand';
+Parameters.GMeth = 'cst given';
+Parameters.PathsToKeep 
+paths = [];
+thetas = [];
+names = Parameters.Names.Estimated;
+for i = 1:1000
+    i
+    ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
+    RandInd = ceil(rand(1,1)*Parameters.NbParticules);
+    paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
+    for j = 1:length(names)
+        thetas(Parameters.(names{j}).Index,i) = Parameters.(names{j}).Value;
+    end
+end
+Res.Paths = paths;
+Res.Thetas = thetas;
+save([SavePath '/TempSmoothed_' NameToSave],'Res')
+clear Res
 
 
 
@@ -763,7 +709,7 @@ if IndModel>1
 else
     Parameters.PathsToKeep = [1:7]';
 end
-Parameters.SaveSpace = 0;
+Parameters.SaveSpace = 1;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
