@@ -57,6 +57,12 @@ for i =1:length(Data.Dates)
 end
 
 
+Data.Observations = zeros(7,35);
+Data.Observations(5,:) = Weigthed*10;
+Data.Instants = [1:size(Data.Observations,2)]*size(Data.Observations,1)/Parameters.ComputationTStep;
+Data.ObservedVariables = 5*ones(1,length(Data.Instants));
+Data.NbComputingSteps = [0 diff(Data.Instants)];
+
 
 load([SavePath '/ParametersSEIR.mat']);
 
@@ -72,7 +78,10 @@ SEIRModel.SMC_projection = @SEIR_SMC_projection;
 SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
 
 
-Res = RunDetermMIF(Data, SEIRModel, Parameters)
+
+Result = EstimationEKFGen(Data, SEIRModel, Parameters)
+
+Res = RunDetermMIF(Data, SEIRModel, Parameters);
 
 k = ceil(sqrt(length(Parameters.Names.Estimated)));
 subplot(k+1,k,1:k)

@@ -971,7 +971,8 @@ for i = 1:length(Names)
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 4;
-%     PlotResHIV(ResBer,ResBer.Parameters)
+    ResBer.title = 'sBR';
+    PlotResHIV(ResBer,ResBer.Parameters)
     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
     ResSigmSto.Parameters.PlotIndex = 3;
     ResSigmSto.title=  'sSigm';
@@ -992,7 +993,7 @@ mean(FtsSigm(:,582)-FtsSigm(:,585-168))
 mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
 mean(FtsAdd(:,582)-FtsAdd(:,585-168))
 
-q = 1
+q = 0.5
 quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
 quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
 quantile(FtsSigm(:,582)-FtsSigm(:,585-168),q)
