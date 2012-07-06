@@ -22,7 +22,7 @@ addpath([pwd '/Toolboxes/'])
 
 
 Epss = (1:14)*0.2;
-Parameters.Epsil = Epss(ind);
+Parameters.Epsil = Epss(ind+1);
 
 
 switch IndDensity
@@ -97,4 +97,7 @@ Res.Eps = Parameters.Epsil;
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
 save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'],'Res');
 
-      
+  
+
+
+
