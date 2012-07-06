@@ -90,7 +90,7 @@ end
 Samples = {};
 AccRates = [];
 RelESSs = [];
-Res = RunMCMC(Parameters.ArgMax',Parameters,150000);
+Res = RunMCMC(Parameters.ArgMax',Parameters,5000);
 Res.Samples = Res.Vals;
 Res.Eps = Parameters.Epsil;
 

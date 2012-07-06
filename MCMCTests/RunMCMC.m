@@ -18,6 +18,9 @@ vals = [];
 Potvals = [];
 NbAcc = 0;
 for i = 1:NbIts
+    if rand(1,1)<0.01
+        disp(i)
+    end
     % sample new
     PotValue = Parameters.SampleFun(TempValue,Parameters);
     LogRatio = Parameters.LogRatioFun(TempValue,PotValue,Parameters);
@@ -56,12 +59,14 @@ end
 %     disp('pb')
 % end
 
+
+
 for i = 1:Parameters.Dim
     subplot(Parameters.Dim,1,i)
     hist(vals(i,:))
-    autocor = autocorrelation(vals(i,:),100);
+    autocor = Autocorrelation(vals(i,:));
     Res.autocor(i,:) = autocor;
-    Res.ESS(i) = NbIts/(1+2*sum(autocor));
+    Res.ESS(i) = NbIts/(1+2*sum(autocor(2:end)));
     Res.RelESS(i) = Res.ESS(i)/NbIts*100;
     title([num2str(Res.ESS(i)/NbIts*100,3) '%'])
 end
