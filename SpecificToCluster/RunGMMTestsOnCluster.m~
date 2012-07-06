@@ -22,7 +22,7 @@ addpath([pwd '/Toolboxes/'])
 
 
 Epss = (1:14)*0.2;
-Parameters.Epsil = Epss(ind);
+Parameters.Epsil = Epss(ind+1);
 
 
 switch IndDensity
