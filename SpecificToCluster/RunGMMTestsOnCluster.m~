@@ -38,7 +38,8 @@ switch IndDensity
         Parameters = FindFisherInfMat(zeros(1,dim),Parameters) ;
         Parameters.OptDens = Parameters.RealDens;
         Parameters.Dens = gmdistribution.fit(X,2);
-        
+        Parameters.G = @GGMM;
+        Parameters.GDerivs = @GDerivsGMM;
     case 2
         Parameters.f = @fBanana;
         B = 0.1;
@@ -67,16 +68,15 @@ switch IndMethod
     case 2
         Parameters.LogRatioFun = @LogRatioLocalMALA;
         Parameters.SampleFun = @SampleLocalMALA;
-    case 2
-        
+    case 3
+        Parameters.LogRatioFun = @LogRatioRMALA;
+        Parameters.SampleFun = @SampleRMALA;
+    case 4
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
-    case 3
+    case 5
         Parameters.LogRatioFun = @LogRatioGMMLang;
         Parameters.SampleFun = @SampleGMMLang;
-    case 4
-        Parameters.LogRatioFun = @LogRatioGMMLang2;
-        Parameters.SampleFun = @SampleGMMLang2;
 end
 
 switch IndLogOrNot 
@@ -90,11 +90,14 @@ end
 Samples = {};
 AccRates = [];
 RelESSs = [];
-Res = RunMCMC(Parameters.ArgMax',Parameters,250000);
+Res = RunMCMC(Parameters.ArgMax',Parameters,50000);
 Res.Samples = Res.Vals;
 Res.Eps = Parameters.Epsil;
 
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
 save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'],'Res');
 
-      
+  
+
+
+

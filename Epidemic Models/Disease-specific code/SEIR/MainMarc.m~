@@ -91,6 +91,27 @@ FullSEIRinference(Data,Difftype,Obstype,Name)
 
 
 
+pars = {'RInitProp','km1','gammam1'};
+shift = [0.1 0.2 -0.1 -0.2];
+SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/ResultsMarc/';
+
+
+load([SavePath NameToSave])
+
+
+for IndPar = 2:3
+    for IndShift = 1:4
+        NameToSave = ['MarcData_Sensitivity_' pars{IndPar} '_' num2str(IndShift) '.mat'];
+        load([SavePath NameToSave])
+        PlotMarc(Res3,8)
+        'c'
+        pause()
+    end
+end
+
+
+
+
 Thetas = [];
 TransfThetas = [];
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/ResultsMarc';
