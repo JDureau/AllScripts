@@ -51,9 +51,7 @@ for IndMethod = [1 4 5]
                 tmpESS(indeps) = min(Res.RelESS);
             end
         end
-        try
-            plot(Epss,tmpESS,cols{IndMethod})
-        end
+        plot(Epss,tmpESS,cols{IndMethod})
     end
 end
 hold off
