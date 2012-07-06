@@ -65,7 +65,7 @@ for i = 1:Parameters.Dim
     subplot(Parameters.Dim,1,i)
     hist(vals(i,:))
     autocor = Autocorrelation(vals(i,:));
-    Res.autocor(i,:) = autocor;
+%     Res.autocor(i,:) = autocor;
     Res.ESS(i) = NbIts/(1+2*sum(autocor(2:end)));
     Res.RelESS(i) = Res.ESS(i)/NbIts*100;
     title([num2str(Res.ESS(i)/NbIts*100,3) '%'])
