@@ -17,7 +17,7 @@ for IndComp = 1:Nc
     temp = temp + (mvnpdf(xstar,x,Parameters.Epsil^2*(squeeze(Sigmas(:,:,IndComp))))*post(IndComp));
 end
 LogqTempStar = log(temp);
-LogLikxstar = log(max(eps^3,Parameters.f(xstar,Parameters)));
+LogLikxstar = log(Parameters.f(xstar,Parameters));
 
 
 % Star to Temp 
@@ -32,7 +32,7 @@ for IndComp = 1:Nc
     temp = temp + (mvnpdf(x,xstar,Parameters.Epsil^2*(squeeze(Sigmas(:,:,IndComp))))*post(IndComp));
 end
 LogqStarTemp = log(temp);
-LogLikx = log(max(eps^3,Parameters.f(x,Parameters)));
+LogLikx = log(Parameters.f(x,Parameters));
 
 LogNum = LogLikxstar + LogqStarTemp;
 LogDenom = LogLikx + LogqTempStar;

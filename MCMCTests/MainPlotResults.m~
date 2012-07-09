@@ -4,8 +4,8 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 
 %% STEP 1: check if they all get to the same posteriors
 
-Methods =  {'MALA','LocalMALA','RMALA','GMMRand','GMMLang'};
-Densities = {'GMM2','Banana'};
+Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
+Densities = {'GMM','GMM2','Banana'};
 
 IndDensity = 1;
 dim = 2;
@@ -59,7 +59,7 @@ for IndMethod = [1 3 4 5]
     end
 end
 hold off
-ylim([0 15])
+ylim([0 65])
 
 
 
