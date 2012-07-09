@@ -3,7 +3,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 ind = ind-floor(ind/14)*14;
 
 Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
-Densities = {'GMM2','Banana'};
+Densities = {'GMM','GMM2','Banana'};
 
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
 RandStream.setDefaultStream(s)
@@ -29,6 +29,18 @@ switch IndDensity
     case 1
         Parameters.f = @fGMM;
         mu1 = zeros(dim,1);
+        sigma  = eye(dim);
+        X = [mvnrnd(mu1,sigma,20000)']';
+        Parameters.RealDens = gmdistribution.fit(X,1);
+        Parameters.Dim = dim;
+        Parameters = FindFisherInfMat(zeros(1,dim),Parameters) ;
+        Parameters.OptDens = Parameters.RealDens;
+        Parameters.Dens = gmdistribution.fit(X,1);
+        Parameters.G = @GGMM;
+        Parameters.GDerivs = @GDerivsGMM;
+    case 2
+        Parameters.f = @fGMM;
+        mu1 = zeros(dim,1);
         mu2 = zeros(dim,1);
         mu2(1) = 4;
         sigma  = eye(dim);
@@ -40,7 +52,7 @@ switch IndDensity
         Parameters.Dens = gmdistribution.fit(X,2);
         Parameters.G = @GGMM;
         Parameters.GDerivs = @GDerivsGMM;
-    case 2
+    case 3
         Parameters.f = @fBanana;
         B = 0.1;
         X = mvnrnd(zeros(dim,1),eye(dim),10000);

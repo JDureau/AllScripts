@@ -6,14 +6,10 @@ function xstar = SampleGMCovMALA(x,Parameters)
 Epsil = Parameters.Epsil;
 Mixture = Parameters.Dens;
 
-
+% numerator
 liks = max(eps,posterior(Mixture,x));
 [b,maxind] = max(liks);
-
-mu = Parameters.Mus(maxind,:)';
 Sigma = squeeze(Parameters.Sigmas(:,:,maxind));
-
-
 epsilon = 10^(-10);
 fx = log(max(eps,Parameters.f(x,Parameters)));
 Grad = zeros(length(x),1);
@@ -23,11 +19,7 @@ for i = 1:Parameters.Dim
     fxpdx = log(max(eps,Parameters.f(xpdx,Parameters)));
     Grad(i,1) = (fxpdx-fx)/epsilon;
 end
-G = Parameters.G(x,Parameters);
-Gm1 = G^-1;
-GDerivs = Parameters.GDerivs(x,Parameters);
-
-mu = x'+Epsil^2/2*Gm1*Grad;
+mu = x'+Epsil^2/2*Sigma*Grad;
 
 % temps = {};
 % tempmu = zeros(Parameters.Dim,1);
@@ -49,7 +41,7 @@ mu = x'+Epsil^2/2*Gm1*Grad;
 % end
 % mu = mu + Epsil^2/2*tempmu;
 
-xstar = mvnrnd(mu,squeeze(Epsil^2*Gm1));
+xstar = mvnrnd(mu,squeeze(Epsil^2*Sigma));
 
 if isnan(xstar)
     disp('Pb Sample MALA')
