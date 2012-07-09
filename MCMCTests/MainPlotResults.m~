@@ -7,7 +7,7 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 Methods =  {'MALA','LocalMALA','RMALA','GMMRand','GMMLang'};
 Densities = {'GMM2','Banana'};
 
-IndDensity = 1;
+IndDensity = 2;
 dim = 2;
 
 cols = {'k','','','b','r'};
