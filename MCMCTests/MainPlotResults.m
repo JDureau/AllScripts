@@ -7,13 +7,13 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 Methods =  {'MALA','LocalMALA','RMALA','GMMRand','GMMLang'};
 Densities = {'GMM2','Banana'};
 
-IndDensity = 2;
+IndDensity = 1;
 dim = 2;
 
 cols = {'k','','','b','r'};
 
 clf
-for IndMethod = [ 4 5]
+for IndMethod = [1 43 4 5]
     for IndLogOrNot = 0:1
         for indeps = 1:14
             Epss = (1:14)*0.2;

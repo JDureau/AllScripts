@@ -2,7 +2,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
 ind = ind-floor(ind/14)*14;
 
-Methods =  {'MALA','LocalMALA','RMALA','GMMRand','GMMLang'};
+Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
 Densities = {'GMM2','Banana'};
 
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
@@ -90,7 +90,7 @@ end
 Samples = {};
 AccRates = [];
 RelESSs = [];
-Res = RunMCMC(Parameters.ArgMax',Parameters,50000);
+Res = RunMCMC(Parameters.ArgMax',Parameters,100000);
 Res.Samples = Res.Vals;
 Res.Eps = Parameters.Epsil;
 
