@@ -17,7 +17,7 @@ for i = 1:Parameters.Dim
     fxpdx = log(max(eps,Parameters.f(xpdx,Parameters)));
     Grad(i,1) = (fxpdx-fx)/epsilon;
 end
-GDerivs = Parameters.GDerivs(x',Parameters);
+% GDerivs = Parameters.GDerivs(x',Parameters);
 mu = x'+Epsil^2/2*Sigma*Grad;
 % temps = {};
 % tempmu = zeros(Parameters.Dim,1);
