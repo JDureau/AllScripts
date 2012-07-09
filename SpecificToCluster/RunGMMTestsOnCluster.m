@@ -69,8 +69,8 @@ switch IndMethod
         Parameters.LogRatioFun = @LogRatioLocalMALA;
         Parameters.SampleFun = @SampleLocalMALA;
     case 3
-        Parameters.LogRatioFun = @LogRatioRMALA;
-        Parameters.SampleFun = @SampleRMALA;
+        Parameters.LogRatioFun = @LogRatioGMCovMALA;
+        Parameters.SampleFun = @SampleGMCovMALA;
     case 4
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;

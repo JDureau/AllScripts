@@ -13,7 +13,7 @@ dim = 2;
 cols = {'k','','','b','r'};
 
 clf
-for IndMethod = [1 4 5]
+for IndMethod = [ 4 5]
     for IndLogOrNot = 0:1
         for indeps = 1:14
             Epss = (1:14)*0.2;
@@ -59,7 +59,7 @@ for IndMethod = [1 4 5]
     end
 end
 hold off
-
+ylim([0 2])
 
 
 

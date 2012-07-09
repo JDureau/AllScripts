@@ -89,6 +89,10 @@ Name = [SavePath '/MarcData_Add_LogNorm_Tau3.mat'];
 FullSEIRinference(Data,Difftype,Obstype,Name)
 
 
+load([SavePath '/MarcData_StructModel_2diffb.mat'])
+
+
+
 
 Thetas = [];
 TransfThetas = [];
