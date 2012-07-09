@@ -2,7 +2,6 @@ function [] = MarcSensitivityAnalysis(IndPar,IndShift)
 
 % IndShift : +10 +20 -10 -20
 
-IndShift = IndShift + 1;
 
 
 cd('/users/ecologie/dureau/src/AllScripts/')
@@ -69,12 +68,12 @@ Name = '';
 
 load([SavePath 'ParametersSEIR.mat']);
 pars = {'RInitProp','km1','gammam1'};
-shift = [0.1 0.2 -0.1 -0.2];
+shift = [0 0.1 0.2 -0.1 -0.2];
 m = Parameters.(pars{IndPar}).Min;
 M = Parameters.(pars{IndPar}).Max;
 delta = M-m;
-Parameters.(pars{IndPar}).Min = max(m+shift(IndShift)*delta,Parameters.(pars{IndPar}).MinLim);
-Parameters.(pars{IndPar}).Max = min(M+shift(IndShift)*delta,Parameters.(pars{IndPar}).MaxLim);
+Parameters.(pars{IndPar}).Min = max(m+shift(IndShift+1)*delta,Parameters.(pars{IndPar}).MinLim);
+Parameters.(pars{IndPar}).Max = min(M+shift(IndShift+1)*delta,Parameters.(pars{IndPar}).MaxLim);
 Parameters.(pars{IndPar}).Value = (Parameters.(pars{IndPar}).Min+Parameters.(pars{IndPar}).Max)/2;
 Parameters = DefineEstimatedParametersIndexes(Parameters);
 Parameters = DefineTransfFunctions(Parameters);

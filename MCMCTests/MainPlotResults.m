@@ -23,11 +23,13 @@ for IndMethod = [1 4 5]
                 load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
                 for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));
-                    subplot(dim,1,i)
+                    subplot(dim+1,1,i)
                     hold on
                     plot(xi,fi,cols{IndMethod})
                     hold off
                 end
+                subplot(dim+1,1,dim+1)
+                scattercloud(Res.Vals(1,:),Res.Vals(2,:))
                 pause(0.001)
             end
         end
