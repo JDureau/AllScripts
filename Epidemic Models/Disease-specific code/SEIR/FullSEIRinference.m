@@ -611,12 +611,12 @@ TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
 Parameters.AdMet = 0;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,200000);
 Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,20000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,200000);
 
 
 
@@ -709,7 +709,7 @@ if IndModel>1
 else
     Parameters.PathsToKeep = [1:7]';
 end
-Parameters.SaveSpace = 1;
+Parameters.SaveSpace = 0;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 
