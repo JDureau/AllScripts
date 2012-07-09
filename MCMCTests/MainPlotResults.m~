@@ -13,7 +13,7 @@ dim = 2;
 cols = {'k','','y','b','r'};
 
 clf
-for IndMethod = [1 43 4 5]
+for IndMethod = [1 3 4 5]
     for IndLogOrNot = 0:1
         for indeps = 1:14
             Epss = (1:14)*0.2;
@@ -38,10 +38,10 @@ end
 
 %% STEP 2: check ESS plots
 
-cols = {'k','','','b','r'};
+cols = {'k','','y','b','r'};
 clf
 hold on
-for IndMethod = [1 4 5]
+for IndMethod = [1 3 4 5]
     for IndLogOrNot = 0:1
         tmpESS = [];
         for indeps = 1:14
@@ -59,7 +59,7 @@ for IndMethod = [1 4 5]
     end
 end
 hold off
-ylim([0 2])
+ylim([0 15])
 
 
 

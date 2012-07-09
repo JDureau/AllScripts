@@ -44,7 +44,7 @@ LogLikxstar = log(max(eps^3,Parameters.f(xstar,Parameters)));
 
 % Star to Temp 
 Mixture = Parameters.Dens;
-liks = max(eps,posterior(Mixture,x));
+liks = max(eps,posterior(Mixture,xstar));
 [b,maxind] = max(liks);
 mu = Parameters.Mus(maxind,:)';
 Sigma = squeeze(Parameters.Sigmas(:,:,maxind));
