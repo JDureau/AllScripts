@@ -18,7 +18,7 @@ vals = [];
 Potvals = [];
 NbAcc = 0;
 for i = 1:NbIts
-    if rand(1,1)<0.01
+    if rand(1,1)<0.1
         disp(i)
     end
     % sample new

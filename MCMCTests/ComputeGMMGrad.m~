@@ -1,0 +1,22 @@
+function Grad = ComputeGMMGrad(x,Parameters)
+
+
+Mixture = Parameters.Dens;
+liks = posterior(Mixture,x');
+ws = Parameters.Dens.PComponents
+
+Grad = zeros(Parameters.Dim,1);
+tmp = 0;
+for i = 1:Mixture.NComponents
+    Sigma = squeeze(Mixture.Sigma(:,:,i));
+    Mu = squeeze(Mixture.mu(:,i));
+    Grad = Grad + Sigma*(x-Mu)*liks(i);
+end
+Grad = Grad/sum(liks);
+
+
+    
+    
+    
+    
+    

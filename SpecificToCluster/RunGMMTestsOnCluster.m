@@ -2,7 +2,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
 ind = ind-floor(ind/14)*14;
 
-Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
+Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang','GMHMC','GMCovHMC'};
 Densities = {'GMM','GMM2','Banana'};
 
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
@@ -55,9 +55,10 @@ switch IndDensity
     case 3
         Parameters.f = @fBanana;
         B = 0.1;
-        X = mvnrnd(zeros(dim,1),eye(dim),10000);
+        X = mvnrnd(zeros(dim,1),eye(dim),50000);
         X(:,1) = 10*X(:,1);
         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
+        Parameters.TrueSamples = X;
         Parameters.RealDens = gmdistribution.fit(X,15);
         Parameters.OptDens = Parameters.RealDens;
         Parameters.B = B;
@@ -66,7 +67,7 @@ switch IndDensity
         test = 0;
         while not(test)
             try
-                Parameters.Dens = gmdistribution.fit(X,14);
+                Parameters.Dens = Parameters.RealDens; %gmdistribution.fit(X,5);
                 test = 1;
             end
         end
@@ -89,6 +90,16 @@ switch IndMethod
     case 5
         Parameters.LogRatioFun = @LogRatioGMMLang;
         Parameters.SampleFun = @SampleGMMLang;
+    case 6
+        Parameters.LogRatioFun = @LogRatioGMHMC;
+        Parameters.SampleFun = @SampleGMHMC;
+        Parameters.ScalingCov = -(Parameters.Hess^-1);
+        Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
+    case 7
+        Parameters.LogRatioFun = @LogRatioGMCovHMC;
+        Parameters.SampleFun = @SampleGMCovHMC;
+        Parameters.ScalingCov = -(Parameters.Hess^-1);
+        Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
 end
 
 switch IndLogOrNot 
@@ -102,7 +113,7 @@ end
 Samples = {};
 AccRates = [];
 RelESSs = [];
-Res = RunMCMC(Parameters.ArgMax',Parameters,50000);
+Res = RunMCMC(Parameters.ArgMax',Parameters,50);
 Res.Samples = Res.Vals;
 Res.Eps = Parameters.Epsil;
 

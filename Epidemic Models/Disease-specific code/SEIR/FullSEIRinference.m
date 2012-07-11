@@ -332,6 +332,9 @@ if not(AlreadySomething)
         case 1
             Parameters.SigmaRW.Estimated = 1;
             Parameters.betainit.Estimated = 1;
+            Parameters.EInitProp.Estimated = 1;
+            Parameters.IInitProp.Estimated = 1;
+            Parameters.RInitProp.Estimated = 1;
             Parameters.Problem = 'Marc1diff';
         case 2
             Parameters.SigmaRW11.Estimated = 1;

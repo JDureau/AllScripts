@@ -4,13 +4,13 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 
 %% STEP 1: check if they all get to the same posteriors
 
-Methods =  {'MALA','LocalMALA','RMALA','GMMRand','GMMLang'};
-Densities = {'GMM2','Banana'};
+Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
+Densities = {'GMM','GMM2','Banana'};
 
-IndDensity = 1;
+IndDensity = 2;
 dim = 2;
 
-cols = {'k','','y','b','r'};
+cols = {'k','','y','b','r','g','g'};
 
 clf
 for IndMethod = [1 3 4 5]
@@ -59,7 +59,11 @@ for IndMethod = [1 3 4 5]
     end
 end
 hold off
-ylim([0 15])
+ylim([0 10])
 
-
+clf
+for i = 1:2
+    subplot(2,1,i)
+    plot(Res.Vals(i,:))
+end
 
