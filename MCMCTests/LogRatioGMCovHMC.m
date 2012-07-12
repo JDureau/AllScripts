@@ -12,7 +12,8 @@ pnp1 = bigxstar(2*Dim+1:3*Dim)';
 Mixture = Parameters.Dens;
 liks = posterior(Mixture,x');
 [b,maxind] = max(liks);
-Parameters.ScalingCov = squeeze(Parameters.Sigmas(:,:,maxind));
+% ind = bigx(end);
+Parameters.ScalingCov = (squeeze(Parameters.Sigmas(:,:,maxind)))^(-1);
 
 Hstar = Hamiltonian(xstar,pstar,Parameters);
 H = Hamiltonian(x,pnp1,Parameters);

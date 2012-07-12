@@ -2,7 +2,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
 ind = ind-floor(ind/14)*14;
 
-Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang','GMHMC','GMCovHMC','GMind'};
+Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
@@ -17,10 +17,11 @@ RandStream.setDefaultStream(s)
 cd('/users/ecologie/dureau/src/AllScripts/')
 addpath([pwd '/MCMCTests/'])
 addpath([pwd '/General Tools/'])
-addpath([pwd '/Toolboxes/mcmcdiag/'])
-addpath([pwd '/Toolboxes/'])
+addpath([pwd '/Toolboxes'])
 
 
+Res.Samples = Res.Vals;
+Res.Eps = Parameters.Epsil;
 Epss = (1:14)*0.2;
 Parameters.Epsil = Epss(ind+1);
 
@@ -55,7 +56,7 @@ switch IndDensity
     case 3
         Parameters.f = @fBanana;
         B = 0.1;
-        X = mvnrnd(zeros(dim,1),eye(dim),100000);
+        X = mvnrnd(zeros(dim,1),eye(dim),50000);
         X(:,1) = 10*X(:,1);
         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
         Parameters.TrueSamples = X;
@@ -81,31 +82,60 @@ switch IndMethod
         Parameters.LogRatioFun = @LogRatioMALA;
         Parameters.SampleFun = @SampleMALA;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
+        NbIterations = 100000;
     case 2
-        Parameters.LogRatioFun = @LogRatioLocalMALA;
-        Parameters.SampleFun = @SampleLocalMALA;
-    case 3
         Parameters.LogRatioFun = @LogRatioGMCovMALA;
         Parameters.SampleFun = @SampleGMCovMALA;
-    case 4
+        NbIterations = 100000;
+    case 3
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
-    case 5
+        NbIterations = 100000;
+    case 4
         Parameters.LogRatioFun = @LogRatioGMMLang;
         Parameters.SampleFun = @SampleGMMLang;
-    case 6
-        Parameters.LogRatioFun = @LogRatioGMHMC;
-        Parameters.SampleFun = @SampleGMHMC;
+        NbIterations = 100000;
+    case 5
+        Parameters.LogRatioFun = @LogRatioHMC;
+        Parameters.SampleFun = @SampleHMC;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
+        if IndDensity == 3
+            Parameters.fGrad = @ComputeBananaGrad;
+        else
+            die
+        end
+        NbIterations = 10000;
+        Parameters.Epsil = Parameters.Epsil/10;
+    case 6
+        Parameters.LogRatioFun = @LogRatioGMCovHMC;
+        Parameters.SampleFun = @SampleGMCovHMC;
+        Parameters.ScalingCov = -(Parameters.Hess^-1);
+        Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
+        if IndDensity == 3
+            Parameters.fGrad = @ComputeBananaGrad;
+        else
+            die
+        end
+        NbIterations = 10000;
+        Parameters.Epsil = Parameters.Epsil/10;
     case 7
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
+        if IndDensity == 3
+            Parameters.fGrad = @ComputeGMMGrad;
+        else
+            die
+        end
+        NbIterations = 10000;
+        Parameters.Epsil = Parameters.Epsil/10;
     case 8
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
+        NbIterations = 100000;
+        Parameters.Epsil = Parameters.Epsil/10;
 end
 
 switch IndLogOrNot 
@@ -119,9 +149,7 @@ end
 Samples = {};
 AccRates = [];
 RelESSs = [];
-Res = RunMCMC(Parameters.ArgMax',Parameters,50);
-Res.Samples = Res.Vals;
-Res.Eps = Parameters.Epsil;
+Res = RunMCMC(Parameters.ArgMax',Parameters,NbIterations);
 
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
 save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'],'Res');

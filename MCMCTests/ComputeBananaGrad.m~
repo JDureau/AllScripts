@@ -1,0 +1,10 @@
+function Grad = ComputeBananaGrad(x,Parameters)
+
+if length(x)>2
+    die
+end
+
+B = Parameters.B;
+
+Grad(1,) = -x(1)/100 - 2*B*x(1)*(x(2)+B*x(1)^2-100*B);
+Grad(2) =           - (x(2)+B*x(1)^2-100*B);
