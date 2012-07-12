@@ -1,7 +1,7 @@
 function Parameters = FindFisherInfMat(CurrentPos,Parameters) 
 
 Test = 0;
-n = 1000;
+n = 10000;
 NbItsMax = 50;
 NbIts = 0;
 
@@ -18,5 +18,6 @@ while not(Test)
         disp('Could''nt maximize')
     end
 end
+CurrentPos
 Parameters.ArgMax = CurrentPos;
 disp(Parameters.Hess);

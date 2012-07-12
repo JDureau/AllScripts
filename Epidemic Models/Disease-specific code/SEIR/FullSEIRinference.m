@@ -567,35 +567,35 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 
 
 
-% Running SMC from there
-Cov = (-KalHess)^-1;
-Parameters.G = Cov^-1;
-Parameters.NoPaths = 0;
-Parameters.ModelType='SMC';
-Parameters.AdaptC = 0.999;
-Parameters.NbVariables = 7;
-Parameters.aim = 0.23;
-Parameters.Epsil = 1;
-Parameters.MCMCType = 'Rand';
-Parameters.GMeth = 'cst given';
-Parameters.PathsToKeep 
-paths = [];
-thetas = [];
-names = Parameters.Names.Estimated;
-for i = 1:1000
-    i
-    ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
-    RandInd = ceil(rand(1,1)*Parameters.NbParticules);
-    paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
-    for j = 1:length(names)
-        thetas(Parameters.(names{j}).Index,i) = Parameters.(names{j}).Value;
-    end
-end
-Res.Paths = paths;
-Res.Thetas = thetas;
-save([SavePath '/TempSmoothed_' NameToSave],'Res')
-clear Res
-
+% % Running SMC from there
+% Cov = (-KalHess)^-1;
+% Parameters.G = Cov^-1;
+% Parameters.NoPaths = 0;
+% Parameters.ModelType='SMC';
+% Parameters.AdaptC = 0.999;
+% Parameters.NbVariables = 7;
+% Parameters.aim = 0.23;
+% Parameters.Epsil = 1;
+% Parameters.MCMCType = 'Rand';
+% Parameters.GMeth = 'cst given';
+% Parameters.PathsToKeep 
+% paths = [];
+% thetas = [];
+% names = Parameters.Names.Estimated;
+% for i = 1:1000
+%     i
+%     ResTemp = EstimationSMCsmoothGen(Data,SEIRModel,Parameters);
+%     RandInd = ceil(rand(1,1)*Parameters.NbParticules);
+%     paths(i,:,:) = squeeze(ResTemp.CompletePaths(RandInd,:,:));
+%     for j = 1:length(names)
+%         thetas(Parameters.(names{j}).Index,i) = Parameters.(names{j}).Value;
+%     end
+% end
+% Res.Paths = paths;
+% Res.Thetas = thetas;
+% save([SavePath '/TempSmoothed_' NameToSave],'Res')
+% clear Res
+% 
 
 
 
@@ -614,12 +614,12 @@ TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
 Parameters.AdMet = 0;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,200000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,50000);
 Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,200000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,50000);
 
 
 

@@ -74,7 +74,7 @@ sigs = [0.2 0.4];
 pars = [10 10];
 
 deltas = [];
-NSamples = 100000;
+NSamples = 150000;
 
 for j = 1:length(sigs)
     cpt = 1;
@@ -136,7 +136,7 @@ for j = 1:length(sigs)
                 Fts = exp(xis)./(1+exp(xis));
             end
             deltas(j,cpt) = Fts(584)-Fts(416);
-            if not(isreal(Fts(584)-Fts(416)))
+            if or(not(isreal(Fts(584)-Fts(416))),isnan(Fts(584)-Fts(416)))
                 die
             end
             cpt = cpt+1;
@@ -172,15 +172,16 @@ for i = 1:size(deltas,1)
         end
     end        
     
-    q1 = quantile(deltas(i,:),0.025);
-    q2 = quantile(deltas(i,:),0.975);
+    inds = find(not(isnan(deltas(i,:))));
+    q1 = quantile(deltas(i,inds),0.025);
+    q2 = quantile(deltas(i,inds),0.9);
     disp([q1 q2])
     hold on
     xlim([-0.5 0.5])
 end
-% legend('m = 2, \sigma = 0','m = 2, \sigma = 0.2','m = 10, \sigma = 0','m = 10, \sigma = 0.2')
+legend('m = 2, \sigma = 0','m = 2, \sigma = 0.2','m = 10, \sigma = 0','m = 10, \sigma = 0.2')
 % legend('r = 10, \sigma = 0','r = 10, \sigma = 0.2','r = 100, \sigma = 0','r = 100, \sigma = 0.2')
-legend(' \sigma = 0.2','\sigma = 0.4')
+% legend(' \sigma = 0.2','\sigma = 0.4')
 hold off
 
 subplot(3,1,1)

@@ -2,7 +2,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
 ind = ind-floor(ind/14)*14;
 
-Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang','GMHMC','GMCovHMC'};
+Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang','GMHMC','GMCovHMC','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
@@ -55,18 +55,22 @@ switch IndDensity
     case 3
         Parameters.f = @fBanana;
         B = 0.1;
-        X = mvnrnd(zeros(dim,1),eye(dim),50000);
+        X = mvnrnd(zeros(dim,1),eye(dim),100000);
         X(:,1) = 10*X(:,1);
         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
-        Parameters.RealDens = gmdistribution.fit(X,15);
+        Parameters.TrueSamples = X;
+        Parameters.RealDens = gmdistribution.fit(X,60);
+        scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
         Parameters.OptDens = Parameters.RealDens;
         Parameters.B = B;
         Parameters.Dim = dim;
-        Parameters = FindFisherInfMat(zeros(1,dim),Parameters) ;
+        [b,ind] = max(Parameters.RealDens.PComponents);
+        Parameters = FindFisherInfMat(Parameters.RealDens.mu(ind,:),Parameters) ;
         test = 0;
+%         Parameters.Epsil = Parameters.Epsil/10;
         while not(test)
             try
-                Parameters.Dens = Parameters.RealDens; %gmdistribution.fit(X,5);
+                Parameters.Dens = Parameters.RealDens;%gmdistribution.fit(X,3);
                 test = 1;
             end
         end
@@ -99,6 +103,9 @@ switch IndMethod
         Parameters.SampleFun = @SampleGMCovHMC;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
+    case 8
+        Parameters.LogRatioFun = @LogRatioGMMind;
+        Parameters.SampleFun = @SampleGMMind;
 end
 
 switch IndLogOrNot 

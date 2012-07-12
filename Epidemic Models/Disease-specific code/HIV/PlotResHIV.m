@@ -395,7 +395,7 @@ end
 
 
     try
-        subplot(2,2,Parameters.PlotIndex)
+        subplot(2,1,Parameters.PlotIndex)
     catch
         clf
     end

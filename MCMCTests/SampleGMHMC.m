@@ -13,7 +13,7 @@ pnp1 = mvnrnd(zeros(Parameters.Dim,1),M)';
 p = pnp1;
 clf
 % vals = zeros(1000,2);
-for i = 1:100
+for i = 1:20
 %     i
     Grad = ComputeGMMGrad(x',Parameters);
     tmpp = p + Epsil/2*Grad;

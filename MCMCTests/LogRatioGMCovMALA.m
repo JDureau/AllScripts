@@ -5,15 +5,15 @@ epsilon = 10^(-10);
 
 % numerator (xstar)
 Mixture = Parameters.Dens;
-liks = max(eps,posterior(Mixture,x));
-[b,maxind] = max(liks);
+[b,maxind] = max(posterior(Mixture,x));
 Sigma = squeeze(Parameters.Sigmas(:,:,maxind));
+
 fx = log(max(eps,Parameters.f(x,Parameters)));
 Grad = zeros(length(x),1);
 for i = 1:Parameters.Dim
     xpdx = x;
     xpdx(i) = xpdx(i)+epsilon;
-    fxpdx = log(max(eps,Parameters.f(xpdx,Parameters)));
+    fxpdx = log(Parameters.f(xpdx,Parameters));
     Grad(i,1) = (fxpdx-fx)/epsilon;
 end
 mu = x'+Epsil^2/2*Sigma*Grad;
@@ -24,15 +24,15 @@ LogLikxstar = log(Parameters.f(xstar,Parameters));
 
 % Star to Temp 
 Mixture = Parameters.Dens;
-liks = posterior(Mixture,xstar);
-[b,maxind] = max(liks);
+[b,maxind] = max(posterior(Mixture,xstar));
 Sigma = squeeze(Parameters.Sigmas(:,:,maxind));
-fx = log(max(eps,Parameters.f(xstar,Parameters)));
+
+fx = log(Parameters.f(xstar,Parameters));
 Grad = zeros(length(x),1);
 for i = 1:Parameters.Dim
     xpdx = xstar;
     xpdx(i) = xpdx(i)+epsilon;
-    fxpdx = log(max(eps,Parameters.f(xpdx,Parameters)));
+    fxpdx = log(Parameters.f(xpdx,Parameters));
     Grad(i,1) = (fxpdx-fx)/epsilon;
 end
 mu = xstar'+Epsil^2/2*Sigma*Grad;

@@ -38,7 +38,7 @@ ylim([0 1])
 
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
 
-cd('/Users/dureaujoseph/Dropbox/Taf/AllScripts/')
+cd('/Users/dureaujoseph/Dropbox/AllScriptsGit/')
 addpath([pwd '/General Tools'])
 addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
@@ -959,22 +959,24 @@ for i = 1:length(Names)
     
     clf
     ResAdd.Parameters.TypeWork = 'Boston Examples';
-    ResAdd.Parameters.PlotIndex = 5;
-%     PlotResHIV(ResAdd,ResAdd.Parameters)
-    ResDet.Parameters.TypeWork = 'Boston Examples';
-    ResDet.Parameters.PlotIndex = 2;
-    ResDet.title = 'dBR';
-    PlotResHIV(ResDet,ResDet.Parameters)
+    ResAdd.Parameters.PlotIndex = 1;
+    ResAdd.title = 'Add';
+
+    PlotResHIV(ResAdd,ResAdd.Parameters)
+%     ResDet.Parameters.TypeWork = 'Boston Examples';
+%     ResDet.Parameters.PlotIndex = 2;
+%     ResDet.title = 'dBR';
+%     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
     ResSigm.Parameters.PlotIndex = 1;
-    ResSigm.title = 'dSigm';
+    ResSigm.title = 'Deterministic sigmoid model';
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 4;
 %     PlotResHIV(ResBer,ResBer.Parameters)
     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
-    ResSigmSto.Parameters.PlotIndex = 3;
-    ResSigmSto.title=  'sSigm';
+    ResSigmSto.Parameters.PlotIndex = 2;
+    ResSigmSto.title=  'Stochastic sigmoid model';
     PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
     
 end
