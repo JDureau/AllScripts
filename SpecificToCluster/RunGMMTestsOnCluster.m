@@ -20,8 +20,7 @@ addpath([pwd '/General Tools/'])
 addpath([pwd '/Toolboxes'])
 
 
-Res.Samples = Res.Vals;
-Res.Eps = Parameters.Epsil;
+
 Epss = (1:14)*0.2;
 Parameters.Epsil = Epss(ind+1);
 
