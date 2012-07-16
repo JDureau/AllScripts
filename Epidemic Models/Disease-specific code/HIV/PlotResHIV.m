@@ -336,8 +336,8 @@ elseif strcmp(Parameters.TypeWork,'Boston Examples')
 
 
 %  clf
-if Parameters.PlotIndex == 5
-    subplot(4,2,1)
+if Parameters.PlotIndex == 3
+    subplot(2,2,1)
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
@@ -364,7 +364,7 @@ if Parameters.PlotIndex == 5
 %     legend('95% C.I','50% C.I.','Mean','Data')
     
 
-    subplot(4,2,2)
+    subplot(2,2,2)
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
@@ -395,7 +395,7 @@ end
 
 
     try
-        subplot(2,1,Parameters.PlotIndex)
+        subplot(2,2,Parameters.PlotIndex)
     catch
         clf
     end
