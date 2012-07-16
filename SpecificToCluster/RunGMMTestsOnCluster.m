@@ -105,7 +105,7 @@ switch IndMethod
         else
             die
         end
-        NbIterations = 10000;
+        NbIterations = 30000;
         Parameters.Epsil = Parameters.Epsil/20;
     case 6
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
@@ -117,7 +117,7 @@ switch IndMethod
         else
             die
         end
-        NbIterations = 10000;
+        NbIterations = 30000;
         Parameters.Epsil = Parameters.Epsil/20;
     case 7
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
@@ -129,7 +129,7 @@ switch IndMethod
         else
             die
         end
-        NbIterations = 10000;
+        NbIterations = 30000;
         Parameters.Epsil = Parameters.Epsil/20;
     case 8
         Parameters.LogRatioFun = @LogRatioGMMind;
