@@ -5,6 +5,9 @@ ind = ind-floor(ind/14)*14;
 Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
+
+
+SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
 s = RandStream('mcg16807','Seed',sum(fix(clock)))
 RandStream.setDefaultStream(s)
 
@@ -83,10 +86,16 @@ switch IndMethod
         Parameters.SampleFun = @SampleMALA;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         NbIterations = 100000;
+        if IndLogOrNot
+            die
+        end
     case 2
         Parameters.LogRatioFun = @LogRatioGMCovMALA;
         Parameters.SampleFun = @SampleGMCovMALA;
         NbIterations = 100000;
+        if IndLogOrNot
+            die
+        end
     case 3
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
@@ -105,6 +114,9 @@ switch IndMethod
         else
             die
         end
+        if IndLogOrNot
+            die
+        end
         NbIterations = 30000;
         Parameters.Epsil = Parameters.Epsil/20;
     case 6
@@ -115,6 +127,9 @@ switch IndMethod
         if IndDensity == 3
             Parameters.fGrad = @ComputeBananaGrad;
         else
+            die
+        end
+        if IndLogOrNot
             die
         end
         NbIterations = 30000;
@@ -129,6 +144,9 @@ switch IndMethod
         else
             die
         end
+        if IndLogOrNot
+            die
+        end
         NbIterations = 30000;
         Parameters.Epsil = Parameters.Epsil/20;
     case 8
@@ -136,6 +154,9 @@ switch IndMethod
         Parameters.SampleFun = @SampleGMMind;
         NbIterations = 100000;
         Parameters.Epsil = Parameters.Epsil;
+        if or(IndLogOrNot, ind>1)
+            die
+        end
 end
 
 switch IndLogOrNot 
