@@ -712,7 +712,7 @@ if IndModel>1
 else
     Parameters.PathsToKeep = [1:7]';
 end
-Parameters.SaveSpace = 0;
+Parameters.SaveSpace = 1;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 

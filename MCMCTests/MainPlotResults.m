@@ -4,20 +4,25 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 
 %% STEP 1: check if they all get to the same posteriors
 
-Methods =  {'MALA','LocalMALA','GMCovMALA','GMMRand','GMMLang'};
+Methods =  {'MALA','GMCovMALA','GMMRand','GMMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
-IndDensity = 2;
+IndDensity = 3;
 dim = 2;
 
-cols = {'k','','y','b','r','g','g'};
+cols = {'k','c','y','b','r','g','c','k'};
 
 clf
-for IndMethod = [1 3 4 5]
+for IndMethod = 1:8
+    clf
+    title(Methods{IndMethod})
     for IndLogOrNot = 0:1
         for indeps = 1:14
             Epss = (1:14)*0.2;
             Parameters.Epsil = Epss(indeps);
+            if and(IndMethod>=5,IndMethod<=7)
+                Parameters.Epsil = Parameters.Epsil/10;
+            end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
                 load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
@@ -38,15 +43,18 @@ end
 
 %% STEP 2: check ESS plots
 
-cols = {'k','','y','b','r'};
+cols = {'k',':k','y','b','r','--r',':r','g'};
 clf
 hold on
-for IndMethod = [1 3 4 5]
+for IndMethod = 1:8
     for IndLogOrNot = 0:1
         tmpESS = [];
         for indeps = 1:14
             Epss = (1:14)*0.2;
             Parameters.Epsil = Epss(indeps);
+            if and(IndMethod>=5,IndMethod<=8)
+                Parameters.Epsil = Parameters.Epsil/10;
+            end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
                 load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
@@ -56,10 +64,13 @@ for IndMethod = [1 3 4 5]
         try
             plot(Epss,tmpESS,cols{IndMethod})
         end
+        
+%         plot(Epss,tmpESS,cols{IndMethod})
+%         max(tmpESS)
     end
 end
 hold off
-ylim([0 10])
+% ylim([0 80])
 
 clf
 for i = 1:2
