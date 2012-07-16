@@ -598,7 +598,7 @@ Data.NbComputingSteps = [0 diff(Data.Instants)];
 % 
 
 
-print(Parameters.Names.Estimated)
+disp(Parameters.Names.Estimated)
 die
 
 Cov = (-KalHess)^-1;

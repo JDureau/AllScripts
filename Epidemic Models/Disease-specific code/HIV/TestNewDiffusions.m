@@ -861,105 +861,105 @@ for i = 1:length(Names)
     ResSigmSto.Paths = ResSigmSto.Paths(randinds,:,:);
     ResSigmSto.Thetas = ResSigmSto.Thetas(:,randinds);
     
+%     
+%     indend = ResDet.Data.Instants(end);
+%     
+%     FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
+%     FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
+% 
+%     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+%     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+%     
+%     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+%     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+%     FtsAdd = (exp(tmp)./(1+exp(tmp)));
+% 
+%     tmp = squeeze(ResBer.Paths(:,3,1:indend));
+%     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
+%     mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
+%     ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
+%     ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
+%     Bs = 1-(beta0s./mus).^(1-ms);
+%     ks = 1./ts.*log(Bs./(1-ms));
+%     FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+%     FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
+% 
+%     tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
+%     rate = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrate.Index,:));
+%     base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
+%     mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
+%     tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
+%     c = 1./(1+exp(tinfl./rate));
+%     b = (mu-base).*c;
+%     a = base - b;
+%     a = repmat(a',1,indend);
+%     b = repmat(b',1,indend);
+%     c = repmat(c',1,indend);
+%     FtSigmSto = mean(a + b./(c.*(1+tmp)));
+%     FtsSigmSto = (a + b./(c.*(1+tmp)));
     
-    indend = ResDet.Data.Instants(end);
-    
-    FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
-    FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
-
-    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
-    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
-    
-    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
-    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
-    FtsAdd = (exp(tmp)./(1+exp(tmp)));
-
-    tmp = squeeze(ResBer.Paths(:,3,1:indend));
-    beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
-    mus = squeeze(ResBer.Thetas(ResBer.Parameters.BRmu.Index,:));
-    ms = squeeze(ResBer.Thetas(ResBer.Parameters.BRmm1.Index,:))+1;
-    ts = squeeze(ResBer.Thetas(ResBer.Parameters.BRtinfl.Index,:));
-    Bs = 1-(beta0s./mus).^(1-ms);
-    ks = 1./ts.*log(Bs./(1-ms));
-    FtBer = mean((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-    FtsBer = ((repmat(1-ms',1,indend).*tmp+repmat(mus.^(1-ms)',1,indend)).^(repmat(1./(1-ms)',1,indend)));
-
-    tmp = squeeze(ResSigmSto.Paths(:,3,1:indend));
-    rate = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmrate.Index,:));
-    base = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmbase.Index,:));
-    mu = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmmu.Index,:));
-    tinfl = squeeze(ResSigmSto.Thetas(ResSigmSto.Parameters.Sigmtinfl.Index,:));;
-    c = 1./(1+exp(tinfl./rate));
-    b = (mu-base).*c;
-    a = base - b;
-    a = repmat(a',1,indend);
-    b = repmat(b',1,indend);
-    c = repmat(c',1,indend);
-    FtSigmSto = mean(a + b./(c.*(1+tmp)));
-    FtsSigmSto = (a + b./(c.*(1+tmp)));
-    
-    q = 0.5;
-    disp('q50 delta')
-    disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
-    disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
-    disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
-    disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
-    disp(quantile(FtsSigmSto(:,indend)-FtsAdd(:,585-168),q))
-    ests(i,1,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
-    ests(i,1,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
-    ests(i,1,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
-    ests(i,1,4) = quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q);
-    ests(i,1,5) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
-    
-    q = 0.975;
-    disp('q5 delta')
-    disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
-    disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
-    disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
-    disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
-    disp(quantile(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168),q))
-    ests(i,2,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
-    ests(i,2,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
-    ests(i,2,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
-
-    disp(mean(FtsDet(:,indend)-FtsDet(:,585-168)))
-    disp(mean(FtsBer(:,indend)-FtsBer(:,585-168)))
-    disp(mean(FtsAdd(:,indend)-FtsAdd(:,585-168)))
-    disp(mean(FtsSigm(:,indend)-FtsSigm(:,585-168)))
-    disp(mean(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168)))
-    
-    q = 0.5
-    disp('q50 2010')
-    quantile(FtsDet(:,indend),q)
-    quantile(FtsBer(:,indend),q)
-    quantile(FtsAdd(:,indend),q)
-    ests(i,3,1) = quantile(FtsDet(:,indend),q);
-    ests(i,3,2) = quantile(FtsBer(:,indend),q);
-    ests(i,3,3) = quantile(FtsAdd(:,indend),q);
-    
-    q = 0.05
-    disp('q5 2010')
-    quantile(FtsDet(:,indend),q)
-    quantile(FtsBer(:,indend),q)
-    quantile(FtsAdd(:,indend),q)
-    ests(i,4,1) = quantile(FtsDet(:,indend),q);
-    ests(i,4,2) = quantile(FtsBer(:,indend),q);
-    ests(i,4,3) = quantile(FtsAdd(:,indend),q);
-    
-    disp('mean delta')
-    ests(i,5,1) = mean(FtsDet(:,indend)-FtsDet(:,585-168));
-    ests(i,5,2) = mean(FtsBer(:,indend)-FtsBer(:,585-168));
-    ests(i,5,3) = mean(FtsAdd(:,indend)-FtsAdd(:,585-168));
-    
-    disp('mean 2010')
-    ests(i,6,1) = mean(FtsDet(:,indend));
-    ests(i,6,2) = mean(FtsBer(:,indend));
-    ests(i,6,3) = mean(FtsAdd(:,indend));
+%     q = 0.5;
+%     disp('q50 delta')
+%     disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
+%     disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
+%     disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
+%     disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
+%     disp(quantile(FtsSigmSto(:,indend)-FtsAdd(:,585-168),q))
+%     ests(i,1,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
+%     ests(i,1,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
+%     ests(i,1,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
+%     ests(i,1,4) = quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q);
+%     ests(i,1,5) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
+%     
+%     q = 0.975;
+%     disp('q5 delta')
+%     disp(quantile(FtsDet(:,indend)-FtsDet(:,585-168),q))
+%     disp(quantile(FtsBer(:,indend)-FtsBer(:,585-168),q))
+%     disp(quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q))
+%     disp(quantile(FtsSigm(:,indend)-FtsSigm(:,585-168),q))
+%     disp(quantile(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168),q))
+%     ests(i,2,1) = quantile(FtsDet(:,indend)-FtsDet(:,585-168),q);
+%     ests(i,2,2) = quantile(FtsBer(:,indend)-FtsBer(:,585-168),q);
+%     ests(i,2,3) = quantile(FtsAdd(:,indend)-FtsAdd(:,585-168),q);
+% 
+%     disp(mean(FtsDet(:,indend)-FtsDet(:,585-168)))
+%     disp(mean(FtsBer(:,indend)-FtsBer(:,585-168)))
+%     disp(mean(FtsAdd(:,indend)-FtsAdd(:,585-168)))
+%     disp(mean(FtsSigm(:,indend)-FtsSigm(:,585-168)))
+%     disp(mean(FtsSigmSto(:,indend)-FtsSigmSto(:,585-168)))
+%     
+%     q = 0.5
+%     disp('q50 2010')
+%     quantile(FtsDet(:,indend),q)
+%     quantile(FtsBer(:,indend),q)
+%     quantile(FtsAdd(:,indend),q)
+%     ests(i,3,1) = quantile(FtsDet(:,indend),q);
+%     ests(i,3,2) = quantile(FtsBer(:,indend),q);
+%     ests(i,3,3) = quantile(FtsAdd(:,indend),q);
+%     
+%     q = 0.05
+%     disp('q5 2010')
+%     quantile(FtsDet(:,indend),q)
+%     quantile(FtsBer(:,indend),q)
+%     quantile(FtsAdd(:,indend),q)
+%     ests(i,4,1) = quantile(FtsDet(:,indend),q);
+%     ests(i,4,2) = quantile(FtsBer(:,indend),q);
+%     ests(i,4,3) = quantile(FtsAdd(:,indend),q);
+%     
+%     disp('mean delta')
+%     ests(i,5,1) = mean(FtsDet(:,indend)-FtsDet(:,585-168));
+%     ests(i,5,2) = mean(FtsBer(:,indend)-FtsBer(:,585-168));
+%     ests(i,5,3) = mean(FtsAdd(:,indend)-FtsAdd(:,585-168));
+%     
+%     disp('mean 2010')
+%     ests(i,6,1) = mean(FtsDet(:,indend));
+%     ests(i,6,2) = mean(FtsBer(:,indend));
+%     ests(i,6,3) = mean(FtsAdd(:,indend));
     
     
     clf
     ResAdd.Parameters.TypeWork = 'Boston Examples';
-    ResAdd.Parameters.PlotIndex = 1;
+    ResAdd.Parameters.PlotIndex = 3;
     ResAdd.title = 'Add';
 
     PlotResHIV(ResAdd,ResAdd.Parameters)
@@ -968,16 +968,16 @@ for i = 1:length(Names)
 %     ResDet.title = 'dBR';
 %     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
-    ResSigm.Parameters.PlotIndex = 1;
+    ResSigm.Parameters.PlotIndex = 4;
     ResSigm.title = 'Deterministic sigmoid model';
     PlotResHIV(ResSigm,ResSigm.Parameters)
     ResBer.Parameters.TypeWork = 'Boston Examples';
     ResBer.Parameters.PlotIndex = 4;
 %     PlotResHIV(ResBer,ResBer.Parameters)
-    ResSigmSto.Parameters.TypeWork = 'Boston Examples';
-    ResSigmSto.Parameters.PlotIndex = 2;
-    ResSigmSto.title=  'Stochastic sigmoid model';
-    PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
+%     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
+%     ResSigmSto.Parameters.PlotIndex = 2;
+%     ResSigmSto.title=  'Stochastic sigmoid model';
+%     PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
     
 end
 
