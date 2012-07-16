@@ -20,7 +20,7 @@ for IndMethod = 1:8
         for indeps = 1:14
             Epss = (1:14)*0.2;
             Parameters.Epsil = Epss(indeps);
-            if and(IndMethod>=5,IndMethod<=7)
+            if and(IndMethod>=5,IndMethod<=8)
                 Parameters.Epsil = Parameters.Epsil/10;
             end
             try

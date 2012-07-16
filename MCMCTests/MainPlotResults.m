@@ -20,13 +20,13 @@ for IndMethod = 1:8
         for indeps = 1:14
             Epss = (1:14)*0.2;
             Parameters.Epsil = Epss(indeps);
-            if and(IndMethod>=5,IndMethod<=7)
+            if and(IndMethod>=5,IndMethod<=8)
                 Parameters.Epsil = Parameters.Epsil/10;
             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
                 load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
-                for  i = 1:dim
+                for  i = 1:dims
                     [fi,xi] = ksdensity(Res.Vals(i,:));
                     subplot(dim+1,1,i)
                     hold on

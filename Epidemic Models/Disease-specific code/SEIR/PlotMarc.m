@@ -193,7 +193,7 @@ catch
             end
             title('Total Influenza Incidence')
             ylabel('Incidence')
-            xlabel('t (weeks)')
+%             xlabel('t (weeks)')
         end
 
     %     % smoothed
@@ -376,6 +376,7 @@ catch
                 hold on
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
                 plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
+                ylim([0 3])
             elseif strcmp(Parameters.Problem,'Marc2diffb')
                 toplotdiff = 12;
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)

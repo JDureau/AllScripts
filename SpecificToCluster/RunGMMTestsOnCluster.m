@@ -53,27 +53,28 @@ switch IndDensity
         Parameters.G = @GGMM;
         Parameters.GDerivs = @GDerivsGMM;
     case 3
-        Parameters.f = @fBanana;
-        B = 0.1;
-        X = mvnrnd(zeros(dim,1),eye(dim),50000);
-        X(:,1) = 10*X(:,1);
-        X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
-        Parameters.TrueSamples = X;
-        Parameters.RealDens = gmdistribution.fit(X,60);
-        scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
-        Parameters.OptDens = Parameters.RealDens;
-        Parameters.B = B;
-        Parameters.Dim = dim;
-        [b,ind] = max(Parameters.RealDens.PComponents);
-        Parameters = FindFisherInfMat(Parameters.RealDens.mu(ind,:),Parameters) ;
-        test = 0;
-%         Parameters.Epsil = Parameters.Epsil/10;
-        while not(test)
-            try
-                Parameters.Dens = Parameters.RealDens;%gmdistribution.fit(X,3);
-                test = 1;
-            end
-        end
+        load([SavePath '/BananaModelParameters100.mat'])
+%         Parameters.f = @fBanana;
+%         B = 0.1;
+%         X = mvnrnd(zeros(dim,1),eye(dim),100000);
+%         X(:,1) = 10*X(:,1);
+%         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
+%         Parameters.TrueSamples = X;
+%         Parameters.RealDens = gmdistribution.fit(X,100);
+%         scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
+%         Parameters.OptDens = Parameters.RealDens;
+%         Parameters.B = B;
+%         Parameters.Dim = dim;
+%         [b,ind] = max(Parameters.RealDens.PComponents);
+%         Parameters = FindFisherInfMat(Parameters.RealDens.mu(ind,:),Parameters) ;
+%         test = 0;
+% %         Parameters.Epsil = Parameters.Epsil/10;
+%         while not(test)
+%             try
+%                 Parameters.Dens = Parameters.RealDens;%gmdistribution.fit(X,3);
+%                 test = 1;
+%             end
+%         end
 end
        
 switch IndMethod
@@ -105,7 +106,7 @@ switch IndMethod
             die
         end
         NbIterations = 10000;
-        Parameters.Epsil = Parameters.Epsil/10;
+        Parameters.Epsil = Parameters.Epsil/20;
     case 6
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
@@ -117,7 +118,7 @@ switch IndMethod
             die
         end
         NbIterations = 10000;
-        Parameters.Epsil = Parameters.Epsil/10;
+        Parameters.Epsil = Parameters.Epsil/20;
     case 7
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
@@ -129,12 +130,12 @@ switch IndMethod
             die
         end
         NbIterations = 10000;
-        Parameters.Epsil = Parameters.Epsil/10;
+        Parameters.Epsil = Parameters.Epsil/20;
     case 8
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
         NbIterations = 100000;
-        Parameters.Epsil = Parameters.Epsil/10;
+        Parameters.Epsil = Parameters.Epsil;
 end
 
 switch IndLogOrNot 
