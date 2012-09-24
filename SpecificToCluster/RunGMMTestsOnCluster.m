@@ -24,8 +24,6 @@ addpath([pwd '/Toolboxes'])
 
 
 
-'top'
-IndMethod
 
 switch IndDensity
     case 1
@@ -86,9 +84,8 @@ switch IndDensity
 %             end
 %         end
 end
-       
-'before'
-IndMethod
+   
+
 switch IndMethod
     case 1
         Parameters.LogRatioFun = @LogRatioMALA;
@@ -135,8 +132,6 @@ switch IndMethod
             die
         end
 end
-'after'
-IndMethod
 
 
 try
