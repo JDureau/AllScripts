@@ -18,7 +18,7 @@ dim = 2;
 cols = {'k','c','y','b','r','g','c','k'};
 
 clf
-for IndMethod = 1:8
+for IndMethod = 1:6
         clf
     title(Methods{IndMethod})
     for IndLogOrNot = 0:0
@@ -30,7 +30,7 @@ for IndMethod = 1:8
             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat']);
+                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
                 Parameters.Epsil = Res.Parameters.Epsil;
                 for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));

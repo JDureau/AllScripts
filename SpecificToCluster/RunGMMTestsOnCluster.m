@@ -57,6 +57,10 @@ switch IndDensity
         load([SavePath '/BananaModelParameters15.mat'])
         Parameters.f = @fBanana;
         Parameters.fGrad = @ComputeGMMGrad;
+    case 4
+        load([SavePath '/BananaModelParameters5.mat'])
+        Parameters.f = @fBanana;
+        Parameters.fGrad = @ComputeGMMGrad;
 %         Parameters.f = @fGMM;
 
 %         B = 0.1;
@@ -64,13 +68,14 @@ switch IndDensity
 %         X(:,1) = 10*X(:,1);
 %         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
 %         Parameters.TrueSamples = X;
-%         Parameters.RealDens = gmdistribution.fit(X,15);
+%         Parameters.RealDens = gmdistribution.fit(X,5);
 %         scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
 %         Parameters.OptDens = Parameters.RealDens;
 %         Parameters.B = B;
 %         Parameters.Dim = dim;
 %         [b,ind] = max(Parameters.RealDens.PComponents);
-        Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
+%         Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
+
 %         test = 0;
 %         Parameters.Epsil = Parameters.Epsil/10;
 %         while not(test)
