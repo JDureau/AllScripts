@@ -57,20 +57,25 @@ switch IndDensity
         load([SavePath '/BananaModelParameters15.mat'])
         Parameters.f = @fBanana;
         Parameters.fGrad = @ComputeGMMGrad;
+    case 4
+        load([SavePath '/BananaModelParameters5.mat'])
+        Parameters.f = @fBanana;
+        Parameters.fGrad = @ComputeGMMGrad;
 %         Parameters.f = @fGMM;
 
-        B = 0.1;
-        X = mvnrnd(zeros(dim,1),eye(dim),50000);
-        X(:,1) = 10*X(:,1);
-        X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
-        Parameters.TrueSamples = X;
-        Parameters.RealDens = gmdistribution.fit(X,5);
-        scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
-        Parameters.OptDens = Parameters.RealDens;
-        Parameters.B = B;
-        Parameters.Dim = dim;
-        [b,ind] = max(Parameters.RealDens.PComponents);
-        Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
+%         B = 0.1;
+%         X = mvnrnd(zeros(dim,1),eye(dim),50000);
+%         X(:,1) = 10*X(:,1);
+%         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
+%         Parameters.TrueSamples = X;
+%         Parameters.RealDens = gmdistribution.fit(X,5);
+%         scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
+%         Parameters.OptDens = Parameters.RealDens;
+%         Parameters.B = B;
+%         Parameters.Dim = dim;
+%         [b,ind] = max(Parameters.RealDens.PComponents);
+%         Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
+
 %         test = 0;
 %         Parameters.Epsil = Parameters.Epsil/10;
 %         while not(test)
@@ -81,6 +86,7 @@ switch IndDensity
 %         end
 end
        
+'before'
 switch IndMethod
     case 1
         Parameters.LogRatioFun = @LogRatioMALA;
@@ -111,23 +117,6 @@ switch IndMethod
         EpsMin = 1;
         EpsMax = 1.5;
         NbIterations = 50000;
-%     case 5
-%         Parameters.LogRatioFun = @LogRatioHMC;
-%         Parameters.SampleFun = @SampleHMC;
-%         Parameters.ScalingCov = -(Parameters.Hess^-1);
-%         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
-%         Parameters.OptAR = 0.8;
-%         if IndDensity == 3
-%             Parameters.fGrad = @ComputeBananaGrad;
-% %             Parameters.fGrad = @ComputeGMMGrad;
-%         else
-%             die
-%         end
-%         if IndLogOrNot
-%             die
-%         end
-%         NbIterations = 30000;
-%         Parameters.Epsil = Parameters.Epsil/20;
     case 5
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;

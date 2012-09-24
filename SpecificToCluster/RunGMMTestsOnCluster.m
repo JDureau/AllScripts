@@ -86,6 +86,8 @@ switch IndDensity
 %         end
 end
        
+'before'
+IndMethod
 switch IndMethod
     case 1
         Parameters.LogRatioFun = @LogRatioMALA;
@@ -132,6 +134,9 @@ switch IndMethod
             die
         end
 end
+'after'
+IndMethod
+
 
 try
     Epss = EpsMin:(EpsMax-EpsMin)/9:EpsMax;
