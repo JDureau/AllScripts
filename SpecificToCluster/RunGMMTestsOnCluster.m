@@ -1,6 +1,6 @@
 function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
-ind = ind-floor(ind/14)*14;
+ind = ind-floor(ind/10)*10;
 
 Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
 Densities = {'GMM','GMM2','Banana'};
@@ -146,8 +146,13 @@ switch IndMethod
         end
 end
 
-Epss = EpsMin:(EpsMax-EpsMin)/9:EpsMax;
-Parameters.Epsil = Epss(ind+1);
+try
+    Epss = EpsMin:(EpsMax-EpsMin)/9:EpsMax;
+    Parameters.Epsil = Epss(ind+1);
+catch
+    Parameters.Epsil = 1;
+end
+
 
 switch IndLogOrNot 
     case 0
