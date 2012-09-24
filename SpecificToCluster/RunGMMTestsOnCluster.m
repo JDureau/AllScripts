@@ -167,7 +167,7 @@ RelESSs = [];
 Res = RunMCMC(Parameters.ArgMax',Parameters,NbIterations);
 
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
-save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'],'Res');
+save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(ind) '.mat'],'Res');
 
 'fini!'  
 
