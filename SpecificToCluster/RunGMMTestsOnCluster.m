@@ -2,7 +2,7 @@ function [] = RunGMMTestsOnCluster(IndDensity,IndMethod,IndLogOrNot,dim,ind)
 
 ind = ind-floor(ind/10)*10;
 
-Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
+Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMCGMCov','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
 

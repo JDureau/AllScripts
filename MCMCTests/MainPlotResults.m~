@@ -1,10 +1,15 @@
 % Results analysis
+cd('/Users/dureaujoseph/Dropbox/AllScriptsGit/')
+addpath([pwd '/MCMCTests/'])
+addpath([pwd '/General Tools/'])
+addpath([pwd '/Toolboxes'])
+
 
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCstudy/';
 
 %% STEP 1: check if they all get to the same posteriors
 
-Methods =  {'MALA','GMCovMALA','GMMRand','GMMLang','HMC','HMCGMCov','HMCGMCovGrad','GMind'};
+Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMCGMCov','GMind'};
 Densities = {'GMM','GMM2','Banana'};
 
 IndDensity = 3;
@@ -14,18 +19,19 @@ cols = {'k','c','y','b','r','g','c','k'};
 
 clf
 for IndMethod = 1:8
-    clf
+        clf
     title(Methods{IndMethod})
-    for IndLogOrNot = 0:1
-        for indeps = 1:14
+    for IndLogOrNot = 0:0
+        for indeps = 1:10
             Epss = (1:14)*0.2;
             Parameters.Epsil = Epss(indeps);
             if and(IndMethod>=5,IndMethod<=8)
                 Parameters.Epsil = Parameters.Epsil/10;
             end
             try
-                disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
+                disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat'])
+                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat']);
+                Parameters.Epsil = Res.Parameters.Epsil;
                 for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));
                     subplot(dim+1,1,i)
@@ -39,6 +45,7 @@ for IndMethod = 1:8
             end
         end
     end
+    pause()
 end
 
 %% STEP 2: check ESS plots
