@@ -24,7 +24,8 @@ addpath([pwd '/Toolboxes'])
 
 
 
-
+'top'
+IndMethod
 
 switch IndDensity
     case 1
