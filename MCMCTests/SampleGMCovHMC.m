@@ -20,7 +20,7 @@ M = (squeeze(Parameters.Sigmas(:,:,maxind)))^-(1);
 Mm1 = M^(-1);
 pnp1 = mvnrnd(zeros(Parameters.Dim,1),M)';
 p = pnp1;
-clf
+% clf
 % vals = zeros(50,2);
 % scattercloud(Parameters.TrueSamples(1:500,1),Parameters.TrueSamples(1:500,2));
 % hold on
@@ -28,7 +28,7 @@ clf
 % hold on
 % tmp = [x' x'+p];
 % plot(tmp(1,:),tmp(2,:),'r')
-for i = 1:100
+for i = 1:50
 %     i
     Grad = Parameters.fGrad(x',Parameters);
     tmpp = p + Epsil/2*Grad;
@@ -38,6 +38,11 @@ for i = 1:100
 
     Grad = Parameters.fGrad(x',Parameters);
     p = tmpp + Epsil/2*Grad;
+    liks = posterior(Mixture,x);
+    [b,maxind] = max(liks);
+    M = (squeeze(Parameters.Sigmas(:,:,maxind)))^-(1);
+    Mm1 = M^(-1);
+
     
 %     hold on
 %     plot(x(1),x(2),'.')

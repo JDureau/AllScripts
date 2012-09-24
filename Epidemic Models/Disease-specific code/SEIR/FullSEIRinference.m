@@ -442,9 +442,9 @@ if not(AlreadySomething)
     if strcmp(Parameters.DiffusionType,'IBM')
         Parameters.betaderinit.Estimated = 1;
     end
-    % if strcmp(ObsType,'Estimated')
-    %     Parameters.SigmaObs.Estimated = 1;
-    % end
+    if strcmp(ObsType,'Estimated')
+        Parameters.SigmaObs.Estimated = 1;
+    end
     Parameters = DefineEstimatedParametersIndexes(Parameters);
     Parameters = DefineTransfFunctions(Parameters);
     Parameters = DefinePriors(Parameters);

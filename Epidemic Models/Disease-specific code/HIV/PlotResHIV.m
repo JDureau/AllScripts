@@ -330,24 +330,53 @@ elseif strcmp(Parameters.TypeWork,'ISSTDR Poster Val')
   
 elseif strcmp(Parameters.TypeWork,'Boston Examples')
    
-    SmLgth = 15;
+    SmLgth = 105;
 %     clf
 %     figure(3)
 
 
 %  clf
 if Parameters.PlotIndex == 3
-    subplot(2,2,1)
+    subplot(4,1,1)
+    
+    
+    
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.25),quantile(squeeze(Paths(:,ToPlot(1),:)),0.75),[100,153,251]/255)
     plot(mean(squeeze(Paths(:,ToPlot(1),:))),'k','LineWidth',2)
+    xs = [];
+    ys = [];
+    es = [];
     for i = 2:size(Data.Observations,2)
         if Data.Observations(7,i)>0
-            plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
+            xs(end+1) = Data.Instants(i);
+            ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
+            es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
+%             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
+    plot(xs,ys,'.r','LineWidth',3)
+%     errorbar(xs,ys,es,'.r')
+    ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
+    ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.25),quantile(squeeze(Paths(:,ToPlot(1),:)),0.75),[100,153,251]/255)
+    plot(mean(squeeze(Paths(:,ToPlot(1),:))),'k','LineWidth',2)
+
+    xs = [];
+    ys = [];
+    es = [];
+    for i = 2:size(Data.Observations,2)
+        if Data.Observations(7,i)>0
+            xs(end+1) = Data.Instants(i);
+            ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
+            es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
+%             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
+        end
+    end
+    plot(xs,ys,'.r','LineWidth',3)
+%     errorbar(xs,ys,es,'.r','LineWidth',3,'LineStyle','none')
+
     
     tmp = quantile(squeeze(Paths(:,ToPlot(1),:)),0.975);
     m = max(tmp);
@@ -355,26 +384,51 @@ if Parameters.PlotIndex == 3
     plot([456 456],[0 m*1.1],'--k','LineWidth',2)
     hold off
     set(gca,'XTick',[0:(600)/5:(600)])
-    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',14)
-    title('Prevalence among Female Sex Workers','FontWeight','bold','FontSize',16)
+    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',12)
+    title('a) Prevalence among Female Sex Workers','FontWeight','bold','FontSize',14, 'Units', 'normalized', ...
+'Position', [0 1], 'HorizontalAlignment', 'left')
 %     gtext({'\leftarrow Start of','     Avahan'},'FontSize',14)
 
 %     xlabel('Time')
-    ylabel('Prevalence','FontSize',15)
-%     legend('95% C.I','50% C.I.','Mean','Data')
+    ylabel('Prevalence','FontSize',12)
     
 
-    subplot(2,2,2)
+    subplot(4,1,2)
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
     xlim([0 620])
     hold on
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.25),quantile(squeeze(Paths(:,ToPlot(2),:)),0.75),[100,153,251]/255)
     plot(mean(squeeze(Paths(:,ToPlot(2),:))),'k','LineWidth',2)
+    xs = [];
+    ys = [];
+    es = [];
     for i = 2:size(Data.Observations,2)
         if Data.Observations(8,i)>0
-            plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
+            xs(end+1) = Data.Instants(i);
+            ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
+            es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
+%             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
+    plot(xs,ys,'.r','LineWidth',3)
+%     errorbar(xs,ys,es,'.r')
+    ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
+    ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.25),quantile(squeeze(Paths(:,ToPlot(2),:)),0.75),[100,153,251]/255)
+    plot(mean(squeeze(Paths(:,ToPlot(2),:))),'k','LineWidth',2)
+
+    xs = [];
+    ys = [];
+    es = [];
+    for i = 2:size(Data.Observations,2)
+        if Data.Observations(8,i)>0
+            xs(end+1) = Data.Instants(i);
+            ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
+            es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
+%             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
+        end
+    end
+    plot(xs,ys,'.r','LineWidth',3)
+   
     
     tmp = quantile(squeeze(Paths(:,ToPlot(2),:)),0.975);
     m = max(tmp);
@@ -382,12 +436,15 @@ if Parameters.PlotIndex == 3
     plot([456 456],[0 m*1.1],'--k','LineWidth',2)
     hold off
     set(gca,'XTick',[0:(600)/5:(600)])
-    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',14)
-    title('Prevalence among Clients','FontWeight','bold','FontSize',16)
+    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',12)
+    title('b) Prevalence among Clients','FontWeight','bold','FontSize',14, 'Units', 'normalized', ...
+'Position', [0 1], 'HorizontalAlignment', 'left')
 %     gtext({'\leftarrow Start of','     Avahan'},'FontSize',14)
 
 %     xlabel('Time')
-    ylabel('Prevalence','FontSize',15)
+    ylabel('Prevalence','FontSize',12)
+    legend('95% c.i','50% c.i.','Post. mean','Data')
+
 end
 
 
@@ -395,7 +452,7 @@ end
 
 
     try
-        subplot(2,2,Parameters.PlotIndex)
+        subplot(4,1,Parameters.PlotIndex)
     catch
         clf
     end
@@ -451,11 +508,11 @@ end
     end
 
     if size(Paths,2)<20
-        ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.025),SmLgth,'median'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.975),SmLgth,'median'),[172,215,255]/255)
+        ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.025),SmLgth,'loess'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.975),SmLgth,'loess'),[172,215,255]/255)
         xlim([0 620])
         hold on
-        ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.25),SmLgth,'median'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.75),SmLgth,'median'),[100,153,251]/255)
-        plot(smooth(median(squeeze(Paths(:,ToPlot(3),:))),SmLgth,'median'),'k','LineWidth',2)
+        ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.25),SmLgth,'loess'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.75),SmLgth,'loess'),[100,153,251]/255)
+        plot(smooth(median(squeeze(Paths(:,ToPlot(3),:))),SmLgth,'loess'),'k','LineWidth',2)
         m = size(Paths,3);
         xis = 0:m/(308-1):m;
         try
@@ -464,11 +521,11 @@ end
         tmp = quantile(squeeze(Paths(:,ToPlot(3),:)),0.975);    
 
     else
-        ciplot(smooth(quantile(squeeze(Paths),0.025),SmLgth,'median'),smooth(quantile(squeeze(Paths),0.975),SmLgth,'median'),[172,215,255]/255)
+        ciplot(smooth(quantile(squeeze(Paths),0.025),SmLgth,'loess'),smooth(quantile(squeeze(Paths),0.975),SmLgth,'loess'),[172,215,255]/255)
         xlim([0 620])
         hold on
-        ciplot(smooth(quantile(squeeze(Paths),0.25),SmLgth,'median'),smooth(quantile(squeeze(Paths),0.75),SmLgth,'median'),[100,153,251]/255)
-        plot(smooth(median(squeeze(Paths)),SmLgth,'median'),'k','LineWidth',2)
+        ciplot(smooth(quantile(squeeze(Paths),0.25),SmLgth,'loess'),smooth(quantile(squeeze(Paths),0.75),SmLgth,'loess'),[100,153,251]/255)
+        plot(smooth(median(squeeze(Paths)),SmLgth,'loess'),'k','LineWidth',2)
         tmp = quantile(squeeze(Paths),0.975);    
 
     end
@@ -488,11 +545,14 @@ end
     hold off
     ylim([0 1])
     set(gca,'XTick',[0:(600)/5:(600)])
-    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',16)
+    set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'],'FontSize',12)
     if Parameters.PlotIndex == 1
-        title('Estimated Condom Use','FontWeight','bold','FontSize',18)
+        title('Estimated Condom Use','FontWeight','bold','FontSize',14)
     end
-    title(Res.title)
+    title(Res.title,'FontWeight','bold', 'Units', 'normalized', ...
+'Position', [0 1], 'HorizontalAlignment', 'left')
+    ylabel('Condom use','FontSize',12)
+
 %     xlabel('Time')
 %     ylabel('Condom Use','FontSize',16)
 %     legend('95% C.I','50% C.I.','Mean')

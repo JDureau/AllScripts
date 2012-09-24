@@ -3,7 +3,9 @@ function Res = RunMCMC(InitValue,Parameters,NbIts)
 
 % Initialize Parameters
 Dens = Parameters.Dens;
-Parameters.Mus = De
+Parameters.Mus = Dens.mu;
+Parameters.Sigmas = Dens.Sigma;
+Parameters.Nc = Dens.NComponents;
 
 LogRatioFun = Parameters.LogRatioFun;
 SampleFun = Parameters.SampleFun;
@@ -16,6 +18,9 @@ vals = [];
 Potvals = [];
 NbAcc = 0;
 for i = 1:NbIts
+    if rand(1,1)<0.1
+        disp(i)
+    end
     % sample new
     PotValue = Parameters.SampleFun(TempValue,Parameters);
     LogRatio = Parameters.LogRatioFun(TempValue,PotValue,Parameters);
@@ -35,14 +40,19 @@ for i = 1:NbIts
 %         hold off
 %         pause(0.001)
     end
-    try
-        logliks(i) = log(Parameters.f(TempValue',Parameters));
-    catch
-        disp('pb');
+%     try
+%         logliks(i) = log(Parameters.f(TempValue',Parameters));
+%     catch
+%         disp('pb');
+%     end
+
+    if i > 50
+        Parameters.Epsil = exp(log(Parameters.Epsil + 0.999^i*(NbAcc/i-Parameters.OptAR)));
     end
     vals(:,i) = TempValue;
     Potvals(:,i) = PotValue;
 end
+disp(['Epsil : ' num2str(Parameters.Epsil)]) 
 
 % 
 % try
@@ -54,12 +64,14 @@ end
 %     disp('pb')
 % end
 
+
+
 for i = 1:Parameters.Dim
     subplot(Parameters.Dim,1,i)
     hist(vals(i,:))
-    autocor = autocorrelation(vals(i,:),100);
-    Res.autocor(i,:) = autocor;
-    Res.ESS(i) = NbIts/(1+2*sum(autocor));
+    autocor = Autocorrelation(vals(i,:));
+%     Res.autocor(i,:) = autocor;
+    Res.ESS(i) = NbIts/(1+2*sum(autocor(2:end)));
     Res.RelESS(i) = Res.ESS(i)/NbIts*100;
     title([num2str(Res.ESS(i)/NbIts*100,3) '%'])
 end

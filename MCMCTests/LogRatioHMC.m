@@ -1,7 +1,6 @@
 function LogRatio = LogRatioHMC(bigx,bigxstar,Parameters)
 
-Epsil = Parameters.Epsil;
-epsilon = 10^(-10);
+
 Dim = Parameters.Dim;
 
 x = bigx(1:Dim)';

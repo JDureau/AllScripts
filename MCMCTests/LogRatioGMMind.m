@@ -17,6 +17,7 @@ LogNum = LogLikxstar + LogqStarTemp;
 LogDenom = LogLikx + LogqTempStar;
 LogRatio = LogNum - LogDenom;
 
+
 if isnan(LogRatio)
     disp('Ratio GMM rand problem')
 end

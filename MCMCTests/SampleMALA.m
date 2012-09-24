@@ -19,7 +19,7 @@ Sigma = Parameters.ScalingCov;
 %     Grad(i,1) = (fxpdx-fx)/epsilon;
 % end
 
-Grad = ComputeBananaGrad(x,Parameters);
+Grad = Parameters.fGrad(x',Parameters);
 mu = x'+Epsil^2/2*Sigma*Grad;
 xstar = mvnrnd(mu,squeeze(Epsil^2*Sigma));
 

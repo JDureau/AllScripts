@@ -28,8 +28,8 @@ function Temp = SEIR_PathLik(Data, Model,Parameters)
             
             TempVariables(1) = TempVariables(1) + (-beta.*Variables(1).*Variables(3)/TotPop)*ComputationTStep ;% + sqrt(ComputationTStep)*Parameters.SigmaDiffusion(1)*rands(:,IndDiscr,1);
             TempVariables(2) = TempVariables(2) + ( beta.*Variables(1).*Variables(3)/TotPop-k*Variables(2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(2)*rands(:,IndDiscr,2);
-            TempVariables(3) = TempVariables(3) + (-gamma*Variables(3) + k*Variables(2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(IndDiscr,3);
-            TempVariables(4) = TempVariables(4) + ( gamma*Variables(3))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(IndDiscr,3);
+            TempVariables(3) = TempVariables(3) + (-gamma*Variables(3) + k*Variables(2))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(:,IndDiscr,3);
+            TempVariables(4) = TempVariables(4) + ( gamma*Variables(3))*ComputationTStep ;%+ sqrt(ComputationTStep)*Parameters.SigmaDiffusion(3)*rands(:,IndDiscr,3);
             TempVariables(5) = TempVariables(5) + ( k*Variables(2))*ComputationTStep ;
             TempVariables(1) = max(TempVariables(1),0);
             TempVariables(2) = max(TempVariables(2),0);
@@ -49,17 +49,17 @@ function Temp = SEIR_PathLik(Data, Model,Parameters)
         LogLik = LogLik + temp;
     end
     
-    subplot(2,1,1)
-    plot(Data.Observations(5,:),'g')
-    hold on
-    plot(RecordVariables(5,:))
-    hold off
-    subplot(2,1,2)
-    plot(RecordVariables(6,2:end))
-    hold on
-    plot(log(Parameters.Betas(Data.Instants(2:end)+1)),'g')
-    hold off
-    pause(0.01)
+%     subplot(2,1,1)
+%     plot(Data.Observations(5,:),'g')
+%     hold on
+%     plot(RecordVariables(5,:))
+%     hold off
+%     subplot(2,1,2)
+%     plot(RecordVariables(6,2:end))
+%     hold on
+%     plot(log(Parameters.Betas(Data.Instants(2:end)+1)),'g')
+%     hold off
+%     pause(0.01)
 %     disp(LogLik)
 %     plot(Betas)
 %     ylim([0.5 2.5])

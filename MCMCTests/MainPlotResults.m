@@ -1,4 +1,9 @@
 % Results analysis
+cd('/Users/dureaujoseph/Dropbox/AllScriptsGit/')
+addpath([pwd '/MCMCTests/'])
+addpath([pwd '/General Tools/'])
+addpath([pwd '/Toolboxes'])
+
 
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCstudy/';
 
@@ -26,7 +31,7 @@ for IndMethod = 1:8
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
                 load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
-                for  i = 1:dims
+                for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));
                     subplot(dim+1,1,i)
                     hold on

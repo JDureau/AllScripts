@@ -10,7 +10,7 @@ pstar = bigxstar(Dim+1:2*Dim)';
 pnp1 = bigxstar(2*Dim+1:3*Dim)';
 
 Mixture = Parameters.Dens;
-liks = posterior(Mixture,x');
+liks = posterior(Mixture,xstar');
 [b,maxind] = max(liks);
 % ind = bigx(end);
 Parameters.ScalingCov = (squeeze(Parameters.Sigmas(:,:,maxind)))^(-1);

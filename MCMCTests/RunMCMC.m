@@ -45,9 +45,14 @@ for i = 1:NbIts
 %     catch
 %         disp('pb');
 %     end
+
+    if i > 50
+%         Parameters.Epsil = exp(log(Parameters.Epsil) + 0.999^i*(NbAcc/i-Parameters.OptAR));
+    end
     vals(:,i) = TempValue;
     Potvals(:,i) = PotValue;
 end
+disp(['Epsil : ' num2str(Parameters.Epsil)]) 
 
 % 
 % try

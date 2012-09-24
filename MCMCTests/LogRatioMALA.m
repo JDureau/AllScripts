@@ -14,7 +14,7 @@ Sigma = Parameters.ScalingCov;
 %     fxpdx = log(Parameters.f(xpdx,Parameters));
 %     Grad(i,1) = (fxpdx-fx)/epsilon;
 % end
-Grad = ComputeBananaGrad(x,Parameters);
+Grad = Parameters.fGrad(x',Parameters);
 mu = x'+Epsil^2/2*Sigma*Grad;
 temp =  mvnpdf(xstar',mu,squeeze(Epsil^2*Sigma));
 LogqTempStar = log(temp);
@@ -30,7 +30,7 @@ LogLikxstar = log(Parameters.f(xstar,Parameters));
 %     fxpdx = log(Parameters.f(xpdx,Parameters));
 %     Grad(i,1) = (fxpdx-fx)/epsilon;
 % end
-Grad = ComputeBananaGrad(xstar,Parameters);
+Grad = Parameters.fGrad(xstar',Parameters);
 mu = xstar'+Epsil^2/2*Sigma*Grad;
 temp =  mvnpdf(x',mu,squeeze(Epsil^2*Sigma));
 LogqStarTemp = log(temp);
