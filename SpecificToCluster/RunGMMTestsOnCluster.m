@@ -140,7 +140,6 @@ switch IndMethod
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
         NbIterations = 100000;
-        Parameters.Epsil = Parameters.Epsil;
         if or(IndLogOrNot, ind>1)
             die
         end
