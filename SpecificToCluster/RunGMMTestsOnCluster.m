@@ -70,7 +70,7 @@ switch IndDensity
 %         Parameters.B = B;
 %         Parameters.Dim = dim;
 %         [b,ind] = max(Parameters.RealDens.PComponents);
-        Parameters = FindFisherInfMat(Parameters.RealDens.mu(ind,:),Parameters) ;
+        Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
 %         test = 0;
 %         Parameters.Epsil = Parameters.Epsil/10;
 %         while not(test)
@@ -146,7 +146,7 @@ switch IndMethod
         end
 end
 
-Epss = EpsMin:(EpsMax-EpsMax)/10:EpsMax;
+Epss = EpsMin:(EpsMax-EpsMin)/9:EpsMax;
 Parameters.Epsil = Epss(ind+1);
 
 switch IndLogOrNot 
@@ -165,7 +165,7 @@ Res = RunMCMC(Parameters.ArgMax',Parameters,NbIterations);
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
 save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'],'Res');
 
-  
+'fini!'  
 
 
 
