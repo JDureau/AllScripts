@@ -136,11 +136,11 @@ switch IndMethod
         NbIterations = 20000;
         EpsMin = 0.05;
         EpsMax = 0.2;
-    case 7
+    case 6
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
         NbIterations = 100000;
-        if or(IndLogOrNot, ind>1)
+        if or(IndLogOrNot, ind>0)
             die
         end
 end
