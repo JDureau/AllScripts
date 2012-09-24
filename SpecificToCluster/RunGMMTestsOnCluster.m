@@ -97,36 +97,36 @@ switch IndMethod
 %         Parameters.OptAR = 0.7;
         EpsMin = 0.1;
         EpsMax = 0.5;
-        NbIterations = 50000;
+        NbIterations = 100000;
     case 2
         Parameters.LogRatioFun = @LogRatioGMCovMALA;
         Parameters.SampleFun = @SampleGMCovMALA;
 %         Parameters.OptAR = 0.7;
-        EpsMin = 1;
-        EpsMax = 1.5;
-        NbIterations = 50000;
+        EpsMin = 1.2;
+        EpsMax = 2;
+        NbIterations = 100000;
     case 3
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
 %         Parameters.OptAR = 0.23;
         EpsMin = 2;
         EpsMax = 5;
-        NbIterations = 50000;
+        NbIterations = 100000;
     case 4
         Parameters.LogRatioFun = @LogRatioGMMLang;
         Parameters.SampleFun = @SampleGMMLang;
 %         Parameters.OptAR = 0.7;
-        EpsMin = 1;
-        EpsMax = 1.5;
-        NbIterations = 50000;
+        EpsMin = 1.2;
+        EpsMax = 2;
+        NbIterations = 100000;
     case 5
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];        
-        NbIterations = 20000;
-        EpsMin = 0.05;
-        EpsMax = 0.2;
+        NbIterations = 40000;
+        EpsMin = 0.15;
+        EpsMax = 0.4;
     case 6
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
@@ -161,7 +161,7 @@ RelESSs = [];
 Res = RunMCMC(Parameters.ArgMax',Parameters,NbIterations);
 
 SavePath = '/users/ecologie/dureau/src/AllData/GMM/';
-save([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(ind) '.mat'],'Res');
+save([SavePath Densities{IndDensity} num2str(IndDensity) '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(ind) '.mat'],'Res');
 
 'fini!'  
 

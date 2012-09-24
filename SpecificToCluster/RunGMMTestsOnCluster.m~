@@ -24,7 +24,8 @@ addpath([pwd '/Toolboxes'])
 
 
 
-
+'top'
+IndMethod
 
 switch IndDensity
     case 1
@@ -87,6 +88,7 @@ switch IndDensity
 end
        
 'before'
+IndMethod
 switch IndMethod
     case 1
         Parameters.LogRatioFun = @LogRatioMALA;
@@ -95,14 +97,14 @@ switch IndMethod
 %         Parameters.OptAR = 0.7;
         EpsMin = 0.1;
         EpsMax = 0.5;
-        NbIterations = 50000;
+        NbIterations = 100000;
     case 2
         Parameters.LogRatioFun = @LogRatioGMCovMALA;
         Parameters.SampleFun = @SampleGMCovMALA;
 %         Parameters.OptAR = 0.7;
-        EpsMin = 1;
-        EpsMax = 1.5;
-        NbIterations = 50000;
+        EpsMin = 1.2;
+        EpsMax = 2;
+        NbIterations = 100000;
     case 3
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
@@ -133,6 +135,9 @@ switch IndMethod
             die
         end
 end
+'after'
+IndMethod
+
 
 try
     Epss = EpsMin:(EpsMax-EpsMin)/9:EpsMax;
