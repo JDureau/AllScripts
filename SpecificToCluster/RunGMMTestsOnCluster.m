@@ -116,23 +116,6 @@ switch IndMethod
         EpsMin = 1;
         EpsMax = 1.5;
         NbIterations = 50000;
-%     case 5
-%         Parameters.LogRatioFun = @LogRatioHMC;
-%         Parameters.SampleFun = @SampleHMC;
-%         Parameters.ScalingCov = -(Parameters.Hess^-1);
-%         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];
-%         Parameters.OptAR = 0.8;
-%         if IndDensity == 3
-%             Parameters.fGrad = @ComputeBananaGrad;
-% %             Parameters.fGrad = @ComputeGMMGrad;
-%         else
-%             die
-%         end
-%         if IndLogOrNot
-%             die
-%         end
-%         NbIterations = 30000;
-%         Parameters.Epsil = Parameters.Epsil/20;
     case 5
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
