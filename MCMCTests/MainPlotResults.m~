@@ -10,9 +10,9 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 %% STEP 1: check if they all get to the same posteriors
 
 Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMCGMCov','GMind'};
-Densities = {'GMM','GMM2','Banana'};
+Densities = {'GMM','GMM2','Banana15','Banana5'};
 
-IndDensity = 3;
+IndDensity = 4;
 dim = 2;
 
 cols = {'k','c','y','b','r','g','c','k'};
@@ -30,7 +30,7 @@ for IndMethod = 1:6
             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
+                load([SavePath Densities{IndDensity}  '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
                 Parameters.Epsil = Res.Parameters.Epsil;
                 for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));
@@ -66,7 +66,7 @@ for IndMethod = 1:6
 %             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
+                load([SavePath Densities{IndDensity}  '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
                 tmpESS(indeps) = min(Res.RelESS);
                 Epss(indeps) = Res.Parameters.Epsil;
             end

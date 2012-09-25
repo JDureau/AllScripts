@@ -10,15 +10,15 @@ SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/MCMCs
 %% STEP 1: check if they all get to the same posteriors
 
 Methods =  {'MALA','GMCovMALA','GMRand','GMLang','HMCGMCov','GMind'};
-Densities = {'GMM','GMM2','Banana'};
+Densities = {'GMM','GMM2','Banana15','Banana5'};
 
-IndDensity = 3;
+IndDensity = 4;
 dim = 2;
 
 cols = {'k','c','y','b','r','g','c','k'};
 
 clf
-for IndMethod = 1:8
+for IndMethod = 1:6
         clf
     title(Methods{IndMethod})
     for IndLogOrNot = 0:0
@@ -30,7 +30,7 @@ for IndMethod = 1:8
             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps) '.mat']);
+                load([SavePath Densities{IndDensity}  '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
                 Parameters.Epsil = Res.Parameters.Epsil;
                 for  i = 1:dim
                     [fi,xi] = ksdensity(Res.Vals(i,:));
@@ -53,19 +53,22 @@ end
 cols = {'k',':k','y','b','r','--r',':r','g'};
 clf
 hold on
-for IndMethod = 1:8
-    for IndLogOrNot = 0:1
+for IndMethod = 1:6
+    clf
+    for IndLogOrNot = 0:0
         tmpESS = [];
-        for indeps = 1:14
-            Epss = (1:14)*0.2;
-            Parameters.Epsil = Epss(indeps);
-            if and(IndMethod>=5,IndMethod<=8)
-                Parameters.Epsil = Parameters.Epsil/10;
-            end
+        Epss = [];
+        for indeps = 1:10
+%             Epss = (1:14)*0.2;
+%             Parameters.Epsil = Epss(indeps);
+%             if and(IndMethod>=5,IndMethod<=8)
+%                 Parameters.Epsil = Parameters.Epsil/10;
+%             end
             try
                 disp([Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat'])
-                load([SavePath Densities{IndDensity} '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(Parameters.Epsil) '.mat']);
+                load([SavePath Densities{IndDensity}  '_' Methods{IndMethod} '_dim' num2str(dim) '_Log' num2str(IndLogOrNot) '_eps' num2str(indeps-1) '.mat']);
                 tmpESS(indeps) = min(Res.RelESS);
+                Epss(indeps) = Res.Parameters.Epsil;
             end
         end
         try
@@ -73,8 +76,9 @@ for IndMethod = 1:8
         end
         
 %         plot(Epss,tmpESS,cols{IndMethod})
-%         max(tmpESS)
+        title(max(tmpESS))
     end
+    pause()
 end
 hold off
 % ylim([0 80])
