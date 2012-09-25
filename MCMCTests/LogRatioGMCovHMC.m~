@@ -10,13 +10,15 @@ pstar = bigxstar(Dim+1:2*Dim)';
 pnp1 = bigxstar(2*Dim+1:3*Dim)';
 
 Mixture = Parameters.Dens;
-liks = posterior(Mixture,x');
+liks = posterior(Mixture,xstar');
 [b,maxind] = max(liks);
-Parameters.ScalingCov = squeeze(Parameters.Sigmas(:,:,maxind));
+% ind = bigx(end);
+Parameters.ScalingCov = (squeeze(Parameters.Sigmas(:,:,maxind)))^(-1);
 
 Hstar = Hamiltonian(xstar,pstar,Parameters);
 H = Hamiltonian(x,pnp1,Parameters);
 LogRatio =  - (H - Hstar);
+i
 title(LogRatio)
 pause(0.01)
 % if abs(x(1))>18

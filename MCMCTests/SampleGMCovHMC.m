@@ -28,10 +28,16 @@ p = pnp1;
 % hold on
 % tmp = [x' x'+p];
 % plot(tmp(1,:),tmp(2,:),'r')
-for i = 1:50
+for i = 1:10
 %     i
+   
     Grad = Parameters.fGrad(x',Parameters);
+    
+%     [(Grad) (ComputeGMMGrad(x',Parameters))]
+    
+ 
     tmpp = p + Epsil/2*Grad;
+    
     x = (x' + Epsil*Mm1*tmpp)';
     tmp = [x' x'+tmpp];
 %     plot(tmp(1,:),tmp(2,:),'r')
@@ -64,6 +70,7 @@ end
 % if rand(1,1)<0.02
 %     die
 % end
+
 xstar = x;
 pstar = p;
 bigx = [xstar pstar' pnp1'];

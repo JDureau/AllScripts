@@ -14,6 +14,9 @@ for i = 1:Mixture.NComponents
     Grad = Grad - ws(i)*(Sigma^-(1))*(x-Mu)*mvnpdf(x,Mu,Sigma);
 end
 Grad = Grad/pdf(Parameters.Dens,x');
+if pdf(Parameters.Dens,x') == 0
+    Grad = 0;
+end
 
 
     

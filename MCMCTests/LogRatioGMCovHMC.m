@@ -18,6 +18,10 @@ Parameters.ScalingCov = (squeeze(Parameters.Sigmas(:,:,maxind)))^(-1);
 Hstar = Hamiltonian(xstar,pstar,Parameters);
 H = Hamiltonian(x,pnp1,Parameters);
 LogRatio =  - (H - Hstar);
+if isnan(xstar)
+    LogRatio = -Inf;
+end
+    
 title(LogRatio)
 pause(0.01)
 % if abs(x(1))>18

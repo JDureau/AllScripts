@@ -71,14 +71,15 @@ switch IndDensity
 %         X(:,1) = 10*X(:,1);
 %         X(:,2) = X(:,2)-B*X(:,1).^2+100*B;
 %         Parameters.TrueSamples = X;
-%         Parameters.RealDens = gmdistribution.fit(X,1);
+%         Parameters.Dens = gmdistribution.fit(X,15);
 %         scattercloudGM(X(:,1),X(:,2),Parameters.RealDens)
-%         Parameters.OptDens = Parameters.RealDens;
+%         Parameters.OptDens = Parameters.Dens;
+%         Parameters.RealDens = Parameters.Dens;
 %         Parameters.B = B;
 %         Parameters.Dim = dim;
 %         [b,ind] = max(Parameters.RealDens.PComponents);
 %         Parameters = FindFisherInfMat(Parameters.RealDens.mu(1,:),Parameters) ;
-
+        
 %         test = 0;
 %         Parameters.Epsil = Parameters.Epsil/10;
 %         while not(test)
@@ -98,40 +99,40 @@ switch IndMethod
 %         Parameters.OptAR = 0.7;
         EpsMin = 0.1;
         EpsMax = 0.5;
-        NbIterations = 100000;
+        NbIterations = 500000;
     case 2
         Parameters.LogRatioFun = @LogRatioGMCovMALA;
         Parameters.SampleFun = @SampleGMCovMALA;
 %         Parameters.OptAR = 0.7;
         EpsMin = 1.2;
         EpsMax = 2;
-        NbIterations = 100000;
+        NbIterations = 500000;
     case 3
         Parameters.LogRatioFun = @LogRatioGMMRand;
         Parameters.SampleFun = @SampleGMMRand;
 %         Parameters.OptAR = 0.23;
         EpsMin = 2;
         EpsMax = 5;
-        NbIterations = 100000;
+        NbIterations = 500000;
     case 4
         Parameters.LogRatioFun = @LogRatioGMMLang;
         Parameters.SampleFun = @SampleGMMLang;
 %         Parameters.OptAR = 0.7;
         EpsMin = 1.2;
         EpsMax = 2;
-        NbIterations = 100000;
+        NbIterations = 500000;
     case 5
         Parameters.LogRatioFun = @LogRatioGMCovHMC;
         Parameters.SampleFun = @SampleGMCovHMC;
         Parameters.ScalingCov = -(Parameters.Hess^-1);
         Parameters.ArgMax = [Parameters.ArgMax Parameters.ArgMax];        
-        NbIterations = 40000;
-        EpsMin = 0.15;
+        NbIterations = 60000;
+        EpsMin = 0.1;
         EpsMax = 0.4;
     case 6
         Parameters.LogRatioFun = @LogRatioGMMind;
         Parameters.SampleFun = @SampleGMMind;
-        NbIterations = 100000;
+        NbIterations = 500000;
         if or(IndLogOrNot, ind>0)
             die
         end

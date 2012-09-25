@@ -20,6 +20,9 @@ Sigma = Parameters.ScalingCov;
 % end
 
 Grad = Parameters.fGrad(x',Parameters);
+
+
+
 mu = x'+Epsil^2/2*Sigma*Grad;
 xstar = mvnrnd(mu,squeeze(Epsil^2*Sigma));
 
