@@ -212,7 +212,7 @@ if not(AlreadySomething)
             Parameters.R2InitProp.Estimated = 1;
     %         Parameters.beta11init.Estimated = 1;
     %         Parameters.beta22init.Estimated = 1;
-            Parameters.adultsmult.Estimated = 1;
+%             Parameters.adultsmult.Estimated = 1;
         case 5
             Parameters.SigmaRW11.Estimated = 1;
             Parameters.SigmaRW22.Estimated = 1;
@@ -290,7 +290,7 @@ if not(AlreadySomething)
             case 4
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.SigmaRW22.Value = rand(1,1)*2;
-                Parameters.adultsmult.Value = rand(1,1);
+%                 Parameters.adultsmult.Value = rand(1,1);
             case 5
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.SigmaRW22.Value = rand(1,1)*2;
@@ -376,7 +376,7 @@ if not(AlreadySomething)
             Parameters.beta11init.Estimated = 1;
             Parameters.beta22init.Estimated = 1;
             Parameters.beta12init.Estimated = 1;
-            Parameters.adultsmult.Estimated = 1;
+%             Parameters.adultsmult.Estimated = 1;
             Parameters.E1InitProp.Estimated = 1;
             Parameters.I1InitProp.Estimated = 1;
             Parameters.R1InitProp.Estimated = 1;
