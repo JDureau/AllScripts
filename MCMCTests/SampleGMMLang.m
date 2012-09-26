@@ -30,7 +30,7 @@ Epsil = Parameters.Epsil;
 
 Sigma = squeeze(Parameters.Sigmas(:,:,ind));
 
-xstar = mvnrnd(x'-Epsil^2*(x'-mu)/2,Epsil^2*Sigma);
+xstar = mvnrnd(x'+Epsil^2*(mu-x')/2,Epsil^2*Sigma);
 % plot(xstar(1),xstar(2),'og', 'MarkerFaceColor','g')
 % hold off
 % xlim([-20 20])

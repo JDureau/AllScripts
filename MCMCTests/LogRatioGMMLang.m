@@ -19,7 +19,7 @@ end
 for IndComp = 1:Nc
     mu = Mus(IndComp,:)';
     Sigma = squeeze(Sigmas(:,:,IndComp));
-    temp = temp + (mvnpdf(xstar',x'-Epsil^2*(x'-mu)/2,Parameters.Epsil^2*Sigma)*post(IndComp));
+    temp = temp + (mvnpdf(xstar',x'+Epsil^2*(mu-x')/2,Parameters.Epsil^2*Sigma)*post(IndComp));
 end
 LogqTempStar = log(temp);
 LogLikxstar = log(Parameters.f(xstar,Parameters));
@@ -36,7 +36,7 @@ end
 for IndComp = 1:Nc
     mu = Mus(IndComp,:)';
     Sigma = squeeze(Sigmas(:,:,IndComp));
-    temp = temp + (mvnpdf(x',xstar'-Epsil^2*(xstar'-mu)/2,Parameters.Epsil^2*Sigma)*post(IndComp));
+    temp = temp + (mvnpdf(x',xstar'-Epsil^2*(mu-xstar')/2,Parameters.Epsil^2*Sigma)*post(IndComp));
 end
 LogqStarTemp = log(temp);
 LogLikx = log(Parameters.f(x,Parameters));

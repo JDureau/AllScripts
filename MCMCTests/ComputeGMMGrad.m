@@ -1,6 +1,7 @@
 function Grad = ComputeGMMGrad(x,Parameters)
 
 
+
 Mixture = Parameters.Dens;
 ws = Parameters.Dens.PComponents;
 

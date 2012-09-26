@@ -20,7 +20,7 @@ function Res = SEIR2_2diff_SMC_projection(Variables,IndIt,NbIts,Data,Parameters,
         % Variables
         beta11 = exp(TempVariables(:,11));
         beta12 = Parameters.beta12init.Value;
-        beta21 = Parameters.adultsmult.Value*Parameters.beta12init.Value;
+        beta21 = Parameters.beta12init.Value;%Parameters.adultsmult.Value*Parameters.beta12init.Value;
         beta22 = exp(TempVariables(:,12));
         %S
         TempVariables(:,1) = TempVariables(:,1) + (-beta11.*Variables(:,1).*Variables(:,5)/TotPop1 -beta12.*Variables(:,1).*Variables(:,6)/TotPop2)*ComputationTStep ;% + sqrt(ComputationTStep)*Parameters.SigmaDiffusion(1)*rands(:,IndDiscr,1);
