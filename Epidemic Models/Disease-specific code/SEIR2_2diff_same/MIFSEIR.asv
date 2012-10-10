@@ -1,0 +1,227 @@
+function Result = MIFSEIR(Data,Parameters,Model)
+
+Result = struct();
+Result.SamplesX = [];
+Result.SamplesTheta = [];
+
+Observations = Data.Observations;
+ObservationInstants = Data.Instants;
+ComputationTStep = Parameters.ComputationTStep;
+ObservationTStep = mean(diff(ObservationInstants));
+NbTSteps = ceil(ObservationTStep/ComputationTStep);
+NbIterations = Parameters.MIFNbIterations;
+NbParticules = Parameters.MIFNbParticules;
+a = Parameters.MIFCoolingParameters;
+b = Parameters.MIFb;
+
+ThetasRecord = [];
+
+% Initialize Theta
+NbPars = length(Parameters.Names.Estimated); 
+NbParsInit = length(Parameters.Names.EstimatedInit);
+NbParsNotInit = length(Parameters.Names.EstimatedNotInit); 
+Names = Parameters.Names.Estimated;
+NamesInit = Parameters.Names.EstimatedInit;
+NamesNotInit = Parameters.Names.EstimatedNotInit;
+ThetasInit = ones(NbParticules,NbParsInit);
+ThetasNotInit = ones(NbParticules,NbParsNotInit);
+InitIndices = [];
+NotInitIndices = [];
+for i = 1:NbParsNotInit
+    ind = Parameters.(NamesNotInit{i}).Index;
+    NotInitIndices(i) = ind;
+    ThetasNotInit(:,i) = Parameters.(NamesNotInit{i}).TransfValue*ThetasNotInit(:,i);
+end
+for i = 1:NbParsInit
+    ind = Parameters.(NamesInit{i}).Index;
+    InitIndices(i) = ind;
+    ThetasInit(:,i) = Parameters.(NamesInit{i}).TransfValue*ThetasInit(:,i);
+end
+ThetasRecord(InitIndices,1) = mean(ThetasInit)';
+ThetasRecord(NotInitIndices,1) = mean(ThetasNotInit)';
+ThetasRecordTemp = zeros(length(ObservationInstants),NbParsNotInit);
+ThetasVarRecordTemp = zeros(length(ObservationInstants),NbParsNotInit);
+LogLiks = [];
+
+
+for IndIt = 2:NbIterations
+
+    disp(['Iteration ' num2str(IndIt)])
+    
+    ThetasInit = repmat(ThetasRecord(InitIndices,IndIt-1),1,NbParticules)';
+    ThetasNotInit = repmat(ThetasRecord(NotInitIndices,IndIt-1),1,NbParticules)';
+    
+    ThetasInit = ThetasInit + a^(IndIt-1)*b*((chol(Parameters.MIFCov(InitIndices,InitIndices)))*(randn(NbParticules,NbParsInit)'))';
+    ThetasNotInit = ThetasNotInit + a^(IndIt-1)*b*((chol(Parameters.MIFCov(NotInitIndices,NotInitIndices)))*randn(NbParticules,NbParsNotInit)')';
+    ThetasRecordTemp(1,:) = mean(ThetasNotInit) ; 
+    ThetasVarRecordTemp(1,:) = var(ThetasNotInit) ; 
+    RecordStates = zeros(length(ObservationInstants),NbParticules,Parameters.NbVariables);
+    RecordThetas = zeros(length(ObservationInstants),NbParticules,NbParsNotInit);
+    LogLiksTemp = zeros(1,length(ObservationInstants));
+    NoTransfThetasInit = UpdateParsTransfToNoTransf(Parameters,ThetasInit,NamesInit);
+    NoTransfThetasNotInit = UpdateParsTransfToNoTransf(Parameters,ThetasNotInit,NamesNotInit);
+    Xf = [];
+    Xf(:,2) = Parameters.TotalPopulation*max(0,min(1,NoTransfThetasInit(:,Parameters.EInitProp.IndexInit)));
+    Xf(:,3) = Parameters.TotalPopulation*max(0,min(1,NoTransfThetasInit(:,Parameters.IInitProp.IndexInit)));
+    Xf(:,4) = Parameters.TotalPopulation*max(0,min(1,NoTransfThetasInit(:,Parameters.RInitProp.IndexInit)));
+    Xf(:,1) = max(0,Parameters.TotalPopulation-Xf(:,2)-Xf(:,3)-Xf(:,4));
+    Xf(:,6) = log(NoTransfThetasInit(:,Parameters.betainit.IndexInit));
+    Xf(:,7) = zeros(size(Xf(:,3)));
+    
+    RecordState(1,:,:) = Xf;
+    
+    for IndTime = 2:length(ObservationInstants)
+        
+        TempXf = Xf;
+        TempXf(:,5) = zeros(size(TempXf(:,5)));
+        rands = randn(NbParticules,NbTSteps);
+        
+        ks = NoTransfThetasNotInit(:,Parameters.km1.IndexNotInit).^-1;
+        gammas = NoTransfThetasNotInit(:,Parameters.gammam1.IndexNotInit).^-1;
+        sigmasRW = NoTransfThetasNotInit(:,Parameters.SigmaRW.IndexNotInit);
+        
+
+        
+        for IndDiscr = 1:Data.NbComputingSteps(IndTime)
+            betas = exp(Xf(:,6))/Parameters.TotalPopulation;
+            TempXf(:,1) =  TempXf(:,1) + (- Xf(:,1).*Xf(:,3).*betas)*ComputationTStep;
+            TempXf(:,2) =  TempXf(:,2) + (  Xf(:,1).*Xf(:,3).*betas - ks.*Xf(:,2))*ComputationTStep;
+            TempXf(:,3) =  TempXf(:,3) + (  ks.*Xf(:,2) - gammas.*Xf(:,3))*ComputationTStep;
+            TempXf(:,4) =  TempXf(:,4) + (  gammas.*Xf(:,3))*ComputationTStep;
+            TempXf(:,5) =  TempXf(:,5) + ( ks.*Xf(:,2) )*ComputationTStep;
+            TempXf(:,6) =  TempXf(:,6) + ( sqrt(ComputationTStep)*sigmasRW.*rands(:,IndDiscr));
+            TempXf(:,7) =  TempXf(:,7);
+            TempXf(:,1) = max(0,TempXf(:,1));
+            TempXf(:,2) = max(0,TempXf(:,2));
+            TempXf(:,3) = max(0,TempXf(:,3));
+            Xf = TempXf;
+        end
+%         hist(Xf(:,6))
+%         disp(mean(exp(Xf(:,6))))
+%         pause(0.01)
+        
+        
+        
+        Weigths = ones(NbParticules,1);
+        CorrecPrior = 1;
+        for i = 1:length(Names)
+            if Parameters.(Names{i}).Init
+                temptransf = ThetasInit(:,Parameters.(Names{i}).IndexInit);
+                tempnotransf = NoTransfThetasInit(:,Parameters.(Names{i}).IndexInit);
+            else
+                temptransf = ThetasNotInit(:,Parameters.(Names{i}).IndexNotInit);
+                tempnotransf = NoTransfThetasNotInit(:,Parameters.(Names{i}).IndexNotInit);
+            end
+            tmp = Parameters.(Names{i}).Prior(Names{i},Parameters,temptransf,tempnotransf).^(1/NbIterations);
+            Weigths =  Weigths;
+            CorrecPrior = CorrecPrior * tmp;
+        end
+        
+                
+        LogLikWeigths = normpdf(Xf(:,5),Observations(5, IndTime)*ones(NbParticules,1),Parameters.SigmaObs.Value*Observations(5,IndTime)*ones(NbParticules,1));
+        Weigths = Weigths.* LogLikWeigths;
+        CorrectedZeigt
+        ResampledIndexes = Resample(Weigths);
+        if length(unique(ResampledIndexes))<NbParticules/10
+            disp(['Nb Kept Particules : ' num2str(length(unique(ResampledIndexes)))]) 
+        end
+        Xf(:,1) = Xf(ResampledIndexes,1);
+        Xf(:,2) = Xf(ResampledIndexes,2);
+        Xf(:,3) = Xf(ResampledIndexes,3);
+        Xf(:,4) = Xf(ResampledIndexes,4);
+        Xf(:,5) = Xf(ResampledIndexes,5);
+        Xf(:,6) = Xf(ResampledIndexes,6);
+        Xf(:,7) = Xf(ResampledIndexes,7);
+        
+%         disp('avant')
+%         disp(mean(NoTransfThetasNotInit(:,end)))
+%         ThetasNotInit = ThetasNotInit(ResampledIndexes,:) + a^(IndIt-1)*1/length(ObservationInstants)*((chol(Parameters.MIFCov(NotInitIndices,NotInitIndices)))*randn(NbParticules,NbParsNotInit)')';
+        ThetasNotInit = ThetasNotInit(ResampledIndexes,:) + a^(IndIt-1)*((chol(Parameters.MIFCov(NotInitIndices,NotInitIndices)))*randn(NbParticules,NbParsNotInit)')';
+        ThetasInit = ThetasInit(ResampledIndexes,:);
+        NoTransfThetasInit = UpdateParsTransfToNoTransf(Parameters,ThetasInit,NamesInit);
+        NoTransfThetasNotInit = UpdateParsTransfToNoTransf(Parameters,ThetasNotInit,NamesNotInit);
+
+%         disp('apres')
+%         disp(mean(NoTransfThetasNotInit(:,end)))
+        
+        NoTransfThetasRecordTemp(IndTime,:) = mean(NoTransfThetasNotInit)';
+        ThetasRecordTemp(IndTime,:) = mean(ThetasNotInit)';
+        ThetasVarRecordTemp(IndTime,:) = var(ThetasNotInit)';        
+        RecordStates(IndTime,:,:) = Xf;
+        RecordThetas(IndTime,:,:) = ThetasNotInit;
+        LogLiksTemp(IndTime) = log(sum(LogLikWeigths)/NbParticules);
+        if or(isinf(log(sum(Weigths)/NbParticules)),isnan(log(sum(Weigths)/NbParticules)))
+            disp('inf or nan')
+        end
+    end
+%     plot(mean(squeeze(RecordStates(:,:,5))'))
+%     hold on
+%     plot(Data.Observations(5,:),'g')
+%     hold off
+%     die
+    temp = zeros(1,NbParsNotInit);
+    for IndTime = 2:length(ObservationInstants)
+        temp = temp + min(ThetasVarRecordTemp).*(ThetasVarRecordTemp(IndTime,:).^-1).*(ThetasRecordTemp(IndTime,:)-ThetasRecordTemp(IndTime-1,:));
+    end
+    ThetasRecord(NotInitIndices,IndIt) = ThetasRecord(NotInitIndices,IndIt-1) + temp';
+    ThetasRecord(InitIndices,IndIt) = mean(ThetasInit)';
+    tmp = [ThetasRecord(:,IndIt) ThetasRecord(:,IndIt)];
+    NoTransfThetasRecord(:,IndIt) = UpdateParsTransfToNoTransf(Parameters,ThetasRecord(:,IndIt)',Names);
+    
+    LogLiks(IndIt-1) = sum(LogLiksTemp);
+    TempParameters = Parameters;
+    for i = 1:length(Names)
+        ind  = Parameters.(Names{i}).Index;
+        TempParameters.(Names{i}).TransfValue = ThetasRecord(ind,IndIt);
+    end
+    TempParameters = UpdateParsTransfToNoTransf(TempParameters);
+%     Temp = EstimationSMCsmoothGen(Data, Model, TempParameters);
+    figure(2)
+    for i = 1:length(Names)
+        subplot(length(Names),1,i)
+        plot(NoTransfThetasRecord(i,2:end))
+        title(Names{i})
+        hold on
+        xis = ones(1,NbIterations);
+        plot(Parameters.(Names{i}).MinLim*xis,'--r')
+        plot(Parameters.(Names{i}).MaxLim*xis,'--r')
+        hold off
+    end
+%     figure(1)
+%     PlotMarc(Temp,8)
+%     title(Temp.LogLik)
+    pause(0.05)
+end
+
+figure(1)
+subplot(3,1,1)
+plot(LogLiks(2:end))
+title('LogLiks')
+subplot(3,1,2)
+plot(mean(squeeze(RecordStates(:,:,5))'))
+title('New Cases')
+subplot(3,1,3)
+plot(mean(exp(squeeze(RecordStates(2:end,:,6))')))
+
+
+figure(2)
+for i = 1:size(ThetasRecord,1)
+    subplot(size(ThetasRecord,1),1,i)
+    plot(NoTransfThetasRecord(i,2:end))
+    title(Names{i})
+    Parameters.(Names{i}).Value = NoTransfThetasRecord(i,end);
+end
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+
+
+Result.Cov = cov(ThetasRecord');
+Result.NoTransfThetasRecord = NoTransfThetasRecord;
+Result.ThetasRecord = ThetasRecord;
+Result.RecordStates = RecordStates;
+Result.LogLiks = LogLiks;
+Result.Parameters = Parameters;
+
+
+
+

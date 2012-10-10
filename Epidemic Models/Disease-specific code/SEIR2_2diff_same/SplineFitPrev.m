@@ -1,0 +1,49 @@
+function Spline = SplineFitPrev(Data,Parameters,N)
+
+n = sum(Data.NbComputingSteps);
+delta = floor(n/N);
+
+SplineInit = SplineFitBeta(Data.RealBetaTraj,N);
+
+tsinit = SplineInit.tis;
+yisinit = SplineInit.yis;
+
+% 
+xInit = [tsinit,yisinit];
+[x,fval,exitflag,output] = fminsearch(@(x) SplinePrevLik(x,Data,Parameters),xInit,optimset('MaxFunEvals',10000,'MaxIter',10000,'TolX',1e-7,'TolFun',1e-5));
+
+% x = RWoptimizeSplines(xInit,Data,Parameters,100,0.1);
+
+
+ts = ceil(x(1:length(x)/2));
+[ts,I,J] = UNIQUE(ts);
+
+yis = x(length(x)/2+1:end);
+yis = yis(I);
+
+Spline.tis = ts;
+Spline.yis = yis;
+Spline.BetaFit = spline(Spline.tis,Spline.yis,1:n);
+
+SEIRModel = struct();
+SEIRModel.EKF_projection = @SEIR_EKF_projection;
+SEIRModel.InitializeParameters = @SEIRInitialize;
+SEIRModel.LikFunction = 'normpdf(Variables(:,5),Data.Observations(5,IndTime),Data.Observations(5,IndTime)*Parameters.SigmaObs.Value)';
+SEIRModel.SMC_projection = @SEIR_SMC_projection;
+Parameters = SEIRModel.InitializeParameters(Parameters);
+
+
+SimData = SEIR_CreateData(Spline.BetaFit,Parameters,Data,SEIRModel);
+
+subplot(2,1,1)
+plot(Data.Observations(5,:),'g')
+hold on
+plot(SimData.Observations(5,:))
+subplot(2,1,2)
+plot(Spline.BetaFit);
+hold on
+plot(Data.RealBetaTraj,'g')
+hold off
+
+
+

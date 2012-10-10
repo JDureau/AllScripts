@@ -1,0 +1,97 @@
+
+%% 1: Generate realistic data
+% we use a beta trajectory that corresponds to 30 observations, 1 every 7 days,
+% with a one-day discretization time-step
+sigmaobs = 0.05; % multiplicative observational noise
+TStep = 1/7;
+NbObs = 30; % number of weeks
+% sigmoid parameters (roughly calibrated to generate realistic epidemics)
+RealAmpl = rand(1,1)*0.8;
+RealBaseline = 1.4;
+RealAsympt = baseline+ampl;
+RealInflpt = rand(1,1)*NbObs/TStep;
+RealSteepness = rand(1,1)*NbObs/(4);
+xis = TStep:TStep:NbObs;
+truebetas =  exp(RealBaseline-RealAmpl*Sigmoid((xis-RealInflpt*TStep)/RealSteepness));
+
+% Epidemic parameters:
+gamma = 0.94963^(-1);
+k = 1.5647^(-1);
+TotPop = 100000; % total population
+% Initial conditions:
+InitialI = 1;
+InitVariables = [TotPop*0.7 InitialI InitialI 0];
+InitVariables(4) = TotPop -sum(InitVariables);
+
+%% 2: Generate data with SEIR model
+Variables = InitVariables;
+TempVariables = Variables;
+Observations = []; 
+IndBeta = 1;
+Record = [];
+for IndIt = 2:NbObs
+    Variables (5) = 0;
+    TempVariables (5) = 0;
+    for IndDiscr = 1:1/TStep
+        beta = truebetas(IndBeta);
+        IndBeta = IndBeta + 1;
+        TempVariables(1) = TempVariables(1) + (-beta.*Variables(1).*Variables(3)/TotPop)*TStep ;
+        TempVariables(2) = TempVariables(2) + ( beta.*Variables(1).*Variables(3)/TotPop-k*Variables(2))*TStep ;
+        TempVariables(3) = TempVariables(3) + (-gamma*Variables(3) + k*Variables(2))*TStep ;
+        TempVariables(4) = TempVariables(4) + ( gamma*Variables(3))*TStep ;
+        TempVariables(5) = TempVariables(5) + ( k*Variables(2))*TStep ;
+        TempVariables(1) = max(TempVariables(1),0);
+        TempVariables(2) = max(TempVariables(2),0);
+        TempVariables(3) = max(TempVariables(3),0);
+        Variables = TempVariables;
+        Record(IndBeta,:) = Variables;
+
+    end
+    Observations(IndIt) = Variables(5)*(1+sigmaobs*randn(1,1));
+end 
+subplot(2,1,1)
+plot(Observations)
+subplot(2,1,2)
+plot(truebetas)
+
+
+%% 3: compute p(y|beta)
+% for a given beta that has the following parameters:
+ampl = rand(1,1)*0.8;
+baseline = 1.4;
+asympt = baseline+ampl;
+inflpt = rand(1,1)*NbObs/TStep;
+steepness = rand(1,1)*NbObs/(4);
+xis = TStep:TStep:NbObs;
+betas =  exp(baseline-ampl*Sigmoid((xis-inflpt*TStep)/steepness));
+
+% we get the following Log-likelihood:
+SimulatedEpid = [];
+Variables = InitVariables;
+TempVariables = Variables;
+
+IndBeta = 1;
+Record = [];
+LogLik = 0;
+for IndIt = 2:NbObs
+    Variables (5) = 0;
+    TempVariables (5) = 0;
+    for IndDiscr = 1:1/TStep
+        beta = betas(IndBeta);
+        IndBeta = IndBeta + 1;
+        TempVariables(1) = TempVariables(1) + (-beta.*Variables(1).*Variables(3)/TotPop)*TStep ;
+        TempVariables(2) = TempVariables(2) + ( beta.*Variables(1).*Variables(3)/TotPop-k*Variables(2))*TStep ;
+        TempVariables(3) = TempVariables(3) + (-gamma*Variables(3) + k*Variables(2))*TStep ;
+        TempVariables(4) = TempVariables(4) + ( gamma*Variables(3))*TStep ;
+        TempVariables(5) = TempVariables(5) + ( k*Variables(2))*TStep ;
+        TempVariables(1) = max(TempVariables(1),0);
+        TempVariables(2) = max(TempVariables(2),0);
+        TempVariables(3) = max(TempVariables(3),0);
+        Variables = TempVariables;
+        Record(IndBeta,:) = Variables;
+
+    end
+    SimulatedEpid(IndIt) = Variables(5);
+    LogLik = LogLik + normpdf(Observations(IndIt),SimulatedEpid(IndIt), Observations(IndIt)*sigmaobs);
+end    
+disp(LogLik)

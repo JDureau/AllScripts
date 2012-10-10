@@ -6,8 +6,8 @@ function [] = FullSEIRinference(Data,DiffType,ObsType,Name,IndModel)
 % IndModel = 3 -> 2diffb
 % IndModel = 4 -> 3diff
         
-NbIters = 15000;
-NbItersPrep = 5000;
+NbIters = 60000;
+NbItersPrep = 15000;
 
 
 
@@ -21,9 +21,9 @@ switch IndModel
     case 3
         tmp = load([SavePath '/ParametersSEIR2_1diffb.mat']);    
     case 4
-        tmp = load([SavePath '/ParametersSEIR2_2diff.mat']);
+        tmp = load([SavePath '/ParametersSEIR2_2diff_same.mat']);
     case 5
-        tmp = load([SavePath '/ParametersSEIR2_2diffb.mat']);
+        tmp = load([SavePath '/ParametersSEIR2_2diff_diff.mat']);
     case 6
         tmp = load([SavePath '/ParametersSEIR2_3diff.mat']);
     case 7
@@ -45,9 +45,9 @@ switch IndModel
     case 3
         NameToSave = ['MarcData_StructModel_1diffb.mat'];
     case 4
-        NameToSave = ['MarcData_StructModel_2diff.mat'];
+        NameToSave = ['MarcData_StructModel_2diff_same.mat'];
     case 5
-        NameToSave = ['MarcData_StructModel_2diffb.mat'];
+        NameToSave = ['MarcData_StructModel_2diff_diff.mat'];
     case 6
         NameToSave = ['MarcData_StructModel_3diff.mat'];
     case 7
@@ -124,14 +124,14 @@ switch IndModel
         SEIRModel.SMC_projection = @SEIR2_1diffb_SMC_projection;
         SEIRModel.LikFunction = 'mvnpdf(log(Variables(:,[9 10])),transpose(log(coeff*Data.Observations([9 10],IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),diag([log(Parameters.SigmaObs.Value^2+1) log(Parameters.SigmaObs.Value^2+1)]))';
     case 4
-        SEIRModel.EKF_projection = @SEIR2_2diff_EKF_projection;
-        SEIRModel.InitializeParameters = @SEIR2_2diff_Initialize;
-        SEIRModel.SMC_projection = @SEIR2_2diff_SMC_projection;
+        SEIRModel.EKF_projection = @SEIR2_2diff_same_EKF_projection;
+        SEIRModel.InitializeParameters = @SEIR2_2diff_same_Initialize;
+        SEIRModel.SMC_projection = @SEIR2_2diff_same_SMC_projection;
         SEIRModel.LikFunction = 'mvnpdf(log(Variables(:,[9 10])),transpose(log(coeff*Data.Observations([9 10],IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),diag([log(Parameters.SigmaObs.Value^2+1) log(Parameters.SigmaObs.Value^2+1)]))';
     case 5
-        SEIRModel.EKF_projection = @SEIR2_2diffb_EKF_projection;
-        SEIRModel.InitializeParameters = @SEIR2_2diffb_Initialize;
-        SEIRModel.SMC_projection = @SEIR2_2diffb_SMC_projection;
+        SEIRModel.EKF_projection = @SEIR2_2diff_diff_EKF_projection;
+        SEIRModel.InitializeParameters = @SEIR2_2diff_diff_Initialize;
+        SEIRModel.SMC_projection = @SEIR2_2diff_diff_SMC_projection;
         SEIRModel.LikFunction = 'mvnpdf(log(Variables(:,[9 10])),transpose(log(coeff*Data.Observations([9 10],IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),diag([log(Parameters.SigmaObs.Value^2+1) log(Parameters.SigmaObs.Value^2+1)]))';
     case 6
         SEIRModel.EKF_projection = @SEIR2_3diff_EKF_projection;
@@ -212,7 +212,7 @@ if not(AlreadySomething)
             Parameters.R2InitProp.Estimated = 1;
     %         Parameters.beta11init.Estimated = 1;
     %         Parameters.beta22init.Estimated = 1;
-            Parameters.adultsmult.Estimated = 1;
+%             Parameters.adultsmult.Estimated = 1;
         case 5
             Parameters.SigmaRW11.Estimated = 1;
             Parameters.SigmaRW22.Estimated = 1;
@@ -225,7 +225,7 @@ if not(AlreadySomething)
     %         Parameters.beta11init.Estimated = 1;
     %         Parameters.beta22init.Estimated = 1;
             Parameters.adultsmult.Estimated = 1;
-            Parameters.kidsmult.Estimated = 1;
+%             Parameters.kidsmult.Estimated = 1;
         case 6
             Parameters.SigmaRW11.Estimated = 1;
             Parameters.SigmaRW22.Estimated = 1;
@@ -290,12 +290,12 @@ if not(AlreadySomething)
             case 4
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.SigmaRW22.Value = rand(1,1)*2;
-                Parameters.adultsmult.Value = rand(1,1);
+%                 Parameters.adultsmult.Value = rand(1,1);
             case 5
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.SigmaRW22.Value = rand(1,1)*2;
                 Parameters.adultsmult.Value = rand(1,1);
-                Parameters.kidsmult.Value = rand(1,1);
+%                 Parameters.kidsmult.Value = rand(1,1);
             case 6
                 Parameters.SigmaRW11.Value = rand(1,1)*2;
                 Parameters.SigmaRW22.Value = rand(1,1)*2;
@@ -376,7 +376,7 @@ if not(AlreadySomething)
             Parameters.beta11init.Estimated = 1;
             Parameters.beta22init.Estimated = 1;
             Parameters.beta12init.Estimated = 1;
-            Parameters.adultsmult.Estimated = 1;
+%             Parameters.adultsmult.Estimated = 1;
             Parameters.E1InitProp.Estimated = 1;
             Parameters.I1InitProp.Estimated = 1;
             Parameters.R1InitProp.Estimated = 1;
@@ -392,8 +392,8 @@ if not(AlreadySomething)
             Parameters.beta22init.Estimated = 1;
             Parameters.adultsmult.Estimated = 1;
             Parameters.kidsmult.Estimated = 1;
-            Parameters.adultsadd.Estimated = 1;
-            Parameters.kidsadd.Estimated = 1;
+%             Parameters.adultsadd.Estimated = 1;
+%             Parameters.kidsadd.Estimated = 1;
             Parameters.E1InitProp.Estimated = 1;
             Parameters.I1InitProp.Estimated = 1;
             Parameters.R1InitProp.Estimated = 1;
@@ -615,12 +615,12 @@ TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
 Parameters.AdMet = 0;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,50000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,250000);
 Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
 Parameters.ModelType='Kalman';
 Parameters.AdaptC = 0.999;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,50000);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,250000);
 
 
 
