@@ -26,43 +26,32 @@ elseif IndModel == 2
 end
 
 
-if or(ind == 1,ind == 2)
+if ind == 1
     temp = load([SavePath 'ParametersMysore.mat']);
     Parameters = temp.Parameters;
     
-    if ind == 1
-        ObsYears = [2004.667  2006.917    2008.834    2009.26];
-        ObsMin = [0.2193 0.1911 0.032663 0.06975];
-        ObsMax = [0.3028 0.2945 0.07557 0.14818];
-        ObsVars = [7 7 8 7];
-        Name = ['/HIV_Mysore_3rounds' s '.mat'];
-    else
-        ObsYears = [2004.667	2006.917    2008.834	];
-        ObsMin = [0.2193 0.1911 0.032663 ];
-        ObsMax = [0.3028 0.2945 0.07557 ];
-        ObsVars = [7 7 8];
-        Name = ['/HIV_Mysore_2rounds' s '.mat'];
-    end
+    ObsYears = [2004.667  2006.917    2008.834    2009.26];
+    ObsMin = [0.2193 0.1911 0.032663 0.06975];
+    ObsMax = [0.3028 0.2945 0.07557 0.14818];
+    ObsVars = [7 7 8 7];
+    NbSamples = [429 425 425 425];
+
+    Name = ['/HIV_Mysore_3rounds' s '.mat'];
     
-elseif or(ind == 3,ind == 4)
+elseif ind == 2
     temp = load([SavePath 'ParametersBelgaum.mat']);
     Parameters = temp.Parameters;
     
-    if ind == 3
-        ObsYears = [2005.834	2007.824    2008.584	2010.71];
-        ObsMin = [0.2762 0.0363 0.2217  0.17552];
-        ObsMax = [0.4018 0.0877 0.3251  0.2695];
-        ObsVars = [7 8 7 7];
-        Name = ['/HIV_Belgaum_3rounds' s '.mat'];
-    else
-        ObsYears = [2005.834	2007.824    2008.584 ];
-        ObsMin = [0.2762  0.0363 0.2217];
-        ObsMax = [0.4018  0.0877 0.3251];
-        ObsVars = [7 8 7];
-        Name = ['/HIV_Belgaum_2rounds' s '.mat'];
-    end
+    ObsYears = [2005.834	2007.824    2008.584	2010.71];
+    ObsMin = [0.2762 0.0363 0.2217  0.17552];
+    ObsMax = [0.4018 0.0877 0.3251  0.2695];
+    ObsVars = [7 8 7 7];
+    NbSamples = [363 408 396 423];
+
+    Name = ['/HIV_Belgaum_3rounds' s '.mat'];
+
     
-elseif ind == 5
+elseif ind == 3
     temp = load([SavePath 'ParametersBellary.mat']);  
     Parameters = temp.Parameters;
 
@@ -70,9 +59,11 @@ elseif ind == 5
     ObsMin = [0.1106 0.0258 0.1048 0.0377];
     ObsMax = [0.2003 0.0946 0.1776 0.0892];
     ObsVars = [7 8 7 7];
+    NbSamples = [422 424 410 400];
+
     Name = ['/HIV_Bellary' s '.mat'];
     
-elseif ind == 6
+elseif ind == 4
     temp = load([SavePath 'ParametersEastGodavry.mat']);
     Parameters = temp.Parameters;
     
@@ -80,9 +71,11 @@ elseif ind == 6
     ObsMin = [0.2004 0.0483 0.1514 0.041215];
     ObsMax = [0.3247 0.1184 0.3139 0.150556];
     ObsVars = [7 8 7 8];
+    NbSamples = [422 422 422 422];
+
     Name = ['/HIV_EastGodavry' s '.mat'];
 
-elseif ind == 7
+elseif ind == 5
     temp = load([SavePath 'ParametersGuntur.mat']);  
     Parameters = temp.Parameters;
     
@@ -90,11 +83,13 @@ elseif ind == 7
     ObsMin = [0.1639 0.0369 0.0429 0.021891];
     ObsMax = [0.262 0.0956 0.125 0.1206];
     ObsVars = [7 8 7 8];
+    NbSamples = [405 405 405 405];
+
 
     Name = ['/HIV_Guntur' s '.mat'];
 
 
-elseif ind == 8
+elseif ind == 6
     temp = load([SavePath 'ParametersHyderabad.mat']); 
     Parameters = temp.Parameters;
     
@@ -102,10 +97,12 @@ elseif ind == 8
     ObsMin = [0.0906 0.007 0.045 0];
     ObsMax = [0.1954 0.0405 0.147 0.0841];
     ObsVars = [7 8 7 8];
+    NbSamples = [399 399 399 399];
+
     Name = ['/HIV_Hyderabad' s '.mat'];
     
 
-elseif ind == 9
+elseif ind == 7
     temp = load([SavePath 'ParametersYevatmal.mat']);  
     Parameters = temp.Parameters;
     
@@ -113,9 +110,11 @@ elseif ind == 9
     ObsMin = [0.2391 0.075527 0.1805 0.065032];
     ObsMax = [0.506 0.142355 0.3546 0.168657];
     ObsVars = [7 8 7 8];
+    NbSamples = [153 153 153 153];
+
     Name = ['/HIV_Yevatmal' s '.mat'];
 
-elseif ind == 10
+elseif ind == 8
     temp = load([SavePath 'ParametersShimoga.mat']); 
     
     Parameters = temp.Parameters;
@@ -124,6 +123,8 @@ elseif ind == 10
     ObsMin = [0.0632 0.0085 0.0566];
     ObsMax = [0.1305 0.0514 0.1226];
     ObsVars = [7 8 7];
+    NbSamples = [389 426 406 396];
+
     Name = ['/HIV_Shimoga' s '.mat'];
 
 end
@@ -132,7 +133,7 @@ end
 
 
 
-
+Parameters.NbSamples = NbSamples;
 Parameters.NbVariables = 9;
 Parameters.Problem = 'ImperialHIV';
 Parameters.ObservationLength = 26*12;

@@ -314,6 +314,7 @@ ObsYevatmal = [0.373	0.109 0.267 0.117];
 ObsYevatmalMin = [0.2391 0.075527 0.1805 0.065032];
 ObsYevatmalMax = [0.506 0.142355 0.3546 0.168657];
 ObsVarsYevatmal = [7 8 7 8];
+NbSamples = [153 153 153 153];
 
 
 if ind == 7
@@ -340,6 +341,7 @@ ObsShimoga = [0.0968	 0.023 0.0896];
 ObsShimogaMin = [0.0632 0.0085 0.0566];
 ObsShimogaMax = [0.1305 0.0514 0.1226];
 ObsVarsShimoga = [7 8 7];
+NbSamples = [153 153 153 153];
 
 
 if ind == 8
