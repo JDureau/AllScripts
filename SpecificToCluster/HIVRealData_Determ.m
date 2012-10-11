@@ -12,18 +12,18 @@ addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
-HIVModel = struct();
-HIVModel.EKF_projection = @HIV_EKF_projection;
-HIVModel.InitializeParameters = @HIV_Initialize;
-HIVModel.SMC_projection = @HIV_SMC_projection;
+    HIVModel = struct();
+    HIVModel.EKF_projection = @HIV_EKF_projection;
+    HIVModel.InitializeParameters = @HIV_Initialize;
+    HIVModel.SMC_projection = @HIV_SMC_projection;
 
-NbIts = 20000;
+    NbIts = 20000;
 
-if IndModel == 1
-    s = '_dBR';
-elseif IndModel == 2
-    s = '_Sigm';
-end
+    if IndModel == 1
+        s = '_dBR';
+    elseif IndModel == 2
+        s = '_Sigm';
+    end
 
 
 if ind == 1

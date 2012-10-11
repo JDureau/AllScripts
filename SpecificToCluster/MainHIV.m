@@ -220,8 +220,12 @@ if ind == 2
 
   
   
-  if strcmp(Diff,'Logistic')
-    ParametersBelgaum.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersBelgaum.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersBelgaum.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersBelgaum.DiffusionType = 'Sigmoid';
   end
   
   Res = HIVapplyInference([],ParametersBelgaum);
@@ -268,8 +272,12 @@ if ind == 3
   ParametersBellary.NbSamples = NbSamples;
 
   
-  if strcmp(Diff,'Logistic')
-    ParametersBellary.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersBellary.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersBellary.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersBellary.DiffusionType = 'Sigmoid';
   end
   
   Res = HIVapplyInference([],ParametersBellary);
@@ -296,8 +304,12 @@ if ind == 4
   ParametersEastGodavry.NbSamples = NbSamples;
 
   
-  if strcmp(Diff,'Logistic')
-    ParametersEastGodavry.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersEastGodavry.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersEastGodavry.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersEastGodavry.DiffusionType = 'Sigmoid';
   end
   
   Res = HIVapplyInference([],ParametersEastGodavry);
@@ -324,8 +336,12 @@ if ind == 5
   ParametersGuntur.NameToSave = Name;
   ParametersGuntur.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersEastGuntur.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersGuntur.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersGuntur.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersGuntur.DiffusionType = 'Sigmoid';
   end
   
   Res = HIVapplyInference([],ParametersGuntur);
@@ -353,8 +369,12 @@ if ind == 6
   ParametersHyderabad.NameToSave = Name;
   ParametersHyderabad.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersHyderabad.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersHyderabad.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersHyderabad.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersHyderabad.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersHyderabad);
 end
@@ -399,8 +419,12 @@ if ind == 7
   ParametersYevatmal.NameToSave = Name;
   ParametersYevatmal.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersYevatmal.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersYevatmal.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersYevatmal.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersYevatmal.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersYevatmal);
 end
@@ -426,8 +450,12 @@ if ind == 8
   ParametersShimoga.NameToSave = Name;
   ParametersShimoga.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersShimoga.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersShimoga.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersShimoga.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersShimoga.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersShimoga);
 end
