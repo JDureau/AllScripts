@@ -134,17 +134,19 @@ ParametersShimoga = temp.Parameters;
 
 
 
+
 ObsYearsMysore3rds = [2004.667	2006.917    2008.834	2009.26];
 CIMysore3rds = [];
 ObsMysore3rds = [0.2611	0.2424 0.054 0.111];
 ObsMysore3rdsMin = [0.2193 0.1911 0.032663 0.06975];
 ObsMysore3rdsMax = [0.3028 0.2945 0.07557 0.14818];
 ObsVarsMysore3rds = [7 7 8 7];
-ObsYearsMysore2rds = [2004.667	2006.917    2008.834	];
-ObsMysore2rdsMin = [0.2193 0.1911 0.032663 ];
-ObsMysore2rdsMax = [0.3028 0.2945 0.07557 ];
-ObsMysore2rds = [0.2611	0.2424 0.054 ];
-ObsVarsMysore2rds = [7 7 8 ];
+NbSamples = [429 425 425 425];
+% ObsYearsMysore2rds = [2004.667	2006.917    2008.834	];
+% ObsMysore2rdsMin = [0.2193 0.1911 0.032663 ];
+% ObsMysore2rdsMax = [0.3028 0.2945 0.07557 ];
+% ObsMysore2rds = [0.2611	0.2424 0.054 ];
+% ObsVarsMysore2rds = [7 7 8 ];
 
 if ind == 1
 
@@ -155,25 +157,40 @@ if ind == 1
   ParametersMysore.Obs = ObsMysore3rds;
   ParametersMysore.ObsMin = ObsMysore3rdsMin;
   ParametersMysore.ObsMax = ObsMysore3rdsMax;
-  ParametersMysore.NameToSave = [Name temp.Parameters.DiffusionType];
+  ParametersMysore.NameToSave = Name;
+  ParametersMysore.NbSamples = NbSamples;
+  
+  if IndDiff == 1
+    ParametersMysore.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersMysore.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersMysore.DiffusionType = 'Sigmoid';
+  end
+  
   Res = HIVapplyInference([],ParametersMysore);
 end
 
 %SavePath = 'S:\Results';
 %Res = load([SavePath Name ]);
 
-if ind == 2
-  Name = 'HIV_Mysore_2rounds';
-  ParametersMysore.RealData = 1;
-  ParametersMysore.ObsYears = ObsYearsMysore2rds;
-  ParametersMysore.ObsVars = ObsVarsMysore2rds;
-  ParametersMysore.Obs = ObsMysore2rds;
-  ParametersMysore.ObsMin = ObsMysore2rdsMin;
-  ParametersMysore.ObsMax = ObsMysore2rdsMax;
-  ParametersMysore.NameToSave = [Name temp.Parameters.DiffusionType];
-  
-  Res = HIVapplyInference([],ParametersMysore);
-end
+% if ind == 2
+%   Name = 'HIV_Mysore_2rounds';
+%   ParametersMysore.RealData = 1;
+%   ParametersMysore.ObsYears = ObsYearsMysore2rds;
+%   ParametersMysore.ObsVars = ObsVarsMysore2rds;
+%   ParametersMysore.Obs = ObsMysore2rds;
+%   ParametersMysore.ObsMin = ObsMysore2rdsMin;
+%   ParametersMysore.ObsMax = ObsMysore2rdsMax;
+%   ParametersMysore.NameToSave = Name;
+%   
+%   
+%   if strcmp(Diff,'Logistic')
+%     ParametersMysore.DiffusionType = 'Logistic';
+%   end
+%   
+%   Res = HIVapplyInference([],ParametersMysore);
+% end
 
  
 ObsYearsBelgaum3rds = [2005.834	2007.824    2008.584	2010.71];
@@ -181,14 +198,16 @@ ObsBelgaum3rds = [0.339	0.062 0.273 0.223];
 ObsBelgaum3rdsMin = [0.2762 0.0363 0.2217  0.17552];
 ObsBelgaum3rdsMax = [0.4018 0.0877 0.3251  0.2695];
 ObsVarsBelgaum3rds = [7 8 7 7];
-ObsYearsBelgaum2rds = [2005.834	2007.824    2008.584 ];
-ObsBelgaum2rdsMin = [0.2762  0.0363 0.2217];
-ObsBelgaum2rdsMax = [0.4018  0.0877 0.3251];
-ObsBelgaum2rds = [0.339	0.062 0.273 ];
-ObsVarsBelgaum2rds = [7 8 7];
+NbSamples = [363 408 396 423];
+
+% ObsYearsBelgaum2rds = [2005.834	2007.824    2008.584 ];
+% ObsBelgaum2rdsMin = [0.2762  0.0363 0.2217];
+% ObsBelgaum2rdsMax = [0.4018  0.0877 0.3251];
+% ObsBelgaum2rds = [0.339	0.062 0.273 ];
+% ObsVarsBelgaum2rds = [7 8 7];
 
 
-if ind == 3
+if ind == 2
   Name = 'HIV_Belgaum_3rounds';
   ParametersBelgaum.RealData = 1;
   ParametersBelgaum.ObsYears = ObsYearsBelgaum3rds;
@@ -196,28 +215,37 @@ if ind == 3
   ParametersBelgaum.Obs = ObsBelgaum3rds;
   ParametersBelgaum.ObsMin = ObsBelgaum3rdsMin;
   ParametersBelgaum.ObsMax = ObsBelgaum3rdsMax;
-  ParametersBelgaum.NameToSave = [Name temp.Parameters.DiffusionType];
+  ParametersBelgaum.NameToSave = Name;
+  ParametersBelgaum.NbSamples = NbSamples;
+
   
   
+  if strcmp(Diff,'Logistic')
+    ParametersBelgaum.DiffusionType = 'Logistic';
+  end
   
   Res = HIVapplyInference([],ParametersBelgaum);
 end
 
 
-if ind == 4
-  Name = 'HIV_Belgaum_2rounds';
-  ParametersBelgaum.RealData = 1;
-  ParametersBelgaum.ObsYears = ObsYearsBelgaum2rds;
-  ParametersBelgaum.ObsVars = ObsVarsBelgaum2rds;
-  ParametersBelgaum.Obs = ObsBelgaum2rds;
-  ParametersBelgaum.ObsMin = ObsBelgaum2rdsMin;
-  ParametersBelgaum.ObsMax = ObsBelgaum2rdsMax;
-  ParametersBelgaum.NameToSave = [Name temp.Parameters.DiffusionType];
-  
-  
-  
-  Res = HIVapplyInference([],ParametersBelgaum);
-end
+% if ind == 4
+%   Name = 'HIV_Belgaum_2rounds';
+%   ParametersBelgaum.RealData = 1;
+%   ParametersBelgaum.ObsYears = ObsYearsBelgaum2rds;
+%   ParametersBelgaum.ObsVars = ObsVarsBelgaum2rds;
+%   ParametersBelgaum.Obs = ObsBelgaum2rds;
+%   ParametersBelgaum.ObsMin = ObsBelgaum2rdsMin;
+%   ParametersBelgaum.ObsMax = ObsBelgaum2rdsMax;
+%   ParametersBelgaum.NameToSave = Name;
+%   
+%   
+%   
+%   if strcmp(Diff,'Logistic')
+%     ParametersBelgaum.DiffusionType = 'Logistic';
+%   end
+%   
+%   Res = HIVapplyInference([],ParametersBelgaum);
+% end
 
 
 ObsYearsBellary = [2005.908	2007.873  2008.642	2010.865];
@@ -225,9 +253,10 @@ ObsBellary = [0.156	0.060 0.142 0.0634];
 ObsBellaryMin = [0.1106 0.0258 0.1048 0.0377];
 ObsBellaryMax = [0.2003 0.0946 0.1776 0.0892];
 ObsVarsBellary = [7 8 7 7];
+NbSamples = [422 424 410 400];
 
 
-if ind == 5
+if ind == 3
   Name = 'HIV_Bellary';
   ParametersBellary.RealData = 1;
   ParametersBellary.ObsYears = ObsYearsBellary;
@@ -235,8 +264,13 @@ if ind == 5
   ParametersBellary.Obs = ObsBellary;
   ParametersBellary.ObsMin = ObsBellaryMin;
   ParametersBellary.ObsMax = ObsBellaryMax;
-  ParametersBellary.NameToSave = [Name temp.Parameters.DiffusionType];
+  ParametersBellary.NameToSave = Name;
+  ParametersBellary.NbSamples = NbSamples;
+
   
+  if strcmp(Diff,'Logistic')
+    ParametersBellary.DiffusionType = 'Logistic';
+  end
   
   Res = HIVapplyInference([],ParametersBellary);
 end
@@ -248,8 +282,9 @@ ObsEastGodavry = [0.263	0.083 0.233 0.096];
 ObsEastGodavryMin = [0.2004 0.0483 0.1514 0.041215];
 ObsEastGodavryMax = [0.3247 0.1184 0.3139 0.150556];
 ObsVarsEastGodavry = [7 8 7 8];
+NbSamples = [422 422 422 422];
 
-if ind == 6
+if ind == 4
   Name = 'HIV_EastGodavry';
   ParametersEastGodavry.RealData = 1;
   ParametersEastGodavry.ObsYears = ObsYearsEastGodavry;
@@ -257,7 +292,13 @@ if ind == 6
   ParametersEastGodavry.Obs = ObsEastGodavry;
   ParametersEastGodavry.ObsMin = ObsEastGodavryMin;
   ParametersEastGodavry.ObsMax = ObsEastGodavryMax;
-  ParametersEastGodavry.NameToSave = [Name temp.Parameters.DiffusionType];
+  ParametersEastGodavry.NameToSave = Name;
+  ParametersEastGodavry.NbSamples = NbSamples;
+
+  
+  if strcmp(Diff,'Logistic')
+    ParametersEastGodavry.DiffusionType = 'Logistic';
+  end
   
   Res = HIVapplyInference([],ParametersEastGodavry);
 end
@@ -269,9 +310,10 @@ ObsGuntur = [0.213	0.066 0.0839 0.071];
 ObsGunturMin = [0.1639 0.0369 0.0429 0.021891];
 ObsGunturMax = [0.262 0.0956 0.125 0.1206];
 ObsVarsGuntur = [7 8 7 8];
+NbSamples = [405 405 405 405];
 
 
-if ind == 7
+if ind == 5
   Name = 'HIV_Guntur';
   ParametersGuntur.RealData = 1;
   ParametersGuntur.ObsYears = ObsYearsGuntur;
@@ -279,7 +321,12 @@ if ind == 7
   ParametersGuntur.Obs = ObsGuntur;
   ParametersGuntur.ObsMin = ObsGunturMin;
   ParametersGuntur.ObsMax = ObsGunturMax;
-  ParametersGuntur.NameToSave = [Name temp.Parameters.DiffusionType];
+  ParametersGuntur.NameToSave = Name;
+  ParametersGuntur.NbSamples = NbSamples;
+
+  if strcmp(Diff,'Logistic')
+    ParametersEastGuntur.DiffusionType = 'Logistic';
+  end
   
   Res = HIVapplyInference([],ParametersGuntur);
 end
@@ -292,9 +339,10 @@ ObsHyderabad = [0.143	0.024 0.096 0.037];
 ObsHyderabadMin = [0.0906 0.007 0.045 0];
 ObsHyderabadMax = [0.1954 0.0405 0.147 0.0841];
 ObsVarsHyderabad = [7 8 7 8];
+NbSamples = [399 399 399 399];
 
 
-if ind == 8
+if ind == 6
   Name = 'HIV_Hyderabad';
   ParametersHyderabad.RealData = 1;
   ParametersHyderabad.ObsYears = ObsYearsHyderabad;
@@ -302,8 +350,12 @@ if ind == 8
   ParametersHyderabad.Obs = ObsHyderabad;
   ParametersHyderabad.ObsMin = ObsHyderabadMin;
   ParametersHyderabad.ObsMax = ObsHyderabadMax;
-  ParametersHyderabad.NameToSave = [Name temp.Parameters.DiffusionType];
-  
+  ParametersHyderabad.NameToSave = Name;
+  ParametersHyderabad.NbSamples = NbSamples;
+
+  if strcmp(Diff,'Logistic')
+    ParametersHyderabad.DiffusionType = 'Logistic';
+  end
   Res = HIVapplyInference([],ParametersHyderabad);
 end
 
@@ -333,9 +385,10 @@ ObsYevatmal = [0.373	0.109 0.267 0.117];
 ObsYevatmalMin = [0.2391 0.075527 0.1805 0.065032];
 ObsYevatmalMax = [0.506 0.142355 0.3546 0.168657];
 ObsVarsYevatmal = [7 8 7 8];
+NbSamples = [153 153 153 153];
 
 
-if ind == 9
+if ind == 7
   Name = 'HIV_Yevatmal';
   ParametersYevatmal.RealData = 1;
   ParametersYevatmal.ObsYears = ObsYearsYevatmal;
@@ -343,8 +396,12 @@ if ind == 9
   ParametersYevatmal.Obs = ObsYevatmal;
   ParametersYevatmal.ObsMin = ObsYevatmalMin;
   ParametersYevatmal.ObsMax = ObsYevatmalMax;
-  ParametersYevatmal.NameToSave = [Name temp.Parameters.DiffusionType];
-  
+  ParametersYevatmal.NameToSave = Name;
+  ParametersYevatmal.NbSamples = NbSamples;
+
+  if strcmp(Diff,'Logistic')
+    ParametersYevatmal.DiffusionType = 'Logistic';
+  end
   Res = HIVapplyInference([],ParametersYevatmal);
 end
 
@@ -355,9 +412,10 @@ ObsShimoga = [0.0968	 0.023 0.0896];
 ObsShimogaMin = [0.0632 0.0085 0.0566];
 ObsShimogaMax = [0.1305 0.0514 0.1226];
 ObsVarsShimoga = [7 8 7];
+NbSamples = [389 426 406 396];
 
 
-if ind == 10
+if ind == 8
   Name = 'HIV_Shimoga';
   ParametersShimoga.RealData = 1;
   ParametersShimoga.ObsYears = ObsYearsShimoga;
@@ -365,8 +423,11 @@ if ind == 10
   ParametersShimoga.Obs = ObsShimoga;
   ParametersShimoga.ObsMin = ObsShimogaMin;
   ParametersShimoga.ObsMax = ObsShimogaMax;
-  ParametersShimoga.NameToSave = [Name temp.Parameters.DiffusionType];
- 
+  ParametersShimoga.NameToSave = Name;
+  ParametersShimoga.NbSamples = NbSamples;
+
+  if strcmp(Diff,'Logistic')
+    ParametersShimoga.DiffusionType = 'Logistic';
+  end
   Res = HIVapplyInference([],ParametersShimoga);
 end
-

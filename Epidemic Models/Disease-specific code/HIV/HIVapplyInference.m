@@ -55,7 +55,7 @@ try
         Obs = Parameters.Obs*100;
         for i = 1:length(ObsVars)
 %             HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
-            HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/425);
+            HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/Parameters.NbSamples(i));
        end
         NbItsPMCMC = 20000;
         Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
