@@ -34,11 +34,11 @@ try
 
         if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
 %             HIVModel.LikFunction = 'not(Res.Crash)*Res.WentOutOrNot.*normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,(Parameters.ObsMax(IndTime-1)-Parameters.ObsMin(IndTime-1))*100/4)';
-            HIVModel.LikFunction = 'not(Res.Crash)*Res.WentOutOrNot.*binopdf(round(425*(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))/2),400,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+            HIVModel.LikFunction = 'not(Res.Crash)*Res.WentOutOrNot.*binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs(IndTime-1)),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables(:,IndTime))/100)'; % On Oct 11, corrected here with Nb Samples (before there was 425 and 400... watch out)
         else
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,(Parameters.ObsMax(IndTime-1)-Parameters.ObsMin(IndTime-1))*100/4)';
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
-            HIVModel.LikFunction = 'binopdf(round(425*(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))/2),400,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+            HIVModel.LikFunction = 'binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs(IndTime-1)),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables(:,IndTime))/100)';
         end
 
         temp7 = zeros(1,9);
@@ -521,7 +521,7 @@ if not(AlreadySomething)
         Parameters.ModelType = 'SMC';
         Parameters.Correction = 1;
         TempPar = Res.TempPar;
-    %     Parameters.Kee»ßpAll = 1;
+    %     Parameters.Kee??pAll = 1;
         Parameters.AdaptC = 0.999;
         % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
         Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,5000);

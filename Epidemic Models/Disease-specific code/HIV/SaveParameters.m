@@ -2,7 +2,7 @@
 
 %% Mysore
 
-SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan';
 % SavePath = 'S:\Results';
 % 
@@ -281,13 +281,7 @@ Parameters = ParametersMysore;
 Parameters.TotalFSW.Value = 2000;
 Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
 Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
-Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
-Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
-Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
-Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
 Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
-Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
-Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
 Parameters.MuFm1.Value = 140;
 Parameters.MuFm1.MinLim = 128.35; 
 Parameters.MuFm1.MaxLim = 157.5175;
@@ -573,4 +567,39 @@ Parameters.CF2.MaxLim =  54.01;
 
 % SavePath = 'S:\Results';
 save([SavePath '/ParametersShimoga.mat'],'Parameters') 
+
+%% Bangalore
+
+Parameters = ParametersBelgaum;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 60;
+Parameters.MuFm1.MinLim = 57.13; 
+Parameters.MuFm1.MaxLim = 67.89;
+Parameters.MuMm1.Value = 140;
+Parameters.MuMm1.MinLim = 127.69;
+Parameters.MuMm1.MaxLim = 155.9;
+Parameters.CF1.Value = 9.7;
+Parameters.CF1.MinLim = 9.3;
+Parameters.CF1.MaxLim = 10.91;
+Parameters.CF2.Value = 50;
+Parameters.CF2.MinLim = 44.8;
+Parameters.CF2.MaxLim =  54.01;
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersBangalore.mat'],'Parameters') 
+
+
+
 
