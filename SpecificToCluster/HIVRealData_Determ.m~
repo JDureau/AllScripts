@@ -12,18 +12,18 @@ addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
-HIVModel = struct();
-HIVModel.EKF_projection = @HIV_EKF_projection;
-HIVModel.InitializeParameters = @HIV_Initialize;
-HIVModel.SMC_projection = @HIV_SMC_projection;
+    HIVModel = struct();
+    HIVModel.EKF_projection = @HIV_EKF_projection;
+    HIVModel.InitializeParameters = @HIV_Initialize;
+    HIVModel.SMC_projection = @HIV_SMC_projection;
 
-NbIts = 20000;
+    NbIts = 20000;
 
-if IndModel == 1
-    s = '_dBR';
-elseif IndModel == 2
-    s = '_Sigm';
-end
+    if IndModel == 1
+        s = '_dBR';
+    elseif IndModel == 2
+        s = '_Sigm';
+    end
 
 
 if ind == 1
@@ -110,6 +110,8 @@ elseif ind == 7
     ObsMin = [0.2391 0.075527 0.1805 0.065032];
     ObsMax = [0.506 0.142355 0.3546 0.168657];
     ObsVars = [7 8 7 8];
+    NbSamples = [153 153 153 153];
+
     Name = ['/HIV_Yevatmal' s '.mat'];
 
 elseif ind == 8
@@ -121,6 +123,8 @@ elseif ind == 8
     ObsMin = [0.0632 0.0085 0.0566];
     ObsMax = [0.1305 0.0514 0.1226];
     ObsVars = [7 8 7];
+    NbSamples = [389 426 406 396];
+
     Name = ['/HIV_Shimoga' s '.mat'];
 
 end
@@ -129,7 +133,7 @@ end
 
 
 
-
+Parameters.NbSamples = NbSamples;
 Parameters.NbVariables = 9;
 Parameters.Problem = 'ImperialHIV';
 Parameters.ObservationLength = 26*12;
