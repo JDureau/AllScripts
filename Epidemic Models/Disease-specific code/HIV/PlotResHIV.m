@@ -549,8 +549,8 @@ end
     if Parameters.PlotIndex == 1
         title('Estimated Condom Use','FontWeight','bold','FontSize',14)
     end
-    title(Res.title,'FontWeight','bold', 'Units', 'normalized', ...
-'Position', [0 1], 'HorizontalAlignment', 'left')
+%     title(Res.title,'FontWeight','bold', 'Units', 'normalized', ...
+% 'Position', [0 1], 'HorizontalAlignment', 'left')
     ylabel('Condom use','FontSize',12)
 
 %     xlabel('Time')

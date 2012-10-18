@@ -464,25 +464,23 @@ xis = [];
 TempRes = Res;
 tab = TempRes.partampls2003;
 for  i = 1:6
-    q1 = 0.1*(i-1);
-    q2 = 0.1*(i);
+    q1 = quantile(tab(4,:),0.16*(i-1));
+    q2 = quantile(tab(4,:),0.16*(i));
     inds = find(and((tab(4,:)<q2),(tab(4,:)>q1)));
-    ToBar(i,2) = mean(tab(1,inds) - tab(4,inds));
-    ToBar(i,1) = mean(tab(3,inds) - tab(4,inds));
-    ToBar(i,5) = mean(tab(2,inds) - tab(4,inds));
-    ToBar(i,4) = mean(tab(5,inds) - tab(4,inds));
-    ToBar(i,3) = mean(tab(6,inds) - tab(4,inds));
+    ToBar(i,1) = mean(tab(1,inds) - tab(4,inds));
+    ToBar(i,2) = mean(tab(3,inds) - tab(4,inds));
+    ToBar(i,3) = mean(tab(2,inds) - tab(4,inds));
     xis(i) = mean([q1 q2]);
 end
-bar(1:6,ToBar(1:end,:))
+bar(1:5,ToBar(2:end,:)./repmat(xis(2:end)',1,3))
 % bar(xis,ToBar)
-xlabel('Real amplitude of the shift in condom use','FontSize',14)
-ylabel('Bias','FontSize',14)
-legend('sto. Bert. Richards','det. Bert. Richards','sto. Sigmoid','det. Sigmoid','Brown. Motion')
-set(gca,'XTick',1:6)
-set(gca,'XTickLabel',{'0-0.1';'0.1-0.2';'0.2-0.3';'0.3-0.4';'0.4-0.5';'0.5-0.6'})
+xlabel('"True" \DeltaCU')
+ylabel('Relative bias')
+legend('dBR','sBR','BM')
+set(gca,'XTick',[0:(600)/5:(600)])
+set(gca,'XTickLabel',['1985';'1990';'1995';'2000';'2005';'2010'])
 
-Title('Bias in shift amplitude estimates','FontWeight','bold','FontSize',16)
+Title('Relative bias in CU estimate as a function of \DeltaCU')
 
 figure(7)
 
@@ -772,20 +770,32 @@ end
 
 %% Real Data
 
-DistrictNames = {'Mysore_2rounds','Mysore_3rounds','Belgaum_2rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
+
+
+
+cd('/Users/dureaujoseph/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+
+
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
 
 for i = 1:length(DistrictNames)
     clf
-    load([SavePath '/HIV_' DistrictNames{i} 'Add.mat'])
+    load([SavePath '/HIV_' DistrictNames{i} '.mat'])
     Res.Parameters.PlotIndex = 1;
-    Res.Parameters.TypeWork='Boston Examples';
+    Res.Parameters.TypeWork='Normal';
     PlotResHIV(Res,Res.Parameters)
-    title([DistrictNames{i} ' BM'],'FontWeight','bold')
-    load([SavePath '/HIV_' DistrictNames{i} 'Bertallanfy.mat'])
-    Res.Parameters.PlotIndex = 2;
-    Res.Parameters.TypeWork='Boston Examples';
-    PlotResHIV(Res,Res.Parameters)
-    title([DistrictNames{i} ' sBR'],'FontWeight','bold')
+%     title([DistrictNames{i} ' BM'],'FontWeight','bold')
+%     load([SavePath '/HIV_' DistrictNames{i} 'Bertallanfy.mat'])
+%     Res.Parameters.PlotIndex = 2;
+%     Res.Parameters.TypeWork='Boston Examples';
+%     PlotResHIV(Res,Res.Parameters)
+%     title([DistrictNames{i} ' sBR'],'FontWeight','bold')
     pause()
 end
 
@@ -832,12 +842,12 @@ plot(xi,fi,'r')
 plot(xi,fi,'b')
 hold off
 
-Names = {'Mysore_3rounds','Mysore_2rounds','Belgaum_3rounds','Belgaum_2rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
+Names = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
 ests = [];
 randinds = 1:2000;
 for i = 1:length(Names)
     disp(Names{i})
-    load([SavePath '/HIV_' Names{i} '_dBR.mat'])
+%     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
     ResDet.Paths = ResDet.Paths(randinds,:);
@@ -847,34 +857,34 @@ for i = 1:length(Names)
     randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
     ResSigm.Paths = ResSigm.Paths(randinds,:);
     ResSigm.Thetas = ResSigm.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Add.mat'])
+    load([SavePath '/HIV_' Names{i} '.mat'])
     ResAdd = Res;
     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
     ResAdd.Paths = ResAdd.Paths(randinds,:,:);
     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
+%     load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
     ResBer = Res;
     randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
     ResBer.Paths = ResBer.Paths(randinds,:,:);
     ResBer.Thetas = ResBer.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
+%     load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
     ResSigmSto = Res;
     randinds = randsample(size(ResSigmSto.Paths,1),min(size(ResSigmSto.Paths,1),4000));
     ResSigmSto.Paths = ResSigmSto.Paths(randinds,:,:);
     ResSigmSto.Thetas = ResSigmSto.Thetas(:,randinds);
     
 %     
-%     indend = ResDet.Data.Instants(end);
+    indend = ResSigm.Data.Instants(end);
 %     
 %     FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
 %     FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
 % 
-%     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
-%     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
 %     
-%     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
-%     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
-%     FtsAdd = (exp(tmp)./(1+exp(tmp)));
+    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+    FtsAdd = (exp(tmp)./(1+exp(tmp)));
 % 
 %     tmp = squeeze(ResBer.Paths(:,3,1:indend));
 %     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
@@ -973,14 +983,20 @@ for i = 1:length(Names)
     ResSigm.Parameters.PlotIndex = 4;
     ResSigm.title = 'd) Estimated condom use (det. sigmoid model)';
     PlotResHIV(ResSigm,ResSigm.Parameters)
-    ResBer.Parameters.TypeWork = 'Boston Examples';
-    ResBer.Parameters.PlotIndex = 4;
+%     ResBer.Parameters.TypeWork = 'Boston Examples';
+%     ResBer.Parameters.PlotIndex = 4;
 %     PlotResHIV(ResBer,ResBer.Parameters)
 %     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
 %     ResSigmSto.Parameters.PlotIndex = 2;
 %     ResSigmSto.title=  'Stochastic sigmoid model';
 %     PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
-    
+
+    q = 0.5
+    quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q)
+    quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q)
+
+
+%     pause()
 end
 
 save([SavePath '/AllRegionsEstimates.mat'],'ests')
@@ -990,17 +1006,17 @@ save([SavePath '/AllRegionsEstimates.mat'],'ests')
 
 
 
-mean(FtsDet(:,582)-FtsDet(:,585-168))
-mean(FtsBer(:,582)-FtsBer(:,585-168))
+% mean(FtsDet(:,582)-FtsDet(:,585-168))
+% mean(FtsBer(:,582)-FtsBer(:,585-168))
 mean(FtsSigm(:,582)-FtsSigm(:,585-168))
-mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
+% mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
 mean(FtsAdd(:,582)-FtsAdd(:,585-168))
 
-q = 1
-quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
-quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
+q = 0.5
+% quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
+% quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
 quantile(FtsSigm(:,582)-FtsSigm(:,585-168),q)
-quantile(FtsSigmSto(:,582)-FtsSigmSto(:,585-168),q)
+% quantile(FtsSigmSto(:,582)-FtsSigmSto(:,585-168),q)
 quantile(FtsAdd(:,582)-FtsAdd(:,585-168),q)
 
 mean(FtsDet(:,582))

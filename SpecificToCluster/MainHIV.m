@@ -150,7 +150,7 @@ NbSamples = [429 425 425 425];
 
 if ind == 1
 
-  Name = 'HIV_Mysore_3rounds';
+  Name = 'HIV_Mysore_3rounds_d2';
   ParametersMysore.RealData = 1;
   ParametersMysore.ObsYears = ObsYearsMysore3rds;
   ParametersMysore.ObsVars = ObsVarsMysore3rds;
@@ -208,7 +208,7 @@ NbSamples = [363 408 396 423];
 
 
 if ind == 2
-  Name = 'HIV_Belgaum_3rounds';
+  Name = 'HIV_Belgaum_3rounds_d2';
   ParametersBelgaum.RealData = 1;
   ParametersBelgaum.ObsYears = ObsYearsBelgaum3rds;
   ParametersBelgaum.ObsVars = ObsVarsBelgaum3rds;
@@ -261,7 +261,7 @@ NbSamples = [422 424 410 400];
 
 
 if ind == 3
-  Name = 'HIV_Bellary';
+  Name = 'HIV_Bellary_d2';
   ParametersBellary.RealData = 1;
   ParametersBellary.ObsYears = ObsYearsBellary;
   ParametersBellary.ObsVars = ObsVarsBellary;
@@ -326,7 +326,7 @@ NbSamples = [405 405 405 405];
 
 
 if ind == 5
-  Name = 'HIV_Guntur';
+  Name = 'HIV_Guntur_d2';
   ParametersGuntur.RealData = 1;
   ParametersGuntur.ObsYears = ObsYearsGuntur;
   ParametersGuntur.ObsVars = ObsVarsGuntur;
@@ -359,7 +359,7 @@ NbSamples = [399 399 399 399];
 
 
 if ind == 6
-  Name = 'HIV_Hyderabad';
+  Name = 'HIV_Hyderabad_d2';
   ParametersHyderabad.RealData = 1;
   ParametersHyderabad.ObsYears = ObsYearsHyderabad;
   ParametersHyderabad.ObsVars = ObsVarsHyderabad;
@@ -409,7 +409,7 @@ NbSamples = [153 153 153 153];
 
 
 if ind == 7
-  Name = 'HIV_Yevatmal';
+  Name = 'HIV_Yevatmal_d2';
   ParametersYevatmal.RealData = 1;
   ParametersYevatmal.ObsYears = ObsYearsYevatmal;
   ParametersYevatmal.ObsVars = ObsVarsYevatmal;
@@ -440,7 +440,7 @@ NbSamples = [389 426 406 396];
 
 
 if ind == 8
-  Name = 'HIV_Shimoga';
+  Name = 'HIV_Shimoga_d2';
   ParametersShimoga.RealData = 1;
   ParametersShimoga.ObsYears = ObsYearsShimoga;
   ParametersShimoga.ObsVars = ObsVarsShimoga;

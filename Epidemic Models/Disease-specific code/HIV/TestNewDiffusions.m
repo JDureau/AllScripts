@@ -830,12 +830,12 @@ plot(xi,fi,'r')
 plot(xi,fi,'b')
 hold off
 
-Names = {'Mysore_3rounds','Mysore_2rounds','Belgaum_3rounds','Belgaum_2rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
+Names = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
 ests = [];
 randinds = 1:2000;
 for i = 1:length(Names)
     disp(Names{i})
-    load([SavePath '/HIV_' Names{i} '_dBR.mat'])
+%     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
     ResDet.Paths = ResDet.Paths(randinds,:);
@@ -845,34 +845,34 @@ for i = 1:length(Names)
     randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
     ResSigm.Paths = ResSigm.Paths(randinds,:);
     ResSigm.Thetas = ResSigm.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Add.mat'])
+    load([SavePath '/HIV_' Names{i} '.mat'])
     ResAdd = Res;
     randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
     ResAdd.Paths = ResAdd.Paths(randinds,:,:);
     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
+%     load([SavePath '/HIV_' Names{i} 'Bertallanfy.mat'])
     ResBer = Res;
     randinds = randsample(size(ResBer.Paths,1),min(size(ResBer.Paths,1),4000));
     ResBer.Paths = ResBer.Paths(randinds,:,:);
     ResBer.Thetas = ResBer.Thetas(:,randinds);
-    load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
+%     load([SavePath '/HIV_' Names{i} 'Sigmoid.mat'])
     ResSigmSto = Res;
     randinds = randsample(size(ResSigmSto.Paths,1),min(size(ResSigmSto.Paths,1),4000));
     ResSigmSto.Paths = ResSigmSto.Paths(randinds,:,:);
     ResSigmSto.Thetas = ResSigmSto.Thetas(:,randinds);
     
 %     
-%     indend = ResDet.Data.Instants(end);
+    indend = ResSigm.Data.Instants(end);
 %     
 %     FtDet = mean(squeeze(ResDet.Paths(:,1:indend)));
 %     FtsDet = (squeeze(ResDet.Paths(:,1:indend)));
 % 
-%     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
-%     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
 %     
-%     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
-%     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
-%     FtsAdd = (exp(tmp)./(1+exp(tmp)));
+    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+    FtsAdd = (exp(tmp)./(1+exp(tmp)));
 % 
 %     tmp = squeeze(ResBer.Paths(:,3,1:indend));
 %     beta0s = squeeze(ResBer.Thetas(ResBer.Parameters.BRbase.Index,:));
@@ -971,14 +971,20 @@ for i = 1:length(Names)
     ResSigm.Parameters.PlotIndex = 4;
     ResSigm.title = 'd) Estimated condom use (det. sigmoid model)';
     PlotResHIV(ResSigm,ResSigm.Parameters)
-    ResBer.Parameters.TypeWork = 'Boston Examples';
-    ResBer.Parameters.PlotIndex = 4;
+%     ResBer.Parameters.TypeWork = 'Boston Examples';
+%     ResBer.Parameters.PlotIndex = 4;
 %     PlotResHIV(ResBer,ResBer.Parameters)
 %     ResSigmSto.Parameters.TypeWork = 'Boston Examples';
 %     ResSigmSto.Parameters.PlotIndex = 2;
 %     ResSigmSto.title=  'Stochastic sigmoid model';
 %     PlotResHIV(ResSigmSto,ResSigmSto.Parameters)
-    
+
+    q = 0.5
+    quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q)
+    quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q)
+
+
+%     pause()
 end
 
 save([SavePath '/AllRegionsEstimates.mat'],'ests')
@@ -988,17 +994,17 @@ save([SavePath '/AllRegionsEstimates.mat'],'ests')
 
 
 
-mean(FtsDet(:,582)-FtsDet(:,585-168))
-mean(FtsBer(:,582)-FtsBer(:,585-168))
+% mean(FtsDet(:,582)-FtsDet(:,585-168))
+% mean(FtsBer(:,582)-FtsBer(:,585-168))
 mean(FtsSigm(:,582)-FtsSigm(:,585-168))
-mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
+% mean(FtsSigmSto(:,582)-FtsSigmSto(:,585-168))
 mean(FtsAdd(:,582)-FtsAdd(:,585-168))
 
-q = 1
-quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
-quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
+q = 0.5
+% quantile(FtsDet(:,582)-FtsDet(:,585-168),q)
+% quantile(FtsBer(:,582)-FtsBer(:,585-168),q)
 quantile(FtsSigm(:,582)-FtsSigm(:,585-168),q)
-quantile(FtsSigmSto(:,582)-FtsSigmSto(:,585-168),q)
+% quantile(FtsSigmSto(:,582)-FtsSigmSto(:,585-168),q)
 quantile(FtsAdd(:,582)-FtsAdd(:,585-168),q)
 
 mean(FtsDet(:,582))
