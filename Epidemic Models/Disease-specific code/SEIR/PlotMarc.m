@@ -336,22 +336,22 @@ catch
             nsmooth = 5;
             ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
             hold on
-            try Parameters.holidays
-                ymax = max(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975));
-                tmpymax = 3;%ymax*1.4;
-                h = area([1+Data.Instants(7) 1+Data.Instants(13)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
-                h = area([1+Data.Instants(20) 1+Data.Instants(22)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
-                set(gca,'Layer','top')
-                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
-                ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
-                ylim([0 tmpymax])
-            end  
+%             try Parameters.holidays
+%                 ymax = max(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975));
+%                 tmpymax = 3;%ymax*1.4;
+%                 h = area([1+Data.Instants(7) 1+Data.Instants(13)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
+%                 h = area([1+Data.Instants(20) 1+Data.Instants(22)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
+%                 set(gca,'Layer','top')
+%                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+%                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+%                 ylim([0 tmpymax])
+%             end  
             ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
             plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),':k','LineWidth',1)
             title('Effective contacts from kids to kids')
             ylabel('\beta_{kids \rightarrow kids}')
 %             xlabel('t (weeks)')
-            ylim([0 3])
+%             ylim([0 3])
 
             xlim([0 Data.Instants(end)])
             try Parameters.holidays
@@ -448,7 +448,7 @@ catch
                 plot(1000*mean(squeeze(exp(Paths(:,toplotdiff ,:)))),':k','LineWidth',1)
                 plot(1000*(Data.Observations(toplot(i),:)),'.','Color',DotsColor,'MarkerSize',10)
                 h = area(1000*[1+Data.Instants(7) 1+Data.Instants(13)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
-                legend('95% c.i.','50% c.i.','Post. mean','HPA data','Holidays')
+%                 legend('95% c.i.','50% c.i.','Post. mean','HPA data','Holidays')
             end
             
             nsmooth = 5;
@@ -479,9 +479,20 @@ catch
                 toplotdiff = 12;
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
                 hold on
+                try Parameters.holidays
+                    ymax = max(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.975));
+                    tmpymax = 3;%ymax*1.4;
+                    h = area([1+Data.Instants(7) 1+Data.Instants(13)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
+                    h = area([1+Data.Instants(20) 1+Data.Instants(22)],[tmpymax tmpymax],'FaceColor',VeryLight,'EdgeColor',VeryLight);
+                    set(gca,'Layer','top')
+                    ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.025),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.975),nsmooth),[172,215,255]/255)
+                    ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
+                    ylim([0 tmpymax])
+                end
                 ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
                 plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),'k','LineWidth',2)
-            
+                ylim([0 3])
+  
             else
                 ciplot(repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.025),1,size(Paths,3)),repmat(quantile(squeeze(Res.Thetas(Parameters.beta22init.Index,:)),0.975),1,size(Paths,3)),[172,215,255]/255)
                 hold on

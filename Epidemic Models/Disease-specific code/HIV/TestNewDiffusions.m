@@ -770,20 +770,33 @@ end
 
 %% Real Data
 
-DistrictNames = {'Mysore_2rounds','Mysore_3rounds','Belgaum_2rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
+
+
+
+cd('/Users/dureaujoseph/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+
+
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
 
 for i = 1:length(DistrictNames)
     clf
-    load([SavePath '/HIV_' DistrictNames{i} 'Add.mat'])
+    load([SavePath '/HIV_' DistrictNames{i} '_d2.mat'])
     Res.Parameters.PlotIndex = 1;
-    Res.Parameters.TypeWork='Boston Examples';
+    Res.Parameters.TypeWork='Normal';
     PlotResHIV(Res,Res.Parameters)
-    title([DistrictNames{i} ' BM'],'FontWeight','bold')
-    load([SavePath '/HIV_' DistrictNames{i} 'Bertallanfy.mat'])
-    Res.Parameters.PlotIndex = 2;
-    Res.Parameters.TypeWork='Boston Examples';
-    PlotResHIV(Res,Res.Parameters)
-    title([DistrictNames{i} ' sBR'],'FontWeight','bold')
+%     title([DistrictNames{i} ' BM'],'FontWeight','bold')
+%     load([SavePath '/HIV_' DistrictNames{i} 'Bertallanfy.mat'])
+%     Res.Parameters.PlotIndex = 2;
+%     Res.Parameters.TypeWork='Boston Examples';
+%     PlotResHIV(Res,Res.Parameters)
+%     title([DistrictNames{i} ' sBR'],'FontWeight','bold')
+    DistrictNames{i}
     pause()
 end
 
