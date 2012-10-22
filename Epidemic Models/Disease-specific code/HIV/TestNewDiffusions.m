@@ -784,9 +784,9 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
 
-for i = 1:length(DistrictNames)
+for i = 4:length(DistrictNames)
     clf
-    load([SavePath '/HIV_' DistrictNames{i} '_d2.mat'])
+    load([SavePath '/HIV_' DistrictNames{i} '_CU5.mat'])
     Res.Parameters.PlotIndex = 1;
     Res.Parameters.TypeWork='Normal';
     PlotResHIV(Res,Res.Parameters)

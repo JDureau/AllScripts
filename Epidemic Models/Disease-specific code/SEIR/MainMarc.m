@@ -2,7 +2,9 @@
 
 DataPath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/HPA';
 
-A = load([DataPath '/andre_estimates_31_01.txt']);
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/ResultsMarc/';
+
+A = load([SavePath '/andre_estimates_31_01.txt']);
 
 Data.Dates = {};
 Data.NewCases = {};
@@ -49,7 +51,7 @@ end
 
 
 %% Inference
-cd('/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllScripts/')
+cd('/Users/dureaujoseph/AllScripts/')
 addpath([pwd '/General Tools'])
 addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
