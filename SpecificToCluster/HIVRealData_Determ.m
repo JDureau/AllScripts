@@ -22,7 +22,7 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
     if IndModel == 1
         s = '_dBR';
     elseif IndModel == 2
-        s = '_Sigm';
+        s = '_Sigm_CU20';
     end
 
 
