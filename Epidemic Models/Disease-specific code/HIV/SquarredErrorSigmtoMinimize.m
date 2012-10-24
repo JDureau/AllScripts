@@ -23,7 +23,7 @@ LogCorr = 0;
 
 for i = 2:length(Data.ObservedVariables);
 %     LogLik = LogLik + max(-700,log(normpdf(Data.Observations(Data.ObservedVariables(i),i),TempSim.Observations(Data.ObservedVariables(i),i),sqrt(Data.Observations(Data.ObservedVariables(i),i)*(100-Data.Observations(Data.ObservedVariables(i),i))/400))));
-    LogLik = LogLik + max(-700,log(binopdf(round(425*Data.Observations(Data.ObservedVariables(:,i),i)/100),425,TempSim.Observations(Data.ObservedVariables(i),i)/100)));
+    LogLik = LogLik + max(-700,log(binopdf(round(425*Data.Observations(Data.ObservedVariables(:,i),i)),425,TempSim.Observations(Data.ObservedVariables(i),i)/100)));
 end
 for i = 1:length(NamesEst)
     tmp = Parameters.(NamesEst{i}).Prior(NamesEst{i},Parameters);

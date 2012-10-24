@@ -144,8 +144,8 @@ Parameters.TypeWork = 'Normal';
 
 Data.Observations = zeros(10,length(ObsVars)+1);
 for i = 1:length(ObsVars)
-    Data.Observations(ObsVars(i),1+i) = (ObsMin(i)+ObsMax(i))/2*100;
-    Data.ObsSigmas(i+1) = ((ObsMax(i)-ObsMin(i))*100/4);
+    Data.Observations(ObsVars(i),1+i) = (ObsMin(i)+ObsMax(i))/2;
+%     Data.ObsSigmas(i+1) = ((ObsMax(i)-ObsMin(i))*100/4);
 end
 Instants = round((ObsYears-1985)*12);
 Data.Instants = round([0 Instants]/(Parameters.ComputationTStep));
@@ -164,9 +164,9 @@ for i = 1:length(ObsVars)
     HIVModel.ObservationJacobian{i+1} = temps{ObsVars(i)};
 end
 HIVModel.ObservationMeasurementNoise = {};
-for i = 1:length(ObsVars)
-    HIVModel.ObservationMeasurementNoise{i+1} = 0.05*(ObsMax(i)+ObsMin(i))*100/2;%((ObsMax(i)-ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
-end
+% for i = 1:length(ObsVars)
+%     HIVModel.ObservationMeasurementNoise{i+1} = 0.05*(ObsMax(i)+ObsMin(i))*100/2;%((ObsMax(i)-ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
+% end
 
 
 
