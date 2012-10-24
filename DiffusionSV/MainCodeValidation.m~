@@ -77,9 +77,9 @@ ScoreAnal = ComputeScore(Z,Y,sigma,dersigma,H,ind)
 
 
 % dL/dZ 
-ind = 90; 
+ind = 1; 
 LogLik1 = ComputeLogLikZ(Z,Y,H,sigma);
-epsil = 0.00000001;
+epsil = 0.000000000001;
 Z2 = Z;
 Z2(ind) = Z2(ind) + epsil;
 LogLik2 = ComputeLogLikZ(Z2,Y,H,sigma);

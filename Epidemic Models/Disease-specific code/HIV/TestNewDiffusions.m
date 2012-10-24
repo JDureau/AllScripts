@@ -784,18 +784,18 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
 
-for i = 4:length(DistrictNames)
+for i = 1:length(DistrictNames)
     clf
-    load([SavePath '/HIV_' DistrictNames{i} '_CU5.mat'])
+%     load([SavePath '/HIV_' DistrictNames{i} '_CU20.mat'])
+%     Res.Parameters.PlotIndex = 3;
+%     Res.Parameters.TypeWork='Boston Examples';
+%     PlotResHIV(Res,Res.Parameters)
+%     title([DistrictNames{i} ' BM'],'FontWeight','bold')
+    load([SavePath '/HIV_' DistrictNames{i} '_Sigm_CU20_t2000.mat'])
     Res.Parameters.PlotIndex = 1;
     Res.Parameters.TypeWork='Normal';
     PlotResHIV(Res,Res.Parameters)
-%     title([DistrictNames{i} ' BM'],'FontWeight','bold')
-%     load([SavePath '/HIV_' DistrictNames{i} 'Bertallanfy.mat'])
-%     Res.Parameters.PlotIndex = 2;
-%     Res.Parameters.TypeWork='Boston Examples';
-%     PlotResHIV(Res,Res.Parameters)
-%     title([DistrictNames{i} ' sBR'],'FontWeight','bold')
+    title([DistrictNames{i} ' sBR'],'FontWeight','bold')
     DistrictNames{i}
     pause()
 end

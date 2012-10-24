@@ -17,12 +17,12 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
     HIVModel.InitializeParameters = @HIV_Initialize;
     HIVModel.SMC_projection = @HIV_SMC_projection;
 
-    NbIts = 20000;
+    NbIts = 30000;
 
     if IndModel == 1
         s = '_dBR';
     elseif IndModel == 2
-        s = '_Sigm';
+        s = '_Sigm_CU20_t2000';
     end
 
 
@@ -390,7 +390,7 @@ Cov = cov(Res.TransfThetas');
 Parameters.NamesEst = NamesEst;
 Parameters.SaveSpace = 1;
 clear Res;
-Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,100000,IndModel);
+Res = RunMCMCdeterm(Parameters,Data,HIVModel,Cov,200000,IndModel);
 
 
 save([SavePath Name],'Res')

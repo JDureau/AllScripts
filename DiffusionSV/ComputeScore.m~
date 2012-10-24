@@ -66,16 +66,15 @@ C = Extr*P*SqrtLambda*M;
 
 tmp = a'*B*Extr;
 tmp = ifft(tmp);
-tmp = real(tmp*SqrtLambda*M);
+tmp = tmp*SqrtLambda*M;
 
-Score = tmp(ind);
-% 
-% Score = 0;
-% for k = 1:N-1
-%     for i = 1:N-1
-%         Score = Score + a(k) * B(k,i) * real(C(i,ind));
-%     end
-% end
+
+Score = 0;
+for k = 1:N-1
+    for i = 1:N-1
+        Score = Score + a(k) * B(k,i) * real(C(i,ind));
+    end
+end
 
 % Score = a'*(B');
 % Score = Score*(C);

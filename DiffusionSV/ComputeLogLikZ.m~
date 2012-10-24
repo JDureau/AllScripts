@@ -14,7 +14,6 @@ Bh = Z_to_Bh(Z,N,step,H);
 X = Bh_to_X(Bh);
 
 LogLik = 0;
-LogLik = log(normpdf(Y(2),0,sqrt(sum(sigma(X(1:npoints-1)).^2)*step)));   
-for i = 3:nobs
-    LogLik = LogLik + log(normpdf(Y(i),Y(i-1),sqrt(sum(sigma(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step)));   
+for i = 1:nobs-1
+    LogLik = LogLik + log(normpdf(Y(i+1),0,sqrt(sum(sigma(X((i-1)*npoints+1:i*npoints)).^2))));   
 end
