@@ -97,15 +97,16 @@ load([SavePath '/MarcData_StructModel_2diffb.mat'])
 %%% Rerunning up to August 1st
 
 
-Data.Observations = zeros(7,10);
-Data.Observations(5,:) = Weigthed(1:10)*10;
+Data.Observations = zeros(7,9);
+Data.Observations(5,:) = Weigthed(1:9)*10;
 
 DiffType = 'Add';
 ObsType = 'Fixed';
 
 SavePath = '/Users/dureaujoseph/Documents/PhD_Data/ResultsMarc/';
 
-NameToSave = '/MarcData_UpToAug1st.mat';
+Name = [SavePath '/MarcData_UpToAug1st.mat'];
+
 IndModel = 1;
 FullSEIRinference(Data,Difftype,Obstype,Name,IndModel)
 
