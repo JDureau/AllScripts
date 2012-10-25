@@ -82,7 +82,7 @@ try
         end
         
         ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),Dark)
-        plot((mean(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),':k','LineWidth',1.5)
+        plot((median(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),':k','LineWidth',1.5)
         plot((Data.Observations(5,:)),'.','Color',DotsColor,'MarkerSize',16)
         hold off
         xlim([1 size(Data.Observations,2)-1])
@@ -99,7 +99,7 @@ try
         set(gca,'FontSize',12)
 
         subplot(rows,cols,min(2+figind,rows*cols))
-        esttraj = mean(squeeze(exp(Paths(:,6,:))));
+        esttraj = median(squeeze(exp(Paths(:,6,:))));
         ymax = max(esttraj);
         ymin = min(esttraj);
         ampl = ymax-ymin;
@@ -119,7 +119,7 @@ try
         end
         ylim([ymin-0.7*ampl ymax+0.75*ampl])
         ciplot(smooth(quantile(squeeze(exp(Paths(:,6,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,6,:))),0.75),nsmooth),Dark)
-        plot(mean(squeeze(exp(Paths(:,6,:)))),':k','LineWidth',1.5)
+        plot(median(squeeze(exp(Paths(:,6,:)))),':k','LineWidth',1.5)
         
         t = Data.Instants-Data.NbComputingSteps(end)*Res.Parameters.ComputationTStep;
         
@@ -325,7 +325,7 @@ catch
                 ylim([0 tmpymax])
             end  
             ciplot(smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.25),nsmooth),smooth(quantile(squeeze(exp(Paths(:,toplotdiff,:))),0.75),nsmooth),[100,153,251]/255)
-            plot(mean(squeeze(exp(Paths(:,toplotdiff ,:)))),':k','LineWidth',1)
+            plot(median(squeeze(exp(Paths(:,toplotdiff ,:)))),':k','LineWidth',1)
             title('Effective contact rate')
             ylabel('\beta_t')
             xlabel('t (weeks)')

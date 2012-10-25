@@ -673,6 +673,7 @@ Parameters.Epsil = 0.8;
 Parameters.AdMet = 0;
 Parameters.AdMetBeta = 0.05;
 TempPar = TempRes.TempPar;
+Parameters.Color = 1;
 % [Parameters, TempPar] = CalibrateMethod( Data, SEIRModel, Parameters, TempPar);
 Res2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbItersPrep);
 
@@ -714,6 +715,7 @@ else
     Parameters.PathsToKeep = [1:7]';
 end
 Parameters.SaveSpace = 1;
+Parameters.Color = 1;
 Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,NbIters);
 
 

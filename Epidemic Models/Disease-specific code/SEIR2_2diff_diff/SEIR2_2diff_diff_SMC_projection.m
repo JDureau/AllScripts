@@ -20,7 +20,7 @@ function Res = SEIR2_2diff_diff_SMC_projection(Variables,IndIt,NbIts,Data,Parame
         % Variables
         beta11 = exp(TempVariables(:,11));
         beta12 = Parameters.beta12init.Value;
-        beta21 = Parameters.adultsmult.Value*Parameters.beta12init.Value;
+        beta21 = Parameters.beta21init.Value;
         beta22 = exp(TempVariables(:,12));
 
         %S

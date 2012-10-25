@@ -1,0 +1,126 @@
+% Testing deterministic model with 4 constant beta's
+
+%% Generating data
+
+cd('/Users/dureaujoseph/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR'])
+addpath([pwd '/Epidemic Models/Disease-specific code/SEIR2_2diff_diff'])
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/ResultsMarc/';
+load([SavePath '/ParametersSEIR2_2diff_diff.mat']);
+
+
+load([SavePath '/Temp2_MarcData_StructModel_2diff_diff.mat'])
+Data = Res.Data;
+Parameters = Res.Parameters;
+Parameters.SigmaRW11.Value = 0;
+Parameters.SigmaRW22.Value = 0;
+
+SEIRModel.EKF_projection = @SEIR2_2diff_diff_EKF_projection;
+SEIRModel.InitializeParameters = @SEIR2_2diff_diff_Initialize;
+SEIRModel.SMC_projection = @SEIR2_2diff_diff_SMC_projection;
+SEIRModel.LikFunction = 'mvnpdf(log(Variables(:,[9 10])),transpose(log(coeff*Data.Observations([9 10],IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),diag([log(Parameters.SigmaObs.Value^2+1) log(Parameters.SigmaObs.Value^2+1)]))';
+
+
+Parameters.SigmaRW11.Value = 0;
+Parameters.SigmaRW22.Value = 0;
+Parameters.beta11init.Value = 2;
+Parameters.beta22init.Value = 1;
+Parameters.beta12init.Value = 0.3;
+Parameters.beta21init.Value = 0.6;
+Parameters.SigmaObs.Value = 100;
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Parameters.NoPaths = 0;
+
+ResultSMC = EstimationSMCsmoothGen(Data, SEIRModel, Parameters)
+
+clf
+subplot(2,1,1)
+plot(squeeze(ResultSMC.CompletePaths(1,9,Data.Instants+1)))
+subplot(2,1,2)
+plot(squeeze(ResultSMC.CompletePaths(1,10,Data.Instants+1)))
+
+Data.Observations(9,:)  = squeeze(ResultSMC.CompletePaths(1,9,Data.Instants+1));
+Data.Observations(10,:) = squeeze(ResultSMC.CompletePaths(1,10,Data.Instants+1));
+
+
+%% Inference
+
+Names = Parameters.Names.All;
+for j = 1:length(Names)
+    Parameters.(Names{j}).Estimated = 0;
+end
+Parameters.beta11init.Estimated = 1;
+Parameters.beta22init.Estimated = 1;
+Parameters.beta12init.Estimated = 1;
+Parameters.adultsmult.Estimated = 1;
+Parameters.SigmaObs.Value = 0.1;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+
+Parameters = KalmOpt(Parameters,Data,SEIRModel,2000);
+
+KalHess = Parameters.KalHess;
+Cov = (-KalHess)^-1;
+Parameters.Correction = 0;
+Parameters = KalmOpt(Parameters,Data,SEIRModel,1500);
+Parameters.Correction = 1;
+
+
+
+Parameters.NbParticules = 1;
+
+
+Cov = (-KalHess)^-1;
+Parameters.G = Cov^-1;
+Parameters.NoPaths = 1;
+Parameters.AdaptC = 0.999;
+Parameters.aim = 0.23;
+Parameters.Epsil = 1;
+Parameters.MCMCType = 'Rand';
+Parameters.GMeth = 'cst given';
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Parameters.ModelType='Kalman';
+Parameters.AdaptC = 0.999;
+Parameters.AdMet = 0;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+PlotTracePlots(Res)
+
+
+save([SavePath '/Temp0_Model4cstbetas' ],'Res')
+load([SavePath '/Temp0_Model4cstbetas' ])
+Parameters = Res.Parameters;
+% Parameters.NbParticules = 3000;
+
+Cov = cov(Res.TransfThetas');
+Parameters.G = Cov^-1;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+PlotTracePlots(Res)
+
+save([SavePath '/Temp1_Model4cstbetas' ],'Res')
+load([SavePath '/Temp1_Model4cstbetas' ])
+
+Cov = cov(Res.TransfThetas');
+Parameters.G = Cov^-1;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,30000);
+PlotTracePlots(Res)
+
+
+Cov = eye(4);
+Parameters.G = Cov^-1;
+Parameters.ModelType='SMC';
+NbParticules = 2;
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,30000);
+PlotTracePlots(Res)
+
+
+
+save([SavePath '/Temp2_Model4cstbetas' ],'Res')
+

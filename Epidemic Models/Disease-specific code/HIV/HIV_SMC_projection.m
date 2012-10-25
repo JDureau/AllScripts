@@ -44,6 +44,7 @@
         elseif or(strcmp(Parameters.DiffusionType,'Add'),strcmp(Parameters.DiffusionType,'AddConstr'))
             beta = min(1,max(0,exp(Variables(:,9))./(1+exp(Variables(:,9)))));
         end    
+        
         TotF1 = Parameters.TotF1.Value;
         TotF2 = Parameters.TotF2.Value;
         TotM  = Parameters.TotM.Value;

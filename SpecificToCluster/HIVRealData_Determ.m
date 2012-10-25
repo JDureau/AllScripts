@@ -10,6 +10,12 @@ addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 
+mode = '';
+
+%  / _Mysore / _MysoreMu / _MysoreCf / _CU20 / _CU20_t2003
+
+
+
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
     HIVModel = struct();
@@ -22,12 +28,12 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
     if IndModel == 1
         s = '_dBR';
     elseif IndModel == 2
-        s = '_Sigm_CU20_t2000';
+        s = ['_Sigm' mode];
     end
 
 
 if ind == 1
-    temp = load([SavePath 'ParametersMysore.mat']);
+    temp = load([SavePath 'ParametersMysore' mode '.mat']);
     Parameters = temp.Parameters;
     
     ObsYears = [2004.667  2006.917    2008.834    2009.26];
@@ -39,7 +45,7 @@ if ind == 1
     Name = ['/HIV_Mysore_3rounds' s '.mat'];
     
 elseif ind == 2
-    temp = load([SavePath 'ParametersBelgaum.mat']);
+    temp = load([SavePath 'ParametersBelgaum' mode '.mat']);
     Parameters = temp.Parameters;
     
     ObsYears = [2005.834	2007.824    2008.584	2010.71];
@@ -52,7 +58,7 @@ elseif ind == 2
 
     
 elseif ind == 3
-    temp = load([SavePath 'ParametersBellary.mat']);  
+    temp = load([SavePath 'ParametersBellary' mode '.mat']);  
     Parameters = temp.Parameters;
 
     ObsYears = [2005.908	2007.873  2008.642	2010.865];
@@ -64,7 +70,7 @@ elseif ind == 3
     Name = ['/HIV_Bellary' s '.mat'];
     
 elseif ind == 4
-    temp = load([SavePath 'ParametersEastGodavry.mat']);
+    temp = load([SavePath 'ParametersEastGodavry' mode '.mat']);
     Parameters = temp.Parameters;
     
     ObsYears = [2006.25  2006.84 2009.25 2009.35];
@@ -76,7 +82,7 @@ elseif ind == 4
     Name = ['/HIV_EastGodavry' s '.mat'];
 
 elseif ind == 5
-    temp = load([SavePath 'ParametersGuntur.mat']);  
+    temp = load([SavePath 'ParametersGuntur' mode '.mat']);  
     Parameters = temp.Parameters;
     
     ObsYears = [2006.38	2006.905   2009.53	2009.59];
@@ -90,7 +96,7 @@ elseif ind == 5
 
 
 elseif ind == 6
-    temp = load([SavePath 'ParametersHyderabad.mat']); 
+    temp = load([SavePath 'ParametersHyderabad' mode '.mat']); 
     Parameters = temp.Parameters;
     
     ObsYears = [2006.16	2006.96   2009.47	2009.52];
@@ -103,7 +109,7 @@ elseif ind == 6
     
 
 elseif ind == 7
-    temp = load([SavePath 'ParametersYevatmal.mat']);  
+    temp = load([SavePath 'ParametersYevatmal' mode '.mat']);  
     Parameters = temp.Parameters;
     
     ObsYears = [2006.337	2006.902    2009.728	2009.9];
@@ -115,7 +121,7 @@ elseif ind == 7
     Name = ['/HIV_Yevatmal' s '.mat'];
 
 elseif ind == 8
-    temp = load([SavePath 'ParametersShimoga.mat']); 
+    temp = load([SavePath 'ParametersShimoga' mode '.mat']); 
     
     Parameters = temp.Parameters;
     ObsYears = [2005.688	2007.943  2008.718];

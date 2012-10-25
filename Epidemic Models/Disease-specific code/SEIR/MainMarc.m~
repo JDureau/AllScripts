@@ -96,19 +96,46 @@ load([SavePath '/MarcData_StructModel_2diffb.mat'])
 
 %%% Rerunning up to August 1st
 
+load([SavePath '/MarcData_StructModel_2diffb.mat'])
 
-Data.Observations = zeros(7,9);
-Data.Observations(5,:) = Weigthed(1:9)*10;
+
+Data.Observations = zeros(7,10);
+Data.Observations(5,:) = Weigthed(1:10)*10;
 
 DiffType = 'Add';
 ObsType = 'Fixed';
 
 SavePath = '/Users/dureaujoseph/Documents/PhD_Data/ResultsMarc/';
 
-Name = [SavePath '/MarcData_UpToAug1st.mat'];
-
+NameToSave = '/MarcData_UpToAug1st.mat';
 IndModel = 1;
 FullSEIRinference(Data,Difftype,Obstype,Name,IndModel)
+
+
+load([SavePath 'RealTime_Add_14_cluster0.mat'])
+
+SEIRModel = Res3.Model;
+Data = Res3.Data;
+Data.Observations = Data.Observations(:,1:10);
+Data.Instants = Data.Instants(1:10);
+Data.NbComputingSteps = Data.NbComputingSteps(1:10);
+
+Parameters = Res3.Parameters;
+Cov = cov(Res3.TransfThetas');
+
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Parameters.G = Cov^-1;
+Parameters.MCMCType = 'Rand';
+Parameters.GMeth = 'cst given';
+Parameters.ComputeRWsamplCov = 0;
+Parameters.aim = 0.23;
+Parameters.Epsil = 0.8;
+Parameters.NoPaths = 0;
+Parameters.AdMet = 0;
+Parameters.AdMetBeta = 0.05;
+Parameters.SaveSpace = 1;
+Parameters.Color = 1;
+Res3 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,1000);
 
 
 %%%
