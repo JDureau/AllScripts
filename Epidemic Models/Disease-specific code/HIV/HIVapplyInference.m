@@ -202,7 +202,6 @@ if not(AlreadySomething)
 
         ParametersKalman.InitialIPropF.Estimated = 1;
         ParametersKalman.InitialIPropM.Estimated = 1;
-        ParametersKalman.TotMFactor.Estimated = 1;
         ParametersKalman.Alpham1.Estimated = 1;
         ParametersKalman.MuFm1.Estimated = 1;
         ParametersKalman.MuMm1.Estimated = 1;
@@ -212,6 +211,7 @@ if not(AlreadySomething)
         ParametersKalman.eHIV.Estimated = 1;
         ParametersKalman.CF1.Estimated = 1;
         ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.CM.Estimated = 1;
         ParametersKalman.BRbase.Estimated = 1;
         ParametersKalman.BRmu.Estimated = 1;
         ParametersKalman.BRtinfl.Estimated = 1;
@@ -230,7 +230,6 @@ if not(AlreadySomething)
 
         ParametersKalman.InitialIPropF.Estimated = 1;
         ParametersKalman.InitialIPropM.Estimated = 1;
-        ParametersKalman.TotMFactor.Estimated = 1;
         ParametersKalman.Alpham1.Estimated = 1;
         ParametersKalman.MuFm1.Estimated = 1;
         ParametersKalman.MuMm1.Estimated = 1;
@@ -240,6 +239,7 @@ if not(AlreadySomething)
         ParametersKalman.eHIV.Estimated = 1;
         ParametersKalman.CF1.Estimated = 1;
         ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.CM.Estimated = 1;
         ParametersKalman.Sigmbase.Estimated = 1;
         ParametersKalman.Sigmmu.Estimated = 1;
         ParametersKalman.Sigmtinfl.Estimated = 1;
@@ -262,7 +262,6 @@ if not(AlreadySomething)
         ParametersKalman.InitialFt.Estimated = 1;
         ParametersKalman.InitialIPropF.Estimated = 1;
         ParametersKalman.InitialIPropM.Estimated = 1;
-        ParametersKalman.TotMFactor.Estimated = 1;
         ParametersKalman.Alpham1.Estimated = 1;
         ParametersKalman.MuFm1.Estimated = 1;
         ParametersKalman.MuMm1.Estimated = 1;
@@ -272,6 +271,7 @@ if not(AlreadySomething)
         ParametersKalman.eHIV.Estimated = 1;
         ParametersKalman.CF1.Estimated = 1;
         ParametersKalman.CF2.Estimated = 1;
+        ParametersKalman.CM.Estimated = 1;
         ParametersKalman.SigmaRW.Estimated = 1;
     elseif strcmp(ParametersKalman.DiffusionType,'AddConstr')
         ParametersKalman.InitialFt.Estimated = 1;
@@ -398,7 +398,6 @@ if not(AlreadySomething)
         Parameters.BRmm1.Estimated = 1;    
         Parameters.InitialIPropF.Estimated = 1;
         Parameters.InitialIPropM.Estimated = 1;
-        Parameters.TotMFactor.Estimated = 1;
         Parameters.Alpham1.Estimated = 1;
         Parameters.MuFm1.Estimated = 1;
         Parameters.MuMm1.Estimated = 1;
@@ -408,6 +407,7 @@ if not(AlreadySomething)
         Parameters.eHIV.Estimated = 1;
         Parameters.CF1.Estimated = 1;
         Parameters.CF2.Estimated = 1;
+        Parameters.CM.Estimated = 1;
         Parameters.BRbase.Estimated = 1;
         Parameters.BRmu.Estimated = 1;
         Parameters.BRtinfl.Estimated = 1;
@@ -415,7 +415,6 @@ if not(AlreadySomething)
     elseif strcmp(Parameters.DiffusionType,'Sigmoid')
         Parameters.InitialIPropF.Estimated = 1;
         Parameters.InitialIPropM.Estimated = 1;
-        Parameters.TotMFactor.Estimated = 1;
         Parameters.Alpham1.Estimated = 1;
         Parameters.MuFm1.Estimated = 1;
         Parameters.MuMm1.Estimated = 1;
@@ -425,6 +424,7 @@ if not(AlreadySomething)
         Parameters.eHIV.Estimated = 1;
         Parameters.CF1.Estimated = 1;
         Parameters.CF2.Estimated = 1;
+        Parameters.CM.Estimated = 1;
         Parameters.Sigmbase.Estimated = 1;
         Parameters.Sigmmu.Estimated = 1;
         Parameters.Sigmtinfl.Estimated = 1;
@@ -440,7 +440,6 @@ if not(AlreadySomething)
         Parameters.InitialFt.Estimated = 1;
         Parameters.InitialIPropF.Estimated = 1;
         Parameters.InitialIPropM.Estimated = 1;
-        Parameters.TotMFactor.Estimated = 1;
         Parameters.Alpham1.Estimated = 1;
         Parameters.MuFm1.Estimated = 1;
         Parameters.MuMm1.Estimated = 1;
@@ -450,6 +449,7 @@ if not(AlreadySomething)
         Parameters.eHIV.Estimated = 1;
         Parameters.CF1.Estimated = 1;
         Parameters.CF2.Estimated = 1;
+        Parameters.CM.Estimated = 1;
         Parameters.SigmaRW.Estimated = 1;
     elseif strcmp(Parameters.DiffusionType,'AddConstr')
         Parameters.InitialFt.Estimated = 1;

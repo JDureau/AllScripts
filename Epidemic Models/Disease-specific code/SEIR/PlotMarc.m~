@@ -524,15 +524,15 @@ catch
             set(gca,'XTick',TicksInds)
 %             set(gca,'XTick',[t(end)/Resol:t(end)/Resol:t(end)])
         %     set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
-%             set(gca,'XTickLabel',dates)
-%             
-%             set(gca,'XTick',[delta*7/Parameters.ComputationTStep:delta*7/Parameters.ComputationTStep:length(Data.Dates)*21]-2*7/Parameters.ComputationTStep)
-%                 %         set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
-%                 set(gca,'XTickLabel',dates)
-%             set(gca,'XTick',[delta*7/Parameters.ComputationTStep:delta*7/Parameters.ComputationTStep:length(Data.Dates)*21]-2*7/Parameters.ComputationTStep)
-%             set(gca,'XTick',[108 159])
-%             set(gca,'XTickLabel',{'13 Jul' , '1 Aug'})
-%                 xlim([0 168])
+            set(gca,'XTickLabel',dates)
+            
+            set(gca,'XTick',[delta*7/Parameters.ComputationTStep:delta*7/Parameters.ComputationTStep:length(Data.Dates)*21]-2*7/Parameters.ComputationTStep)
+                %         set(gca,'XTickLabel',['jun';'jul';'aug';'sep';'oct';'nov';'dec';'jan';'feb';'mar';'apr';'may'])
+                set(gca,'XTickLabel',dates)
+            set(gca,'XTick',[delta*7/Parameters.ComputationTStep:delta*7/Parameters.ComputationTStep:length(Data.Dates)*21]-2*7/Parameters.ComputationTStep)
+            set(gca,'XTick',[42 126 159])
+            set(gca,'XTickLabel',dates)
+                xlim([0 168])
 
             
         end

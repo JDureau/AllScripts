@@ -143,6 +143,13 @@ Parameters.CF2.MinLim = 46.3;
 Parameters.CF2.MaxLim =  54.0;
 Parameters.CF2.Estimated = 1;
 Parameters.CF2.TransfType = 'Logit';
+Parameters.CM.Value = 9.47/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 8.64/6;
+Parameters.CM.MaxLim =  10.3/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
 Parameters.SigmaRW.Value = 0.1;
 Parameters.SigmaRW.Min = -10^14;
 Parameters.SigmaRW.Max = 10^14;
@@ -239,7 +246,7 @@ Parameters.Sigmbase.MinLim = 0;
 Parameters.Sigmbase.Estimated = 1;
 Parameters.Sigmbase.TransfType = 'Logit';
 Parameters.Sigmbase.Init = 1;
-Parameters.Sigmtinfl.Value = 200;
+Parameters.Sigmtinfl.Value = 250;
 Parameters.Sigmtinfl.Min = -10^14;
 Parameters.Sigmtinfl.Max = 10^14;
 Parameters.Sigmtinfl.MinLim = 1;
@@ -265,7 +272,7 @@ ParametersMysore = Parameters;
 TellParsValues(Parameters)
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersMysore_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersMysore.mat'],'Parameters') 
 
 % save([SavePath '/ParametersMysoreBRmInf.mat'],'Parameters') 
 
@@ -303,23 +310,10 @@ Parameters.StableCUseConstraint = 0;
 TellParsValues(Parameters)
 ParametersBelgaum = Parameters;
 
-Parameters.CF1.Value = 21;
-Parameters.CF1.Min = -10^14;
-Parameters.CF1.Max =  10^14;
-Parameters.CF1.MinLim = 19.9;
-Parameters.CF1.MaxLim = 23.7;
-Parameters.CF1.Estimated = 1;
-Parameters.CF1.TransfType = 'Logit';
-Parameters.CF2.Value = 51;
-Parameters.CF2.Min = -10^14;
-Parameters.CF2.Max = 10^14;
-Parameters.CF2.MinLim = 46.3;
-Parameters.CF2.MaxLim =  54.0;
-Parameters.CF2.Estimated = 1;
-Parameters.CF2.TransfType = 'Logit';
+
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersBelgaum_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersBelgaum_CU20_t2003.mat'],'Parameters') 
 
 
 
@@ -353,23 +347,10 @@ Parameters.CF2.MinLim = 81.18;
 Parameters.CF2.MaxLim =  122.08;
 Parameters.InitialFt.Value = 0.4;
 
-Parameters.CF1.Value = 21;
-Parameters.CF1.Min = -10^14;
-Parameters.CF1.Max =  10^14;
-Parameters.CF1.MinLim = 19.9;
-Parameters.CF1.MaxLim = 23.7;
-Parameters.CF1.Estimated = 1;
-Parameters.CF1.TransfType = 'Logit';
-Parameters.CF2.Value = 51;
-Parameters.CF2.Min = -10^14;
-Parameters.CF2.Max = 10^14;
-Parameters.CF2.MinLim = 46.3;
-Parameters.CF2.MaxLim =  54.0;
-Parameters.CF2.Estimated = 1;
-Parameters.CF2.TransfType = 'Logit';
+
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersBellary_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersBellary_CU20_t2003.mat'],'Parameters') 
 
 
 %% EastGodavry
@@ -403,7 +384,7 @@ Parameters.CF2.MaxLim =  91.17;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersEastGodavry_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersEastGodavry_CU20_t2003.mat'],'Parameters') 
 
 
 %% Guntur
@@ -437,7 +418,7 @@ Parameters.CF2.MaxLim =  120;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersGuntur_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersGuntur_CU20_t2003.mat'],'Parameters') 
 
 
 
@@ -472,7 +453,7 @@ Parameters.CF2.MaxLim =  52.94;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersHyderabad_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersHyderabad_CU20_t2003.mat'],'Parameters') 
 
 
 %% Visag
@@ -507,7 +488,7 @@ Parameters.CF2.MaxLim =  96.7;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersVisag_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersVisag_CU20_t2003.mat'],'Parameters') 
 
 
 %% Warangal
@@ -540,7 +521,7 @@ Parameters.CF2.MaxLim =  90.15;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersWarangal_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersWarangal_CU20_t2003.mat'],'Parameters') 
 
 
 %% Yevatmal
@@ -576,7 +557,7 @@ Parameters.CF2.MaxLim =  217.88;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersYevatmal_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersYevatmal_CU20_t2003.mat'],'Parameters') 
 
 
 %% Shimoga
@@ -611,7 +592,7 @@ Parameters.CF2.MaxLim =  54.01;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersShimoga_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersShimoga_CU20_t2003.mat'],'Parameters') 
 
 %% Bangalore
 
@@ -646,7 +627,7 @@ Parameters.CF2.MaxLim =  54.01;
 
 
 % SavePath = 'S:\Results';
-save([SavePath '/ParametersBangalore_MysoreCf.mat'],'Parameters') 
+save([SavePath '/ParametersBangalore_CU20_t2003.mat'],'Parameters') 
 
 
 

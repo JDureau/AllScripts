@@ -25,11 +25,12 @@ SEIRModel.SMC_projection = @SEIR2_2diff_diff_SMC_projection;
 SEIRModel.LikFunction = 'mvnpdf(log(Variables(:,[9 10])),transpose(log(coeff*Data.Observations([9 10],IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),diag([log(Parameters.SigmaObs.Value^2+1) log(Parameters.SigmaObs.Value^2+1)]))';
 
 
-Parameters.SigmaRW11.Value = 0;
-Parameters.SigmaRW22.Value = 0;
+Parameters.SigmaRW11.Value = 0.00001;
+Parameters.SigmaRW22.Value = 0.00001;
 Parameters.beta11init.Value = 2;
 Parameters.beta22init.Value = 1;
 Parameters.beta12init.Value = 0.3;
+Parameters.beta21init = Parameters.beta12init;
 Parameters.beta21init.Value = 0.6;
 Parameters.SigmaObs.Value = 100;
 Parameters = UpdateParsNoTransfToTransf(Parameters);
@@ -56,7 +57,7 @@ end
 Parameters.beta11init.Estimated = 1;
 Parameters.beta22init.Estimated = 1;
 Parameters.beta12init.Estimated = 1;
-Parameters.adultsmult.Estimated = 1;
+Parameters.beta21init.Estimated = 1;
 Parameters.SigmaObs.Value = 0.1;
 Parameters = DefineEstimatedParametersIndexes(Parameters);
 Parameters = DefineTransfFunctions(Parameters);
@@ -74,7 +75,7 @@ Parameters.Correction = 1;
 
 
 
-Parameters.NbParticules = 1;
+Parameters.NbParticules = 2;
 
 
 Cov = (-KalHess)^-1;
@@ -86,41 +87,48 @@ Parameters.Epsil = 1;
 Parameters.MCMCType = 'Rand';
 Parameters.GMeth = 'cst given';
 TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
-Parameters.ModelType='Kalman';
+Parameters.ModelType='SMC';
 Parameters.AdaptC = 0.999;
 Parameters.AdMet = 0;
 Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
 PlotTracePlots(Res)
 
-
-save([SavePath '/Temp0_Model4cstbetas' ],'Res')
-load([SavePath '/Temp0_Model4cstbetas' ])
-Parameters = Res.Parameters;
-% Parameters.NbParticules = 3000;
-
-Cov = cov(Res.TransfThetas');
-Parameters.G = Cov^-1;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
-PlotTracePlots(Res)
-
-save([SavePath '/Temp1_Model4cstbetas' ],'Res')
-load([SavePath '/Temp1_Model4cstbetas' ])
+for i = 1:10
+    Cov = cov(Res.TransfThetas');
+    Parameters.G = Cov^-1;
+    Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+    save([SavePath '/Temp' num2str(i) '_Model4cstbetas' ],'Res')
+end
 
 Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,30000);
-PlotTracePlots(Res)
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,50000);
 
+save([SavePath '/Temp' num2str(11) '_Model4cstbetas' ],'Res')
 
-Cov = eye(4);
+Cov = cov(Res.TransfThetas');
 Parameters.G = Cov^-1;
-Parameters.ModelType='SMC';
-NbParticules = 2;
-TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
-Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,30000);
-PlotTracePlots(Res)
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,100000);
+
+save([SavePath '/Temp' num2str(12) '_Model4cstbetas' ],'Res')
+
+Parameters.beta11init.Value = 1;
+Parameters.beta22init.Value = 2;
+Parameters.beta12init.Value = 0.6;
+Parameters.beta21init.Value = 0.3;
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+Cov = cov(Res.TransfThetas');
+Parameters.G = Cov^-1;
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,100000);
+
+save([SavePath '/TempWrongInit_Model4cstbetas' ],'Res')
 
 
+for i = 1:4
+    subplot(2,2,i)
+    [fi,xi] = ksdensity(Res.Thetas(i,:));
+    plot(xi,fi)
+end
 
-save([SavePath '/Temp2_Model4cstbetas' ],'Res')
 

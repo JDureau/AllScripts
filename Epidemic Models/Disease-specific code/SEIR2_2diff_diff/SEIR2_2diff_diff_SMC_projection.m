@@ -55,8 +55,8 @@ function Res = SEIR2_2diff_diff_SMC_projection(Variables,IndIt,NbIts,Data,Parame
         TempVariables(:,6) = min(TempVariables(:,6),Parameters.TotalPopulation2);
         
      
-        TempVariables(:,11) = TempVariables(:,11) + sqrt(ComputationTStep)*SigmaRW11*squeeze(rands(1,:,IndDiscr))';
-        TempVariables(:,12) = TempVariables(:,12) + sqrt(ComputationTStep)*SigmaRW22*squeeze(rands(2,:,IndDiscr))';
+        TempVariables(:,11) = TempVariables(:,11) ;%+ sqrt(ComputationTStep)*SigmaRW11*squeeze(rands(1,:,IndDiscr))';
+        TempVariables(:,12) = TempVariables(:,12) ;%+ sqrt(ComputationTStep)*SigmaRW22*squeeze(rands(2,:,IndDiscr))';
         
 %         if IndDiscr == 2
 %             (cov(TempVariables))
