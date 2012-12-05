@@ -515,8 +515,12 @@ if ind == 9
   ParametersChennai.NameToSave = Name;
   ParametersChennai.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersChennai.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersChennai.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersChennai.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersChennai.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersChennai);
 end
@@ -539,8 +543,12 @@ if ind == 10
   ParametersMadurai.NameToSave = Name;
   ParametersMadurai.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersMadurai.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersMadurai.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersMadurai.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersMadurai.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersMadurai);
 end
@@ -563,8 +571,12 @@ if ind == 11
   ParametersSalem.NameToSave = Name;
   ParametersSalem.NbSamples = NbSamples;
 
-  if strcmp(Diff,'Logistic')
-    ParametersSalem.DiffusionType = 'Logistic';
+  if IndDiff == 1
+    ParametersSalem.DiffusionType = 'Add';
+  elseif IndDiff == 2
+    ParametersSalem.DiffusionType = 'Bertallanfy';
+  elseif IndDiff == 3
+    ParametersSalem.DiffusionType = 'Sigmoid';
   end
   Res = HIVapplyInference([],ParametersSalem);
 end
