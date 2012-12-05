@@ -132,7 +132,46 @@ elseif ind == 8
     NbSamples = [389 426 406 396];
 
     Name = ['/HIV_Shimoga' s '.mat'];
+    
+elseif ind == 9
+    temp = load([SavePath 'ParametersChennai' mode '.mat']); 
+    
+    Parameters = temp.Parameters;
+    ObsYearsChennai = [2006.588	2006.9 2009.5 2009.6];
+    ObsChennai = [0.0317 0.022 0.02 0.12];
+    ObsChennaiMin = [0.008 0.0085 0.005 0.073];
+    ObsChennaiMax = [0.055 0.036 0.035 0.166];
+    ObsVarsChennai = [7 8 7 8];
+    NbSamples = [410 405 397 408];
 
+
+    Name = ['/HIV_Shimoga' s '.mat'];
+
+elseif ind == 10
+    temp = load([SavePath 'ParametersMadurai' mode '.mat']); 
+    
+    Parameters = temp.Parameters;
+    ObsYearsMadurai = [2006.3 2006.9	2009.3  2009.67];
+    ObsMadurai = [0.057	 0.0225 0.088 0.037 ];
+    ObsMaduraiMin = [0.035 0.005 0.058 0.0146];
+    ObsMaduraiMax = [0.079 0.04 0.118 0.0617];
+    ObsVarsMadurai = [7 8 7 8];
+    NbSamples = [402 400 396 401];
+
+    Name = ['/HIV_Shimoga' s '.mat'];
+
+elseif ind == 11
+    temp = load([SavePath 'ParametersSalem' mode '.mat']); 
+    
+    Parameters = temp.Parameters;
+    ObsYearsSalem = [2006.3	2006.8 2009.3  2009.47];
+    ObsSalem = [0.1294 	 0.035 0.113 0.019];
+    ObsSalemMin = [0.0922 0.011 0.064 0.00];
+    ObsSalemMax = [0.1665 0.058 0.1617 0.041];
+    ObsVarsSalem = [7 8 7 8];
+    NbSamples = [392 396 407 407];
+
+    Name = ['/HIV_Shimoga' s '.mat'];
 end
 
 
