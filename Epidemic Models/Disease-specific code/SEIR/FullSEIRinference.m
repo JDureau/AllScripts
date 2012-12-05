@@ -112,7 +112,8 @@ switch IndModel
         SEIRModel.EKF_projection = @SEIR_EKF_projection;
         SEIRModel.InitializeParameters = @SEIRInitialize;
         SEIRModel.SMC_projection = @SEIR_SMC_projection;
-        SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
+        SEIRModel.LikFunction = 'lognpdf(Variables(:,5),Variables(:,5),Variables(:,5)*Parameters.SigmaObs.Value)';
+%         SEIRModel.LikFunction = 'normpdf(log(Variables(:,5)),transpose(log(coeff*Data.Observations(5,IndTime))-log(Parameters.SigmaObs.Value^2+1)/2),sqrt(log(Parameters.SigmaObs.Value^2+1)))';%Parameters.SigmaObs.Value)';
     case 2
         SEIRModel.EKF_projection = @SEIR2_1diff_EKF_projection;
         SEIRModel.InitializeParameters = @SEIR2_1diff_Initialize;

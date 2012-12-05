@@ -2,8 +2,7 @@ function ResStats = PlotPostForq(Mode,q,s,Delta)
 
 
 files = {'PostThreeMethods.mat','PostThreeMethodsAffine.mat','PostThreeMethodsStep.mat'};
-SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/';
-
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 Stats = {'ampl aft 2003','asympt'};
 
@@ -45,7 +44,7 @@ Pts = {};
 ROCs = [];
 
 
-for f = 1:3
+for f = 1:1%3
     f
     load([SavePath files{f}])
     
@@ -427,14 +426,14 @@ end
 % ylabel('ROCs-0.5')
 % ROCs(:,[1 3 4])
 % 
-% for i = 1:4
+for i = 1:4
 %    subplot(6,4,16+i) 
-%    plot(Pts{i,1}(1,:),Pts{i,1}(2,:),'b')
-%    hold on
-%    plot(Pts{i,2}(1,:),Pts{i,2}(2,:),'g')
-%    plot(Pts{i,3}(1,:),Pts{i,3}(2,:),'r')
-%    hold off
-% end
+   plot(squeeze(Pts{1,i,1}(1,1,:)),squeeze(Pts{1,i,1}(1,2,:)),'b')
+   hold on
+   plot(Pts{1,i,2}(1,:),Pts{i,2}(2,:),'g')
+   plot(Pts{1,i,3}(1,:),Pts{i,3}(2,:),'r')
+   hold off
+end
 
 ResStats = struct();
 ResStats.Corrs = Corrs;

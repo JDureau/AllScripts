@@ -42,12 +42,10 @@ InitialStates(5,:) = zeros(1,n);
 InitialStates(6,:) = log(max(0,(ones(1,n))*Parameters.betainit.Value));
 InitialStates(7,:) = zeros(1,n);
 
-InitialStates(2,:) = min(Parameters.TotalPopulation,InitialStates(2,:));
-InitialStates(3,:) = min(Parameters.TotalPopulation-InitialStates(2,:),InitialStates(3,:));
-InitialStates(4,:) = min(Parameters.TotalPopulation-InitialStates(2,:)-InitialStates(3,:),InitialStates(4,:));
-InitialStates(2,:) = max(InitialStates(2,:),0);
-InitialStates(3,:) = max(InitialStates(3,:),0);
-InitialStates(4,:) = max(InitialStates(4,:),0);
+% InitialStates(2,:) = min(Parameters.TotalPopulation,InitialStates(2,:));
+% InitialStates(3,:) = min(Parameters.TotalPopulation-InitialStates(2,:),InitialStates(3,:));
+% InitialStates(4,:) = min(Parameters.TotalPopulation-InitialStates(2,:)-InitialStates(3,:),InitialStates(4,:));
+
 
 % try
 %     if strcmp(Parameters.DiffusionType,'IBM')

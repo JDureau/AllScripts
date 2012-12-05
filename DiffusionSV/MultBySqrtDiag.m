@@ -1,4 +1,4 @@
-function W = MultVectBySqrtDiag(A,B)
+function W = MultBySqrtDiag(A,B)
 
 % W : sqrt(A) * B where A is diagonal and B is a vector
 

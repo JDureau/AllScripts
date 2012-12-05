@@ -54,14 +54,19 @@ elseif strcmp(Parameters.MCMCType,'Rand')
         %LogCorr = LogCorr + log(Parameters.(Names{i}).CorrFunct(Names{i},ParametersStar));
     end       
 elseif strcmp(Parameters.MCMCType, 'Inde')
-    StarPar.Par = ScaleBack(random(Parameters.DensityModel , 1)',Parameters);
-    for i = 1:length(Names)
+     StarPar.Par = random(Parameters.DensityModel , 1);
+%      Cov = TempPar.Cov;
+%     CholCov = chol(Cov);
+%     StarPar.Par = mvnrnd(TempPar.Par,Parameters.Epsil^2*2.38^2/length(Names)*Cov);
+
+     for i = 1:length(Names)
         StarPar.(Names{i}).TransfValue =  StarPar.Par(Parameters.(Names{i}).Index);
         ParametersStar.(Names{i}).TransfValue = StarPar.(Names{i}).TransfValue;
-        ParametersForPriors = UpdateParsTransfToNoTransf(ParametersStar);
-        LogPrior = LogPrior + log(eval(Parameters.(Names{i}).Prior));
-%             TempPar.Par(Parameters.SigmaRWIndex,1) = TempPar.LogSigmaRW;
-    end
+        ParametersStar = UpdateParsTransfToNoTransf(ParametersStar);
+        %tmp = Parameters.(Names{i}).Prior(Names{i},ParametersStar);
+        %LogPrior = LogPrior + log(tmp);
+        %LogCorr = LogCorr + log(Parameters.(Names{i}).CorrFunct(Names{i},ParametersStar));
+    end 
 end
 ParametersStar.Pars = StarPar.Par;
 ParametersStar = UpdateParsTransfToNoTransf(ParametersStar);
@@ -73,9 +78,9 @@ if strcmp(Parameters.ModelType,'SMC')
 elseif strcmp(Parameters.ModelType,'Kalman')   
     try
         ResStar = EstimationEKFGen(Data, Model, ParametersStar);
-    catch
-        'ouch'
-        ResStar = EstimationSMCsmoothGen(Data,Model,ParametersStar);
+%     catch
+%         'ouch'
+%         ResStar = EstimationSMCsmoothGen(Data,Model,ParametersStar);
     end
     ResStar.Cov = TempPar.Cov;
 end
@@ -106,6 +111,8 @@ StarPar.LogLik = ResStar.LogLik;
 StarPar.LogPost = ResStar.LogLik + LogPrior - LogCorr;
 StarPar.LogCorr = LogCorr;
 StarPar.LogPrior = LogPrior;
+
+
 % if (StarPar.LogLik>-415)
 %     disp('yo')
 % end
@@ -169,8 +176,20 @@ elseif strcmp(Parameters.MCMCType, 'Rand')
 %     StarPar.CompInd = ResStar.CompInd;
 %     StarPar.Coalescence = ResStar.Coalescence;
 elseif strcmp(Parameters.MCMCType, 'Inde')
-    qStarTemp = pdf(Parameters.DensityModel, Scale(StarPar.Par,Parameters)');
-    qTempStar = pdf(Parameters.DensityModel, Scale(TempPar.Par,Parameters)');
+    StarPar.LogAccRate = StarPar.LogPost  - ( TempPar.LogPost  ); 
+%     StarPar.Cov = ResStar.Cov;
+%     StarPar.CovSampledFrom = Parameters.Epsil^2*Cov;
+%     StarPar.MuSampledFrom = TempPar.Par;
+    
+    
+    qStarTemp = pdf(Parameters.DensityModel, StarPar.Par);
+    qTempStar = pdf(Parameters.DensityModel, TempPar.Par);
+%     'loglik'
+%     StarPar.LogLik  - TempPar.LogLik
+%     'logpost'
+%     StarPar.LogPost  - TempPar.LogPost
+%     'logq'
+%     log(qTempStar)  - log(qStarTemp)
     StarPar.LogAccRate = StarPar.LogPost + log(qTempStar) - TempPar.LogPost - log(qStarTemp);
-    StarPar.Ratio = exp(StarPar.LogPost)/qStarTemp;
+    StarPar.Ratio = qTempStar/exp(StarPar.LogLik);
 end

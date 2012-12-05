@@ -2,7 +2,7 @@ function [] = PlotParsHIV(Res,FtPath)
 
 Data = Res.Data;
 Parameters = Res.Parameters;
-Names = Parameters.Names.All;
+Names = Parameters.Names.Estimated;
 k = length(Parameters.Names.All)-4;
 
 figure(1)

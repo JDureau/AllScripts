@@ -395,7 +395,10 @@ Res.Parameters.TypeWork = 'Boston Examples';
 Res.Parameters.DiffusionType='Add';
 PlotResHIV(Res,Res.Parameters)
 % 
-% figure(1)
+% figure(1)legend
+
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+
 load([SavePath '/PostThreeMethods.mat' ])
 
 
@@ -403,9 +406,13 @@ load([SavePath '/PostThreeMethods.mat' ])
 
 PlotPostForq('ROC',0.5,'Delta2003',0.2)
 
-
-
-
+clf
+PlotPostForqNew('ROC',0.5,'Delta2003',0.2)
+hold on
+PlotPostForqNew('ROC',0.5,'Delta2003',0.4)
+hold off
+legend('\DeltaCU>0.2?','\DeltaCU>0.4?')
+title('ROC curve (Brownian motion prior)','FontWeight','bold','FontSize',16)
 
 figure(1)
 PlotPostForq('Mean')
@@ -767,6 +774,138 @@ for i = 1:5
 end
 
 
+% Coverage, MSE, etc.
+
+MeanBias = [];
+MeanMSE  =[];
+MeanVariance = [];
+MeanCoverage = zeros(20,6);
+MedianBias = [];
+MedianMSE  =[];
+MedianVariance = [];
+MedianCoverage = zeros(20,6);
+ModeBias = [];
+ModeMSE  =[];
+ModeVariance = [];
+ModeCoverage = zeros(20,6);
+Amplitude = [];
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+load([SavePath 'PostThreeMethods.mat'])
+
+
+
+N = size(Res.ampls,2);
+indspars = 12:19;
+pars = {'BRmm1','BRmu', 'BRbase', 'BRtinfl', 'Sigmrate', 'Sigmmu', 'Sigmbase', 'Sigmtinfl'};
+for i = 1:size(Res.ampls,2)
+    for k = 1:8 
+            if k < 5
+                indpar = Res.ParametersBR.(pars{k}).Index;
+                j=1;
+                MeanBias(j,indpar,i) = Res.ParsMeans(j,indpar,i) - Res.ParsMeans(4,indpar,i);
+                MeanMSE(j,indpar,i) = (Res.ParsMeans(j,indpar,i) - Res.ParsMeans(4,indpar,i))^2;
+                
+                MedianBias(j,indpar,i) = Res.ParsMeds(j,indpar,i) - Res.ParsMeds(4,indpar,i);
+                MedianMSE(j,indpar,i) = (Res.ParsMeds(j,indpar,i) - Res.ParsMeds(4,indpar,i))^2;
+                
+                ModeBias(j,indpar,i) = Res.ParsModes(j,indpar,i) - Res.ParsModes(4,indpar,i);
+                ModeMSE(j,indpar,i) = (Res.ParsModes(j,indpar,i) - Res.ParsModes(4,indpar,i))^2;
+                
+                if and(Res.ParsMeans(4,indpar,i)>Res.Pars2p5(j,indpar,i),Res.ParsMeans(4,indpar,i)<Res.Pars97p5(j,indpar,i))
+                    MeanCoverage(indpar,j) = MeanCoverage(indpar,j) + 1/N;
+                end
+                
+                Amplitude(j,indpar,i) = Res.Pars97p5(j,indpar,i) - Res.Pars2p5(j,indpar,i);
+            else
+                indpar = Res.ParametersSigm.(pars{k}).Index;
+                indparBR = Res.ParametersBR.(pars{k-4}).Index;
+                j=2;
+                MeanBias(j,indpar,i) = Res.ParsMeans(j,indpar,i) - Res.ParsMeans(4,indparBR,i);
+                MeanMSE(j,indpar,i) = (Res.ParsMeans(j,indpar,i) - Res.ParsMeans(4,indparBR,i))^2;
+                MedianBias(j,indpar,i) = Res.ParsMeds(j,indpar,i) - Res.ParsMeds(4,indparBR,i);
+                MedianMSE(j,indpar,i) = (Res.ParsMeds(j,indpar,i) - Res.ParsMeds(4,indparBR,i))^2;
+                ModeBias(j,indpar,i) = Res.ParsModes(j,indpar,i) - Res.ParsModes(4,indparBR,i);
+                ModeMSE(j,indpar,i) = (Res.ParsModes(j,indpar,i) - Res.ParsModes(4,indparBR,i))^2;
+                if and(Res.ParsMeans(5,indparBR,i)>Res.Pars2p5(j,indpar,i),Res.ParsMeans(4,indparBR,i)<Res.Pars97p5(j,indpar,i))
+                    MeanCoverage(indpar,j) = MeanCoverage(indpar,j) + 1/N;
+                end
+               
+                Amplitude(j,indpar,i) = Res.Pars97p5(j,indpar,i) - Res.Pars2p5(j,indpar,i);
+
+            end
+        end
+    end
+
+for i =  1:8
+    disp('.')
+    disp('.')
+    disp('.')
+
+    disp(pars{i});
+    
+    disp('.')
+    disp('Average extent of 95% c.i.')
+    if i<5
+        indpar = Res.ParametersBR.(pars{i}).Index;
+        disp([num2str(mean(squeeze(Amplitude(1,indpar,:))))])
+    else
+        indpar = Res.ParametersSigm.(pars{i}).Index;
+        disp([num2str(mean(squeeze(Amplitude(2,indpar,:))))])
+    end
+    
+    disp('.')
+    disp('Proportion of true values in  95% c.i.')
+    if i<5
+        indpar = Res.ParametersBR.(pars{i}).Index;
+        disp([num2str(MeanCoverage(indpar,1))])
+    else
+        indpar = Res.ParametersSigm.(pars{i}).Index;
+        disp([num2str(MeanCoverage(indpar,2))])
+    end
+    
+    disp('.')
+    disp('Mean estimator properties')
+    if i<5
+        indpar = Res.ParametersBR.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(MeanBias(1,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(MeanMSE(1,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(MeanMSE(1,indpar,:))) - mean(squeeze(MeanBias(1,indpar,:)))^2)])
+    else
+        indpar = Res.ParametersSigm.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(MeanBias(2,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(MeanMSE(2,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(MeanMSE(2,indpar,:))) - mean(squeeze(MeanBias(2,indpar,:)))^2)])
+    end 
+    
+    disp('.')
+    disp('Median estimator properties')
+    if i<5
+        indpar = Res.ParametersBR.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(MedianBias(1,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(MedianMSE(1,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(MedianMSE(1,indpar,:))) - mean(squeeze(MedianBias(1,indpar,:)))^2)])
+    else
+        indpar = Res.ParametersSigm.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(MeanBias(2,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(MeanMSE(2,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(MedianMSE(2,indpar,:))) - mean(squeeze(MedianBias(2,indpar,:)))^2)])
+    end 
+    
+    disp('.')
+    disp('Mode estimator properties')
+    if i<5
+        indpar = Res.ParametersBR.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(ModeBias(1,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(ModeMSE(1,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(ModeMSE(1,indpar,:))) - mean(squeeze(ModeBias(1,indpar,:)))^2)])
+    else
+        indpar = Res.ParametersSigm.(pars{i}).Index;
+        disp(['Bias ' num2str(mean(squeeze(ModeBias(2,indpar,:))))])
+        disp(['MSE ' num2str(mean(squeeze(ModeMSE(2,indpar,:))))])
+        disp(['Variance ' num2str( mean(squeeze(ModeMSE(2,indpar,:))) - mean(squeeze(ModeBias(2,indpar,:)))^2)])
+    end 
+end
+
 
 %% Real Data
 
@@ -787,12 +926,12 @@ DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Gun
 for i = 1:length(DistrictNames)
     try
         clf
-        load([SavePath '/HIV_' DistrictNames{i} '_CU20.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '.mat'])
         Res.Parameters.PlotIndex = 3;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
         title([DistrictNames{i} ' BM'],'FontWeight','bold')
-        load([SavePath '/HIV_' DistrictNames{i} '_Sigm_CU20_t2000.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '_Sigm_CU20.mat'])
         Res.Parameters.PlotIndex = 4;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
@@ -850,7 +989,7 @@ ests = [];
 randinds = 1:2000;
 for i = 1:length(Names)
     disp(Names{i})
-%     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
+    load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
     ResDet.Paths = ResDet.Paths(randinds,:);
@@ -975,17 +1114,24 @@ for i = 1:length(Names)
     clf
     ResAdd.Parameters.TypeWork = 'Boston Examples';
     ResAdd.Parameters.PlotIndex = 3;
-    ResAdd.title = 'c) Estimated condom use (Brownian motion model)';
+    ResAdd.title = 'c) Estimated condom use (Brownian motion trajectory prior)';
 
     PlotResHIV(ResAdd,ResAdd.Parameters)
+    subplot(4,1,3)
+    title(ResAdd.title,'FontWeight','bold','FontSize',14, 'Units', 'normalized', ...
+'Position', [0 1], 'HorizontalAlignment', 'left')
+
 %     ResDet.Parameters.TypeWork = 'Boston Examples';
 %     ResDet.Parameters.PlotIndex = 2;
 %     ResDet.title = 'dBR';
 %     PlotResHIV(ResDet,ResDet.Parameters)
     ResSigm.Parameters.TypeWork = 'Boston Examples';
     ResSigm.Parameters.PlotIndex = 4;
-    ResSigm.title = 'd) Estimated condom use (det. sigmoid model)';
+    ResSigm.title = 'd) Estimated condom use (deterministic Sigmoid model trajectory prior)';
     PlotResHIV(ResSigm,ResSigm.Parameters)
+    subplot(4,1,4)
+    title(ResSigm.title,'FontWeight','bold','FontSize',14, 'Units', 'normalized', ...
+'Position', [0 1], 'HorizontalAlignment', 'left')
 %     ResBer.Parameters.TypeWork = 'Boston Examples';
 %     ResBer.Parameters.PlotIndex = 4;
 %     PlotResHIV(ResBer,ResBer.Parameters)
@@ -1003,8 +1149,6 @@ for i = 1:length(Names)
 end
 
 save([SavePath '/AllRegionsEstimates.mat'],'ests')
-
-
 
 
 
@@ -1041,3 +1185,98 @@ legend('Det. BR','Sto. BR','Brownian motion')
 ylabel('Posterior density','FontSize',14)
 xlabel('Shift in CU during the intervention in Mysore','FontSize',14)
 xlim([-1 1])
+
+
+
+%% paper 2b, quantiles for different regions
+
+
+cd('/Users/dureaujoseph/AllScripts')
+addpath([pwd '/General Tools'])
+addpath([pwd '/Toolboxes'])
+addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
+addpath([pwd '/Epidemic Models/Disease-specific code'])
+addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+
+
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga'};
+RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Guntur','Hyderabad','Shimoga'};
+for i = 1:length(DistrictNames)
+    try
+        clf
+        load([SavePath '/HIV_' DistrictNames{i} '.mat'])
+        Res.Parameters.PlotIndex = 3;
+        Res.Parameters.TypeWork='Boston Examples';
+        PlotResHIV(Res,Res.Parameters)
+        title([RealDistrictNames{i} ' BM'],'FontWeight','bold')
+        load([SavePath '/HIV_' DistrictNames{i} '_Sigm.mat'])
+        Res.Parameters.PlotIndex = 4;
+        Res.Parameters.TypeWork='Boston Examples';
+        PlotResHIV(Res,Res.Parameters)
+        title([RealDistrictNames{i} ' dSigm'],'FontWeight','bold')
+        DistrictNames{i}
+        pause()
+    end
+end
+
+
+
+% estimates
+
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga'};
+ests = [];
+randinds = 1:2000;
+for i = 1:length(Names)
+    disp('')
+    disp(Names{i})
+
+    % BM
+    load([SavePath '/HIV_' Names{i} '.mat'])
+    ResAdd = Res;
+    randinds = randsample(size(ResAdd.Paths,1),min(size(ResAdd.Paths,1),4000));
+    ResAdd.Paths = ResAdd.Paths(randinds,:,:);
+    ResAdd.Thetas = ResAdd.Thetas(:,randinds);
+
+    % BM 20
+    load([SavePath '/HIV_' Names{i} '.mat'])
+    ResAddCU20 = Res;
+    randinds = randsample(size(ResAddCU20.Paths,1),min(size(ResAddCU20.Paths,1),4000));
+    ResAddCU20.Paths = ResAddCU20.Paths(randinds,:,:);
+    ResAddCU20.Thetas = ResAddCU20.Thetas(:,randinds);
+    
+    % Sigm
+    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+    ResSigm = Res;
+    randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
+    ResSigm.Paths = ResSigm.Paths(randinds,:);
+    ResSigm.Thetas = ResSigm.Thetas(:,randinds);
+    
+    % Sigm 20
+    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+    ResSigmCU20 = Res;
+    randinds = randsample(size(ResSigmCU20.Paths,1),min(size(ResSigmCU20.Paths,1),4000));
+    ResSigmCU20.Paths = ResSigmCU20.Paths(randinds,:);
+    ResSigmCU20.Thetas = ResSigmCU20.Thetas(:,randinds);
+    
+    indend = Res.Data.Instants(end);
+    
+    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+    FtSigmCU20 = mean(squeeze(ResSigmCU20.Paths(:,1:indend)));
+    FtsSigmCU20 = (squeeze(ResSigmCU20.Paths(:,1:indend)));
+    tmp = squeeze(ResAdd.Paths(:,3,1:indend));
+    FtAdd = mean(exp(tmp)./(1+exp(tmp)));
+    FtsAdd = (exp(tmp)./(1+exp(tmp)));
+    tmpCU20 = squeeze(ResAddCU20.Paths(:,3,1:indend));
+    FtAddCU20 = mean(exp(tmpCU20)./(1+exp(tmpCU20)));
+    FtsAddCU20 = (exp(tmpCU20)./(1+exp(tmpCU20)));
+    
+    
+    q = 0.5;
+    disp(num2str(Res.Data.Instants(end)/24+1985,4))
+    disp(['BM :' num2str(quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q))])
+    disp(['BM CU20 :' num2str(quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q))])
+    disp(['Sigm :' num2str(quantile(FtsAddCU20(:,min(indend,582))-FtsAddCU20(:,585-168),q))])
+    disp(['Sigm CU20 :' num2str(quantile(FtsSigmCU20(:,min(indend,582))-FtsSigmCU20(:,585-168),q))])
+end

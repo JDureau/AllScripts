@@ -125,10 +125,11 @@ for IndIt = startind:NbIterations
         
         LogRand = log(rand(1,1));
         
+        
         if LogRand <= StarPar.LogAccRate
             TempPar = StarPar;
             Accepted(IndIt) = 1;
-        elseif and(StarPar.LogAccRate>-10,and(length(Accepted)>100,mean(Accepted(end-min(100,length(Accepted))+1:end))==0))
+        elseif and(StarPar.LogAccRate>-10,and(length(Accepted)>1000,mean(Accepted(end-min(1000,length(Accepted))+1:end))==0))
             TempPar = StarPar;
             Accepted(IndIt) = 1;
             disp('forced it')
@@ -161,9 +162,9 @@ for IndIt = startind:NbIterations
         if rand(1,1)<0.1
             disp(['Acceptance Rate: ' num2str(sum(Accepted)/length(Accepted),2) ' (it' num2str(IndIt) ')'])
         end
-        if strcmp(Parameters.MCMCType, 'Inde')
-            Ratios(IndIt) = TempPar.Ratio ;
-        end        
+%         if strcmp(Parameters.MCMCType, 'Inde')
+%             Ratios(IndIt) = TempPar.Ratio ;
+%         end        
         try 
             Grads(:,IndIt) = TempPar.Grad;
         end
@@ -248,13 +249,15 @@ for i = 1:length(Names)
     Parameters.(Names{i}).Value = tmp(Parameters.(Names{i}).Index);
 end
 Parameters = UpdateParsNoTransfToTransf(Parameters);
-TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
 
-p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
-DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
+if strcmp(Parameters.ModelType,'SMC')
+    TempThetaMean = EstimationSMCsmoothGen(Data, Model, Parameters);
+    p_d = mean(-2*LogLiks) - (-2)*TempThetaMean.LogLik;
+    DIC = (-2)*TempThetaMean.LogLik + 2*p_d;
 
-Res.p_d = p_d;
-Res.DIC = DIC;
+    Res.p_d = p_d;
+    Res.DIC = DIC;
+end
 
 for i = 1:size(TransfThetas,1)
     temp = AutoCorrelation(TransfThetas(i,:));

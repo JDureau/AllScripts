@@ -83,7 +83,7 @@ try
         
         ciplot((quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.25)),(quantile(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))),0.75)),Dark)
         plot((median(squeeze(Paths(:,toplot(i),max(1,cumsum(Data.NbComputingSteps)+1))))),':k','LineWidth',1.5)
-        plot((Data.Observations(5,:)),'.','Color',DotsColor,'MarkerSize',16)
+        plot((Data.Observations(5,:)),'.','Color',DotsColor,'MarkerSize',26)
         hold off
         xlim([1 size(Data.Observations,2)-1])
         try
@@ -93,10 +93,10 @@ try
         catch
             set(gca,'XTick',[0:delta:length(Res.Data.Instants)])
         end
-        title('Total Influenza Incidence','FontSize',14)
-        ylabel('Incidence','FontSize',12)
-        xlabel('t (weeks)','FontSize',12)
-        set(gca,'FontSize',12)
+        title('Total Influenza Incidence','FontSize',26)
+        ylabel('Incidence','FontSize',22)
+%         xlabel('t (weeks)','FontSize',22)
+        set(gca,'FontSize',22)
 
         subplot(rows,cols,min(2+figind,rows*cols))
         esttraj = median(squeeze(exp(Paths(:,6,:))));
@@ -125,11 +125,11 @@ try
         
         
         try
-            plot(1000000,ymax,'.','Color',DotsColor,'MarkerSize',16)
+%             plot(1000000,ymax,'.','Color',DotsColor,'MarkerSize',16)
             if figind == 2
                 width = 4;
             else
-                width = 1.5;
+                width = 1.1;
             end
             plot(Parameters.ComputationTStep:Parameters.ComputationTStep:Data.Instants(end),Data.RealBetaTraj(1:length(Parameters.ComputationTStep:Parameters.ComputationTStep:Data.Instants(end))),'-','Color',SimplotColor,'LineWidth',width)
         end
@@ -147,10 +147,10 @@ try
             set(gca,'XTickLabel',dates)
         end
         
-        title('Effective contact rate','FontSize',14)
-        ylabel('\beta_t','FontSize',12)
-        xlabel('t (weeks)','FontSize',12)
-        set(gca,'FontSize',12)
+        title('Effective contact rate','FontSize',26)
+        ylabel('\beta_t','FontSize',22)
+%         xlabel('t (weeks)','FontSize',22)
+        set(gca,'FontSize',22)
         
 %         hold on
 %         yis1 = ymax/100:ymax/100:ymax*2/5;

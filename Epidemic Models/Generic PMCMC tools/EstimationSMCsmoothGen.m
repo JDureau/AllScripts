@@ -339,6 +339,9 @@ ResultSMC.LogPrior = LogPrior;
 ResultSMC.LogCorr = LogCorr;
 
 
+
+
+
 % ResultSMC.Coalescence = mean(sum((squeeze(ResultSMC.CompletePaths(:,1,:)==repmat(ResultSMC.CompletePaths(1,1,:),NbResampling,1)))'));
     
     

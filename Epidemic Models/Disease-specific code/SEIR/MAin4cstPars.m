@@ -29,7 +29,7 @@ Parameters.SigmaRW11.Value = 0.00001;
 Parameters.SigmaRW22.Value = 0.00001;
 Parameters.beta11init.Value = 2;
 Parameters.beta22init.Value = 1;
-Parameters.beta12init.Value = 0.3;
+Parameters.beta12init.Value = 0.1;
 Parameters.beta21init = Parameters.beta12init;
 Parameters.beta21init.Value = 0.6;
 Parameters.SigmaObs.Value = 100;
@@ -112,6 +112,22 @@ Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,100000);
 
 save([SavePath '/Temp' num2str(12) '_Model4cstbetas' ],'Res')
 
+Parameters.beta11init.Value = 2.4;
+Parameters.beta22init.Value = 1.3;
+Parameters.beta12init.Value = 0.6;
+Parameters.beta21init.Value = 0.9;
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+Cov = cov(Res.TransfThetas');
+Parameters.G = Cov^-1;
+Parameters.AdaptC = 0;
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Res = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,1000);
+
+save([SavePath '/TempWrongInit_Model4cstbetas' ],'Res')
+
+
+load([SavePath '/Temp' num2str(11) '_Model4cstbetas' ])
 for i = 1:4
     subplot(2,2,i)
     [fi,xi] = ksdensity(Res.Thetas(i,:));

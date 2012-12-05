@@ -3,23 +3,8 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
 
 
 
-    if Parameters.RunningMif 
-        temp = zeros(1,7+length(Parameters.Names.Estimated));
-    else
-        temp = zeros(1,7);
-    end
-    temp(1,5) = 1;
-    Model.ObservationJacobian = {};
-    Model.ObservationMeasurementNoise = {};
-    try
-        coeff = Parameters.MultCoeff.Value/10;
-    catch
-        coeff = 1;
-    end
-    for i = 1:length(Data.Instants)
-        Model.ObservationJacobian{i} = temp;
-        Model.ObservationMeasurementNoise{i} = (Parameters.SigmaObs.Value*Data.Observations(5,i))^2; % Additional approximation here due to kalman gaussian approximation
-    end
+    
+   
 
     if Parameters.RunningMif 
         mpred = m; 
@@ -125,7 +110,7 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
                 
         
         if sum(not(isreal(Cov2)))
-            disp('pb')
+%             disp('pb')
         else
             Cov = Cov2;
         end
@@ -137,7 +122,24 @@ function Res = SEIR_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
 %             plot(IndDiscr,mpred(i)+sqrt(Cov(i,i)),'.r')
 %             plot(IndDiscr,mpred(i)-sqrt(Cov(i,i)),'.r')
 %         end
-    
+    if Parameters.RunningMif 
+        temp = zeros(1,7+length(Parameters.Names.Estimated));
+    else
+        temp = zeros(1,7);
+    end
+    temp(1,5) = 1;
+    Model.ObservationJacobian = {};
+    Model.ObservationMeasurementNoise = {};
+    try
+        coeff = Parameters.MultCoeff.Value/10;
+    catch
+        coeff = 1;
+    end
+    for i = 1:length(Data.Instants)
+        Model.ObservationJacobian{i} = temp;
+        Model.ObservationMeasurementNoise{i} = (Parameters.SigmaObs.Value*Data.Observations(5,i))^2; % Additional approximation here due to kalman gaussian approximation
+    end
+
     Res.m = mpred;
     Res.Cov = Cov;
     Res.Model = Model;

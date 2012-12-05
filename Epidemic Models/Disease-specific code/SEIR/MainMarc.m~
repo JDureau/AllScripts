@@ -81,7 +81,7 @@ Data.Observations = zeros(7,35);
 Data.Observations(5,:) = Weigthed*10;
 
 DiffType = 'Add';
-ObsType = 'Estimated';
+ObsType = 'Fixed';
 
 SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/ResultsMarc';
 
@@ -112,7 +112,129 @@ IndModel = 1;
 FullSEIRinference(Data,Difftype,Obstype,Name,IndModel)
 
 
+
+
+load([SavePath '/MarcData_StructModel_2diffb.mat'])
+
+
+Data.Observations = zeros(7,10);
+Data.Observations(5,:) = Weigthed(1:10)*10;
+
+DiffType = 'Add';
+ObsType = 'Fixed';
+
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/ResultsMarc/';
+
+NameToSave = '/MarcData_UpToAug1st.mat';
+IndModel = 1;
+FullSEIRinference(Data,Difftype,Obstype,Name,IndModel)
+
+
+
+
+
 load([SavePath 'RealTime_Add_14_cluster0.mat'])
+
+
+
+
+SEIRModel = Res3.Model;
+Data = Res3.Data;
+Data.Observations = Data.Observations(:,1:9);
+Data.Instants = Data.Instants(1:9);
+Data.NbComputingSteps = Data.NbComputingSteps(1:9);
+
+Parameters = Res3.Parameters;
+Cov = cov(Res3.TransfThetas');
+
+Parameters.SigmaRW.Estimated = 0;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+Cov = cov(Res3.TransfThetas(1:end-1,:)');
+
+
+Parameters.ModelType='SMC';
+TempPar = ProposeInitialParameter(Data, SEIRModel, Parameters);
+Parameters.G = Cov^-1;
+Parameters.MCMCType = 'Rand';
+Parameters.GMeth = 'cst given';
+Parameters.ComputeRWsamplCov = 0;
+Parameters.aim = 0.23;
+Parameters.Epsil = 0.8;
+Parameters.NoPaths = 0;
+Parameters.AdMet = 0;
+Parameters.AdMetBeta = 0.05;
+Parameters.SaveSpace = 1;
+Parameters.Color = 1;
+Parameters.ModelType='Kalman';
+Parameters.NoPaths = 1;
+SEIRModel.LikFunction = 'normpdf(coeff*Data.Observations(5,IndTime),Variables(:,5),Variables(:,5)*Parameters.SigmaObs.Value)';
+ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,15000);
+
+
+Cov = cov(ResKal.TransfThetas');
+Parameters.G = Cov^-1;
+ResKal2 = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,30000);
+
+Cov = eye(6,6);
+Parameters.G = Cov^-1;
+Parameters.ModelType='SMC';
+ResSMCId = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+
+Cov = cov(ResKal2.TransfThetas');
+Parameters.G = Cov^-1;
+Parameters.ModelType='SMC';
+ResSMCKals = {};
+ResSMCKals{1} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCKals{2} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCKals{3} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCKals{4} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCKals{5} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+
+Cov = cov(ResSMCKals{1}.TransfThetas');
+Parameters.G = Cov^-1;
+Parameters.ModelType='SMC';
+ResSMCOpt = {};
+ResSMCOpts{1} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCOpts{2} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCOpts{3} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCOpts{4} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+ResSMCOpts{5} = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,10000);
+
+
+Kals = [];
+Opts = [];
+for i  = 1:5
+    Kals(i) = min(ResSMCKals{i}.ESS);
+    Opts(i) = min(ResSMCOpts{i}.ESS);
+end
+Kals
+Opts
+
+Parameters.SigmaRW.TransfType = 'Logit';
+Parameters.SigmaRW.MinLim = 0;
+Parameters.SigmaRW.MaxLim = 1;
+Parameters = DefineEstimatedParametersIndexes(Parameters);
+Parameters = DefineTransfFunctions(Parameters);
+Parameters = DefinePriors(Parameters);
+Parameters = UpdateParsNoTransfToTransf(Parameters);
+
+ResKal = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,15000);
+
+SEIRModel.LikFunction = 'normpdf(coeff*Data.Observations(5,IndTime),Variables(:,5),Variables(:,5)*Parameters.SigmaObs.Value)';
+Parameters.ModelType='SMC';
+ResSMC = RunEstimationMethod(Data, SEIRModel,Parameters,TempPar,2000);
+
+
+PlotPosteriors(ResKal,ResSMC)
+
+
+
+
+
+
 
 SEIRModel = Res3.Model;
 Data = Res3.Data;

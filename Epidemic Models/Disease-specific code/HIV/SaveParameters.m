@@ -35,7 +35,7 @@ Parameters.DerInitialFt.Init = 1;
 Parameters.InitialFt.Value = 0.01;
 Parameters.InitialFt.Min = -10^14;
 Parameters.InitialFt.Max = 10^14;
-Parameters.InitialFt.MaxLim = 0.9;
+Parameters.InitialFt.MaxLim = 0.95;
 Parameters.InitialFt.MinLim = 0.0001;
 Parameters.InitialFt.Estimated = 1;
 Parameters.InitialFt.TransfType = 'Logit';
@@ -154,7 +154,7 @@ Parameters.SigmaRW.Value = 0.1;
 Parameters.SigmaRW.Min = -10^14;
 Parameters.SigmaRW.Max = 10^14;
 Parameters.SigmaRW.MinLim = 0;
-Parameters.SigmaRW.MaxLim = 0.4;
+Parameters.SigmaRW.MaxLim = 1;
 Parameters.SigmaRW.Estimated = 1;
 Parameters.SigmaRW.TransfType = 'Logit';
 Parameters.SigmaOU.Value = 0.1;
@@ -249,7 +249,7 @@ Parameters.Sigmbase.Init = 1;
 Parameters.Sigmtinfl.Value = 250;
 Parameters.Sigmtinfl.Min = -10^14;
 Parameters.Sigmtinfl.Max = 10^14;
-Parameters.Sigmtinfl.MinLim = 1;
+Parameters.Sigmtinfl.MinLim = 0;
 Parameters.Sigmtinfl.MaxLim = 300;
 Parameters.Sigmtinfl.Estimated = 1;
 Parameters.Sigmtinfl.TransfType = 'Logit';
@@ -547,12 +547,12 @@ Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
 Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
 Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
 Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
-Parameters.MuFm1.Value = 80;
-Parameters.MuFm1.MinLim = 73.2; 
-Parameters.MuFm1.MaxLim = 84.3;
-Parameters.MuMm1.Value = 92;
-Parameters.MuMm1.MinLim = 86.4;
-Parameters.MuMm1.MaxLim = 99.6;
+Parameters.MuFm1.Value = 9*12;
+Parameters.MuFm1.MinLim = 8.4*12; 
+Parameters.MuFm1.MaxLim = 9.9*12;
+Parameters.MuMm1.Value = 13*12;
+Parameters.MuMm1.MinLim = 12.5*12;
+Parameters.MuMm1.MaxLim = 15.2*12;
 Parameters.CF1.Value = 21;
 Parameters.CF1.MinLim = 20.56;
 Parameters.CF1.MaxLim = 22.83;
@@ -700,5 +700,215 @@ Parameters.CM.TransfType = 'Logit';
 save([SavePath '/ParametersBangalore.mat'],'Parameters') 
 
 
+%% Chennai
+
+Parameters = ParametersChennai;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 5.4*12;
+Parameters.MuFm1.MinLim = 5.1*12; 
+Parameters.MuFm1.MaxLim = 5.9*12;
+Parameters.MuMm1.Value = 15*12;
+Parameters.MuMm1.MinLim = 14.6*12;
+Parameters.MuMm1.MaxLim = 18.1*12;
+Parameters.CF1.Value  = 4*4.3;
+Parameters.CF1.MinLim = 0*4.3;
+Parameters.CF1.MaxLim = 6*4.3;
+Parameters.CF2.Value = 10*4.3;
+Parameters.CF2.MinLim =   7*4.3;
+Parameters.CF2.MaxLim =  20*4.3;
+Parameters.CM.Value = 12/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 11.7/6;
+Parameters.CM.MaxLim =  13.1/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
+
+
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersChennai.mat'],'Parameters') 
+
+%% Madurai
+
+Parameters = ParametersBelgaum;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 7*12;
+Parameters.MuFm1.MinLim = 6.72*12; 
+Parameters.MuFm1.MaxLim = 7.8*12;
+Parameters.MuMm1.Value = 8.5*12;
+Parameters.MuMm1.MinLim = 7.8*12;
+Parameters.MuMm1.MaxLim = 9.2*12;
+Parameters.CF1.Value = 4*4.3;
+Parameters.CF1.MinLim = 3.38*4.3;
+Parameters.CF1.MaxLim = 4.12*4.3;
+Parameters.CF2.Value = 11*4.3;
+Parameters.CF2.MinLim = 10.8*4.3;
+Parameters.CF2.MaxLim =  13.2*4.3;
+Parameters.CM.Value = 9.47/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 3.7/6;
+Parameters.CM.MaxLim =  4.5/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
+
+
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersMadurai.mat'],'Parameters') 
+
+%% Mumbai
+
+Parameters = ParametersBelgaum;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 60;
+Parameters.MuFm1.MinLim = 57.13; 
+Parameters.MuFm1.MaxLim = 67.89;
+Parameters.MuMm1.Value = 140;
+Parameters.MuMm1.MinLim = 127.69;
+Parameters.MuMm1.MaxLim = 155.9;
+Parameters.CF1.Value = 9.7;
+Parameters.CF1.MinLim = 9.3;
+Parameters.CF1.MaxLim = 10.91;
+Parameters.CF2.Value = 50;
+Parameters.CF2.MinLim = 44.8;
+Parameters.CF2.MaxLim =  54.01;
+Parameters.CM.Value = 9.47/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 8.64/6;
+Parameters.CM.MaxLim =  10.3/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
+
+
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersMumbai.mat'],'Parameters') 
+
+
+%% Pune
+
+Parameters = ParametersBelgaum;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 60;
+Parameters.MuFm1.MinLim = 57.13; 
+Parameters.MuFm1.MaxLim = 67.89;
+Parameters.MuMm1.Value = 140;
+Parameters.MuMm1.MinLim = 127.69;
+Parameters.MuMm1.MaxLim = 155.9;
+Parameters.CF1.Value = 9.7;
+Parameters.CF1.MinLim = 9.3;
+Parameters.CF1.MaxLim = 10.91;
+Parameters.CF2.Value = 50;
+Parameters.CF2.MinLim = 44.8;
+Parameters.CF2.MaxLim =  54.01;
+Parameters.CM.Value = 9.47/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 8.64/6;
+Parameters.CM.MaxLim =  10.3/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
+
+
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersPune.mat'],'Parameters') 
+
+%% Salem
+
+Parameters = ParametersBelgaum;
+
+
+
+Parameters.TotalFSW.Value = 1588;
+Parameters.TotF1.Value = Parameters.TotalFSW.Value/2;
+Parameters.TotF2.Value = Parameters.TotalFSW.Value/2;
+Parameters.InitialSF1 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF1.Value;
+Parameters.InitialHIVF1 = Parameters.InitialIPropF.Value*Parameters.TotF1.Value;
+Parameters.InitialSF2 = (1-Parameters.InitialIPropF.Value)*Parameters.TotF2.Value;
+Parameters.InitialHIVF2 = Parameters.InitialIPropF.Value*Parameters.TotF2.Value;
+Parameters.TotM.Value = Parameters.TotalFSW.Value*Parameters.TotMFactor.Value;
+Parameters.InitialSM = (1-Parameters.InitialIPropM.Value)*Parameters.TotM.Value;
+Parameters.InitialHIVM = Parameters.InitialIPropM.Value*Parameters.TotM.Value;
+Parameters.MuFm1.Value = 5*12;
+Parameters.MuFm1.MinLim = 4.8*12; 
+Parameters.MuFm1.MaxLim = 5.6*12;
+Parameters.MuMm1.Value = 12*12;
+Parameters.MuMm1.MinLim = 11.5*12;
+Parameters.MuMm1.MaxLim = 13.9*12;
+Parameters.CF1.Value = 4*4.3;
+Parameters.CF1.MinLim = 3.5*4.3;
+Parameters.CF1.MaxLim = 4.07*4.3;
+Parameters.CF2.Value = 10.2*4.3;
+Parameters.CF2.MinLim = 9.7*4.3;
+Parameters.CF2.MaxLim =  10.9*4.3;
+Parameters.CM.Value = 9.47/6;
+Parameters.CM.Min = -10^14;
+Parameters.CM.Max = 10^14;
+Parameters.CM.MinLim = 8.9/6;
+Parameters.CM.MaxLim =  11/6;
+Parameters.CM.Estimated = 1;
+Parameters.CM.TransfType = 'Logit';
+
+
+
+
+% SavePath = 'S:\Results';
+save([SavePath '/ParametersSalem.mat'],'Parameters') 
 
 

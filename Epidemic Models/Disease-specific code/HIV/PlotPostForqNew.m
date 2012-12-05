@@ -2,7 +2,7 @@ function ResStats = PlotPostForqNew(Mode,q,s,Delta)
 
 
 files = {'PostThreeMethods.mat','PostThreeMethodsAffine.mat','PostThreeMethodsStep.mat'};
-SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan/';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 
 Stats = {'ampl aft 2003','asympt'};
@@ -94,11 +94,12 @@ for f = 1:1%3
     MSEs = [];
     Vars = [];
     inds = [1 3 2 0 4 5];
-    for i = 3:4
+    for i = 3:3
         for j = [1 2 3 5 6]
             Pts{f,i,inds(j)} = [];
-            for kbs = 1:NbBS
+            for kbs = 1:2%NbBS
                 bsinds = ceil(rand(1,size(Tabs{i},3))*size(Tabs{i},3));
+                bsinds = 1:size(Tabs{i},3);
                 
                 Corrs(inds(j),i,kbs) = corr(Tabs{i}(4,bsinds)',Tabs{i}(j,bsinds)');
                 Biases(inds(j),i,kbs) = mean(Tabs{i}(j,bsinds)-Tabs{i}(4,bsinds)); 
@@ -138,6 +139,8 @@ for f = 1:1%3
 %                 ROCs(inds(j),i,kbs) = ROCs(inds(j),i,kbs)-0.5;
                 Pts{f,i,inds(j)}(kbs,:,:)=[xs;ys];
 
+                
+                
             end
         end
     end
@@ -379,35 +382,35 @@ for f = 1:1%3
     ResDelta2003{8,5+4*(f-1)}=[num2str(mean(FalsePosRate(4,3,:)),2) ' [' num2str(quantile(FalsePosRate(4,3,:),0.025),2) ';' num2str(quantile(FalsePosRate(4,3,:),0.975),2) ']'];
     ResDelta2003{8,6+4*(f-1)}=[num2str(mean(FalsePosRate(5,3,:)),2) ' [' num2str(quantile(FalsePosRate(5,3,:),0.025),2) ';' num2str(quantile(FalsePosRate(5,3,:),0.975),2) ']'];
     
-    ResCU2010{3,2+4*(f-1)}=[num2str(mean(Biases(1,4,:)),2) ' [' num2str(quantile(Biases(1,4,:),0.025),2) ';' num2str(quantile(Biases(1,4,:),0.975),2) ']'];
-    ResCU2010{3,3+4*(f-1)}=[num2str(mean(Biases(2,4,:)),2) ' [' num2str(quantile(Biases(2,4,:),0.025),2) ';' num2str(quantile(Biases(2,4,:),0.975),2) ']'];
-    ResCU2010{3,4+4*(f-1)}=[num2str(mean(Biases(3,4,:)),2) ' [' num2str(quantile(Biases(3,4,:),0.025),2) ';' num2str(quantile(Biases(3,4,:),0.975),2) ']'];
-    ResCU2010{3,5+4*(f-1)}=[num2str(mean(Biases(4,4,:)),2) ' [' num2str(quantile(Biases(4,4,:),0.025),2) ';' num2str(quantile(Biases(4,4,:),0.975),2) ']'];
-    ResCU2010{3,6+4*(f-1)}=[num2str(mean(Biases(5,4,:)),2) ' [' num2str(quantile(Biases(5,4,:),0.025),2) ';' num2str(quantile(Biases(5,4,:),0.975),2) ']'];
-    ResCU2010{4,2+4*(f-1)}=[num2str(mean(Vars(1,4,:)),2) ' [' num2str(quantile(Vars(1,4,:),0.025),2) ';' num2str(quantile(Vars(1,4,:),0.975),2) ']'];
-    ResCU2010{4,3+4*(f-1)}=[num2str(mean(Vars(2,4,:)),2) ' [' num2str(quantile(Vars(2,4,:),0.025),2) ';' num2str(quantile(Vars(2,4,:),0.975),2) ']'];
-    ResCU2010{4,4+4*(f-1)}=[num2str(mean(Vars(3,4,:)),2) ' [' num2str(quantile(Vars(3,4,:),0.025),2) ';' num2str(quantile(Vars(3,4,:),0.975),2) ']'];
-    ResCU2010{4,5+4*(f-1)}=[num2str(mean(Vars(4,4,:)),2) ' [' num2str(quantile(Vars(4,4,:),0.025),2) ';' num2str(quantile(Vars(4,4,:),0.975),2) ']'];
-    ResCU2010{4,6+4*(f-1)}=[num2str(mean(Vars(5,4,:)),2) ' [' num2str(quantile(Vars(5,4,:),0.025),2) ';' num2str(quantile(Vars(5,4,:),0.975),2) ']'];
-    ResCU2010{5,2+4*(f-1)}=[num2str(mean(MSEs(1,4,:)),2) ' [' num2str(quantile(MSEs(1,4,:),0.025),2) ';' num2str(quantile(MSEs(1,4,:),0.975),2) ']'];
-    ResCU2010{5,3+4*(f-1)}=[num2str(mean(MSEs(2,4,:)),2) ' [' num2str(quantile(MSEs(2,4,:),0.025),2) ';' num2str(quantile(MSEs(2,4,:),0.975),2) ']'];
-    ResCU2010{5,4+4*(f-1)}=[num2str(mean(MSEs(3,4,:)),2) ' [' num2str(quantile(MSEs(3,4,:),0.025),2) ';' num2str(quantile(MSEs(3,4,:),0.975),2) ']'];
-    ResCU2010{5,5+4*(f-1)}=[num2str(mean(MSEs(4,4,:)),2) ' [' num2str(quantile(MSEs(4,4,:),0.025),2) ';' num2str(quantile(MSEs(4,4,:),0.975),2) ']'];
-    ResCU2010{5,6+4*(f-1)}=[num2str(mean(MSEs(5,4,:)),2) ' [' num2str(quantile(MSEs(5,4,:),0.025),2) ';' num2str(quantile(MSEs(5,4,:),0.975),2) ']'];
-    ResCU2010{6,2+4*(f-1)}=[num2str(mean(ROCs(f,1,4,:)),2) ' [' num2str(quantile(ROCs(f,1,4,:),0.025),2) ';' num2str(quantile(ROCs(f,1,4,:),0.975),2) ']'];
-    ResCU2010{6,3+4*(f-1)}=[num2str(mean(ROCs(f,2,4,:)),2) ' [' num2str(quantile(ROCs(f,2,4,:),0.025),2) ';' num2str(quantile(ROCs(f,2,4,:),0.975),2) ']'];
-    ResCU2010{6,4+4*(f-1)}=[num2str(mean(ROCs(f,3,4,:)),2) ' [' num2str(quantile(ROCs(f,3,4,:),0.025),2) ';' num2str(quantile(ROCs(f,3,4,:),0.975),2) ']'];
-    ResCU2010{6,5+4*(f-1)}=[num2str(mean(ROCs(f,4,4,:)),2) ' [' num2str(quantile(ROCs(f,4,4,:),0.025),2) ';' num2str(quantile(ROCs(f,4,4,:),0.975),2) ']'];
-    ResCU2010{7,2+4*(f-1)}=[num2str(mean(TruePosRate(1,4,:)),2) ' [' num2str(quantile(TruePosRate(1,4,:),0.025),2) ';' num2str(quantile(TruePosRate(1,4,:),0.975),2) ']'];
-    ResCU2010{7,3+4*(f-1)}=[num2str(mean(TruePosRate(2,4,:)),2) ' [' num2str(quantile(TruePosRate(2,4,:),0.025),2) ';' num2str(quantile(TruePosRate(2,4,:),0.975),2) ']'];
-    ResCU2010{7,4+4*(f-1)}=[num2str(mean(TruePosRate(3,4,:)),2) ' [' num2str(quantile(TruePosRate(3,4,:),0.025),2) ';' num2str(quantile(TruePosRate(3,4,:),0.975),2) ']'];
-    ResCU2010{7,5+4*(f-1)}=[num2str(mean(TruePosRate(4,4,:)),2) ' [' num2str(quantile(TruePosRate(4,4,:),0.025),2) ';' num2str(quantile(TruePosRate(4,4,:),0.975),2) ']'];
-    ResCU2010{7,6+4*(f-1)}=[num2str(mean(TruePosRate(5,4,:)),2) ' [' num2str(quantile(TruePosRate(5,4,:),0.025),2) ';' num2str(quantile(TruePosRate(5,4,:),0.975),2) ']'];
-    ResCU2010{8,2+4*(f-1)}=[num2str(mean(FalsePosRate(1,4,:)),2) ' [' num2str(quantile(FalsePosRate(1,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(1,4,:),0.975),2) ']'];
-    ResCU2010{8,3+4*(f-1)}=[num2str(mean(FalsePosRate(2,4,:)),2) ' [' num2str(quantile(FalsePosRate(2,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(2,4,:),0.975),2) ']'];
-    ResCU2010{8,4+4*(f-1)}=[num2str(mean(FalsePosRate(3,4,:)),2) ' [' num2str(quantile(FalsePosRate(3,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(3,4,:),0.975),2) ']'];
-    ResCU2010{8,5+4*(f-1)}=[num2str(mean(FalsePosRate(4,4,:)),2) ' [' num2str(quantile(FalsePosRate(4,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(4,4,:),0.975),2) ']'];
-    ResCU2010{8,6+4*(f-1)}=[num2str(mean(FalsePosRate(5,4,:)),2) ' [' num2str(quantile(FalsePosRate(5,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(5,4,:),0.975),2) ']'];
+%     ResCU2010{3,2+4*(f-1)}=[num2str(mean(Biases(1,4,:)),2) ' [' num2str(quantile(Biases(1,4,:),0.025),2) ';' num2str(quantile(Biases(1,4,:),0.975),2) ']'];
+%     ResCU2010{3,3+4*(f-1)}=[num2str(mean(Biases(2,4,:)),2) ' [' num2str(quantile(Biases(2,4,:),0.025),2) ';' num2str(quantile(Biases(2,4,:),0.975),2) ']'];
+%     ResCU2010{3,4+4*(f-1)}=[num2str(mean(Biases(3,4,:)),2) ' [' num2str(quantile(Biases(3,4,:),0.025),2) ';' num2str(quantile(Biases(3,4,:),0.975),2) ']'];
+%     ResCU2010{3,5+4*(f-1)}=[num2str(mean(Biases(4,4,:)),2) ' [' num2str(quantile(Biases(4,4,:),0.025),2) ';' num2str(quantile(Biases(4,4,:),0.975),2) ']'];
+%     ResCU2010{3,6+4*(f-1)}=[num2str(mean(Biases(5,4,:)),2) ' [' num2str(quantile(Biases(5,4,:),0.025),2) ';' num2str(quantile(Biases(5,4,:),0.975),2) ']'];
+%     ResCU2010{4,2+4*(f-1)}=[num2str(mean(Vars(1,4,:)),2) ' [' num2str(quantile(Vars(1,4,:),0.025),2) ';' num2str(quantile(Vars(1,4,:),0.975),2) ']'];
+%     ResCU2010{4,3+4*(f-1)}=[num2str(mean(Vars(2,4,:)),2) ' [' num2str(quantile(Vars(2,4,:),0.025),2) ';' num2str(quantile(Vars(2,4,:),0.975),2) ']'];
+%     ResCU2010{4,4+4*(f-1)}=[num2str(mean(Vars(3,4,:)),2) ' [' num2str(quantile(Vars(3,4,:),0.025),2) ';' num2str(quantile(Vars(3,4,:),0.975),2) ']'];
+%     ResCU2010{4,5+4*(f-1)}=[num2str(mean(Vars(4,4,:)),2) ' [' num2str(quantile(Vars(4,4,:),0.025),2) ';' num2str(quantile(Vars(4,4,:),0.975),2) ']'];
+%     ResCU2010{4,6+4*(f-1)}=[num2str(mean(Vars(5,4,:)),2) ' [' num2str(quantile(Vars(5,4,:),0.025),2) ';' num2str(quantile(Vars(5,4,:),0.975),2) ']'];
+%     ResCU2010{5,2+4*(f-1)}=[num2str(mean(MSEs(1,4,:)),2) ' [' num2str(quantile(MSEs(1,4,:),0.025),2) ';' num2str(quantile(MSEs(1,4,:),0.975),2) ']'];
+%     ResCU2010{5,3+4*(f-1)}=[num2str(mean(MSEs(2,4,:)),2) ' [' num2str(quantile(MSEs(2,4,:),0.025),2) ';' num2str(quantile(MSEs(2,4,:),0.975),2) ']'];
+%     ResCU2010{5,4+4*(f-1)}=[num2str(mean(MSEs(3,4,:)),2) ' [' num2str(quantile(MSEs(3,4,:),0.025),2) ';' num2str(quantile(MSEs(3,4,:),0.975),2) ']'];
+%     ResCU2010{5,5+4*(f-1)}=[num2str(mean(MSEs(4,4,:)),2) ' [' num2str(quantile(MSEs(4,4,:),0.025),2) ';' num2str(quantile(MSEs(4,4,:),0.975),2) ']'];
+%     ResCU2010{5,6+4*(f-1)}=[num2str(mean(MSEs(5,4,:)),2) ' [' num2str(quantile(MSEs(5,4,:),0.025),2) ';' num2str(quantile(MSEs(5,4,:),0.975),2) ']'];
+%     ResCU2010{6,2+4*(f-1)}=[num2str(mean(ROCs(f,1,4,:)),2) ' [' num2str(quantile(ROCs(f,1,4,:),0.025),2) ';' num2str(quantile(ROCs(f,1,4,:),0.975),2) ']'];
+%     ResCU2010{6,3+4*(f-1)}=[num2str(mean(ROCs(f,2,4,:)),2) ' [' num2str(quantile(ROCs(f,2,4,:),0.025),2) ';' num2str(quantile(ROCs(f,2,4,:),0.975),2) ']'];
+%     ResCU2010{6,4+4*(f-1)}=[num2str(mean(ROCs(f,3,4,:)),2) ' [' num2str(quantile(ROCs(f,3,4,:),0.025),2) ';' num2str(quantile(ROCs(f,3,4,:),0.975),2) ']'];
+%     ResCU2010{6,5+4*(f-1)}=[num2str(mean(ROCs(f,4,4,:)),2) ' [' num2str(quantile(ROCs(f,4,4,:),0.025),2) ';' num2str(quantile(ROCs(f,4,4,:),0.975),2) ']'];
+%     ResCU2010{7,2+4*(f-1)}=[num2str(mean(TruePosRate(1,4,:)),2) ' [' num2str(quantile(TruePosRate(1,4,:),0.025),2) ';' num2str(quantile(TruePosRate(1,4,:),0.975),2) ']'];
+%     ResCU2010{7,3+4*(f-1)}=[num2str(mean(TruePosRate(2,4,:)),2) ' [' num2str(quantile(TruePosRate(2,4,:),0.025),2) ';' num2str(quantile(TruePosRate(2,4,:),0.975),2) ']'];
+%     ResCU2010{7,4+4*(f-1)}=[num2str(mean(TruePosRate(3,4,:)),2) ' [' num2str(quantile(TruePosRate(3,4,:),0.025),2) ';' num2str(quantile(TruePosRate(3,4,:),0.975),2) ']'];
+%     ResCU2010{7,5+4*(f-1)}=[num2str(mean(TruePosRate(4,4,:)),2) ' [' num2str(quantile(TruePosRate(4,4,:),0.025),2) ';' num2str(quantile(TruePosRate(4,4,:),0.975),2) ']'];
+%     ResCU2010{7,6+4*(f-1)}=[num2str(mean(TruePosRate(5,4,:)),2) ' [' num2str(quantile(TruePosRate(5,4,:),0.025),2) ';' num2str(quantile(TruePosRate(5,4,:),0.975),2) ']'];
+%     ResCU2010{8,2+4*(f-1)}=[num2str(mean(FalsePosRate(1,4,:)),2) ' [' num2str(quantile(FalsePosRate(1,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(1,4,:),0.975),2) ']'];
+%     ResCU2010{8,3+4*(f-1)}=[num2str(mean(FalsePosRate(2,4,:)),2) ' [' num2str(quantile(FalsePosRate(2,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(2,4,:),0.975),2) ']'];
+%     ResCU2010{8,4+4*(f-1)}=[num2str(mean(FalsePosRate(3,4,:)),2) ' [' num2str(quantile(FalsePosRate(3,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(3,4,:),0.975),2) ']'];
+%     ResCU2010{8,5+4*(f-1)}=[num2str(mean(FalsePosRate(4,4,:)),2) ' [' num2str(quantile(FalsePosRate(4,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(4,4,:),0.975),2) ']'];
+%     ResCU2010{8,6+4*(f-1)}=[num2str(mean(FalsePosRate(5,4,:)),2) ' [' num2str(quantile(FalsePosRate(5,4,:),0.025),2) ';' num2str(quantile(FalsePosRate(5,4,:),0.975),2) ']'];
     
 end
 
@@ -458,14 +461,24 @@ end
 % ylabel('ROCs-0.5')
 % ROCs(:,[1 3 4])
 % 
-% for i = 1:4
-%    subplot(6,4,16+i) 
-%    plot(Pts{i,1}(1,:),Pts{i,1}(2,:),'b')
-%    hold on
-%    plot(Pts{i,2}(1,:),Pts{i,2}(2,:),'g')
-%    plot(Pts{i,3}(1,:),Pts{i,3}(2,:),'r')
-%    hold off
-% end
+% clf
+for i = 3:3
+%        plot(mean(squeeze(Pts{1,i,inds(1)}(:,1,:))),mean(squeeze(Pts{1,i,inds(1)}(:,2,:))),'col',[0.3176    0.6627    0.9255])
+%        hold on
+    if Delta == 0.2
+       plot(mean(squeeze(Pts{1,i,inds(2)}(:,1,:))),mean(squeeze(Pts{1,i,inds(2)}(:,2,:))),'--k')
+    else
+       plot(mean(squeeze(Pts{1,i,inds(2)}(:,1,:))),mean(squeeze(Pts{1,i,inds(2)}(:,2,:))),'k')
+    end        
+%        plot(mean(squeeze(Pts{1,i,inds(3)}(:,1,:))),mean(squeeze(Pts{1,i,inds(3)}(:,2,:))),'col',[0.5529    0.1373    0.1373])
+%        plot(mean(squeeze(Pts{1,i,inds(5)}(:,1,:))),mean(squeeze(Pts{1,i,inds(5)}(:,2,:))),'col',[0.8941    0.5961    0.2078])
+%        plot(mean(squeeze(Pts{1,i,inds(6)}(:,1,:))),mean(squeeze(Pts{1,i,inds(6)}(:,2,:))),'col',[0.6471    0.9098    0.3882])
+%        hold off
+end
+% legend('sto. Bert. Richards','det. Bert. Richards','sto. Sigmoid','det. Sigmoid','Brown. Motion')
+xlabel('1-Specificity','FontWeight','bold','FontSize',16)
+ylabel('Sensitivity','FontWeight','bold','FontSize',16)
+
 
 ResStats = struct();
 ResStats.Corrs = Corrs;

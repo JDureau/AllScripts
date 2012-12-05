@@ -163,7 +163,8 @@ for IndTime = 2:length(ObservationInstants)
         %     Sk
         %     die
             if Sk<0
-                disp('stop')
+%                 disp('stop')
+                Res.Crash = 1;
             end
             Kk = Cov1*Ck'*Sk^-1;
 
@@ -201,7 +202,8 @@ for IndTime = 2:length(ObservationInstants)
                 temp = ( V*D*V' + (V*D*V')')/2;
                 Cov = temp;
             catch
-                'pb'
+%                 'pb'
+                Res.Crash = 1;
             end
             
       
@@ -215,10 +217,12 @@ for IndTime = 2:length(ObservationInstants)
             
 
              if sum(not(isreal(Cov)))
-                 disp('pb')
+%                  disp('pb')
+                 Res.Crash = 1;
              end
             if sum((isnan(Cov)))
-                 disp('pb')
+%                  disp('pb')
+                 Res.Crash = 1;
              end
 
 
@@ -226,7 +230,8 @@ for IndTime = 2:length(ObservationInstants)
             Covs(IndTime,:,:) = Cov;
 
             if isnan(Sk)
-                disp('oups')
+                Res.Crash = 1;
+%                 disp('oups')
             end
 
             try
@@ -241,12 +246,14 @@ for IndTime = 2:length(ObservationInstants)
         %             t = 0;%sum(log(normpdf(diff(Res.deltabetas)/Parameters.ComputationTStep,0,sqrt(Parameters.ComputationTStep)*max(eps,Parameters.SigmaRW.Value))));
         %             tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
         %         else
-        Sk = max(0.1,Sk); %Just commented it june 6th
+%         Sk = max(0.1,Sk); %Just commented it june 6th
                     tempLogLik = max(-700,log(not(Res.Crash)*mvnpdf(vk,zeros(size(vk)),Sk)));
         %         end
             catch
-                disp('pb')
-                tempLogLik = -700;
+%                 disp('pb')
+                if Res.Crash
+                    tempLogLik = -700;
+                end
             end
             
 %             'loglik'

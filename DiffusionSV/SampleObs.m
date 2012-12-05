@@ -12,8 +12,8 @@ npoints = N/(nobs-1);
 
 Y = zeros(nobs,1);
 Y(1) = 0;
-Y(2) = Y(1) + sqrt(sum(sigma(X(1:npoints-1)).^2))*randn(1,1);  % accounting for the fact that X(0) = 0 so we only take first npoints-1 elements of X 
+Y(2) = Y(1) + sqrt(sum(sigma(X(1:npoints-1)).^2))*randn(1,1)*sqrt(step);  % accounting for the fact that X(0) = 0 so we only take first npoints-1 elements of X 
 for i = 3:nobs
-    Y(i) = Y(i-1) + sqrt(sum(sigma(X((i-2)*npoints:(i-1)*npoints-1)).^2))*randn(1,1);   
+    Y(i) = Y(i-1) + sqrt(sum(sigma(X((i-2)*npoints:(i-1)*npoints-1)).^2))*randn(1,1)*sqrt(step);   
 end
     
