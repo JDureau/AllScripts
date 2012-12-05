@@ -702,7 +702,7 @@ save([SavePath '/ParametersBangalore.mat'],'Parameters')
 
 %% Chennai
 
-Parameters = ParametersChennai;
+Parameters = ParametersBelgaum;
 
 
 
