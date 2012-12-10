@@ -145,7 +145,7 @@ elseif ind == 9
     NbSamples = [410 405 397 408];
 
 
-    Name = ['/HIV_Shimoga' s '.mat'];
+    Name = ['/HIV_Chennai' s '.mat'];
 
 elseif ind == 10
     temp = load([SavePath 'ParametersMadurai' mode '.mat']); 
@@ -158,7 +158,7 @@ elseif ind == 10
     ObsVars = [7 8 7 8];
     NbSamples = [402 400 396 401];
 
-    Name = ['/HIV_Shimoga' s '.mat'];
+    Name = ['/HIV_Madurai' s '.mat'];
 
 elseif ind == 11
     temp = load([SavePath 'ParametersSalem' mode '.mat']); 
@@ -171,7 +171,7 @@ elseif ind == 11
     ObsVars = [7 8 7 8];
     NbSamples = [392 396 407 407];
 
-    Name = ['/HIV_Shimoga' s '.mat'];
+    Name = ['/HIV_Salem' s '.mat'];
 end
 
 

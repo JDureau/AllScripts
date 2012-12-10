@@ -447,7 +447,7 @@ obstep = 1;
 loop=20000;
 
 
-data_file=strcat('fBMData1000_H=',num2str(Htrue),'_sigma=',num2str(sigma_X),'.mat');
+data_file=strcat('fBMDataNoFine100_H=',num2str(Htrue),'_sigma=',num2str(sigma_X),'.mat');
 
 data_files = {'fBMData_H=0.6_sigma=0.1.mat'}
 
@@ -492,12 +492,12 @@ Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
 else
-    Par.nsteps = 5;
+    Par.nsteps = 20;
 end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.1;
+    Par.h=0.06;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;
@@ -514,7 +514,7 @@ Res = RunJointMCMC(Data,Par);
 PlotfBMoutput(Res)
 
 
-save([SavePath '/Res_JointHMC5_Hsigest_' data_file],'Res')
+save([SavePath '/Res_JointHMC20_Hsigest_' data_file],'Res')
 
 
 est = 'No';
@@ -551,7 +551,7 @@ ESSs = {};
 
 for k = 2:2
     k
-    Ress{k}.h
+%     Ress{k}.h
     %figure(11); for i=10:10:min(500,loop); plot(out_Q(i,:),'b');hold on; end; plot(out_Q(1,:),'r');hold off
     ESS=zeros(size(Ress{k}.out_Zs,2),1);
     for i=1:size(Ress{k}.out_Zs,2)
