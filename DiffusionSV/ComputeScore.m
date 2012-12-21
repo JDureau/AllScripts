@@ -23,30 +23,57 @@ X = Bh_to_X(Bh,sigma_X);
 Vols_s = Vol(X);
 Vols_s_prime = VolDer(X);
 
-% a = dlog(Y|X)/dX
-a = zeros(N-1,1);
+% %  This was from first trials with simple model. After that we had to
+% compute directly dlog(Y|B)/dB
+% % % a = dlog(Y|X)/dX
+% % a = zeros(N-1,1);
+% % denoms = zeros(1,nobs);
+% % currentk=1;
+% % denoms(1) = sum(Vols_s(1:currentk*npoints-1).^2)*step;
+% % for j = 1:N-1
+% %     k = floor(j/npoints)+1;
+% %     if k>currentk
+% %         denoms(k) = sum(Vols_s((k-1)*npoints:k*npoints-1).^2)*step;
+% %         currentk=k;
+% %     end
+% %     a(j) = -Vols_s_prime(j)*Vols_s(j)*step/denoms(k);
+% %     a(j) = a(j) + (Y(k+1)-Y(k-1+1))^2*Vols_s_prime(j)*Vols_s(j)*step/(denoms(k)^2);
+% % end
+% % 
+% % 
+% % 
+% % % a * d X / d Delta B
+% % % a*matrix with down-left half filled with ones 
+% % tmp = zeros(1,length(a));
+% % tmp(end) = sigma_X *a(end);
+% % for i = length(a)-1:-1:1
+% %    tmp(i) = sigma_X *a(i) + tmp(i+1);
+% % end
+
+
+%%% b = dlog(Y|B)/dB
+b = zeros(N-1,1);
 denoms = zeros(1,nobs);
-currentk=1;
-denoms(1) = sum(Vols_s(1:currentk*npoints-1).^2)*step;
-for j = 1:N-1
+currentk=nobs-1;
+denoms(currentk) = sum(Vols_s((currentk-1)*npoints:currentk*npoints-1).^2)*step;
+for j = N-1:-1:1
     k = floor(j/npoints)+1;
-    if k>currentk
-        denoms(k) = sum(Vols_s((k-1)*npoints:k*npoints-1).^2)*step;
+    if k<currentk
+        denoms(k) = sum(Vols_s(max(1,(k-1)*npoints):k*npoints-1).^2)*step;
         currentk=k;
     end
-    a(j) = -Vols_s_prime(j)*Vols_s(j)*step/denoms(k);
-    a(j) = a(j) + (Y(k+1)-Y(k-1+1))^2*Vols_s_prime(j)*Vols_s(j)*step/(denoms(k)^2);
+    if j == N-1
+        c = 0;
+    else
+        c = b(j+1);
+    end
+    b(j) = c - sigma_X * Vols_s_prime(j)*Vols_s(j)*step/denoms(k);
+    b(j) = b(j) + (Y(k+1)-Y(k-1+1))^2 * sigma_X * Vols_s_prime(j) * Vols_s(j) * step/(denoms(k)^2);
 end
 
+tmp = b';
 
 
-% a * d X / d Delta B
-% a*matrix with down-left half filled with ones 
-tmp = zeros(1,length(a));
-tmp(end) = sigma_X *a(end);
-for i = length(a)-1:-1:1
-   tmp(i) = sigma_X *a(i) + tmp(i+1);
-end
 
 % P*Delta*M
 DiagOfLambda = ComputeDiagOfLambda(N,step,H);

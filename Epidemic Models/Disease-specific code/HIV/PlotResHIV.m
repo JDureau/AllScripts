@@ -363,7 +363,7 @@ if Parameters.PlotIndex == 3
 %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
-    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6)
+    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
 %     errorbar(xs,ys,es,'.r')
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.25),quantile(squeeze(Paths(:,ToPlot(1),:)),0.75),[100,153,251]/255)
@@ -383,7 +383,7 @@ if Parameters.PlotIndex == 3
             %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
-    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6)
+    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
 %     errorbar(xs,ys,es,'.r','LineWidth',3,'LineStyle','none')
 
     
@@ -423,7 +423,7 @@ if Parameters.PlotIndex == 3
 %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
-    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6)
+    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
 %     errorbar(xs,ys,es,'.r')
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.25),quantile(squeeze(Paths(:,ToPlot(2),:)),0.75),[100,153,251]/255)
@@ -443,7 +443,7 @@ if Parameters.PlotIndex == 3
 %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
-    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6)
+    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
    
     
     tmp = quantile(squeeze(Paths(:,ToPlot(2),:)),0.975);
@@ -545,6 +545,21 @@ end
         tmp = quantile(squeeze(Paths),0.975);    
 
     end
+
+    for i = 2:size(Data.Observations,2)
+        if Data.Observations(9,i)>0
+            xs(end+1) = Data.Instants(i);
+            try
+                ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
+            catch
+                ys(end+1) = Res.Data.Observations(9,i);
+            end
+%             es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
+%             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
+        end
+    end
+    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
+    
     
     m = max(tmp);
     ylim([0 1])

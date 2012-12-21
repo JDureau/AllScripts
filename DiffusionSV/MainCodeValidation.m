@@ -66,6 +66,11 @@ step = 0.01;
 N = nobs/step;
 H = 0.55;
 sigma_X = 0.1;
+Par.theta_sampler='JointHMC';
+Par.thetafixed=1;
+Par.Zfixed=0;
+Par.sigma_X.Estimated = 0;
+Par.H.Estimated = 0;
 
 SimDatafBM('scoreTest.mat',N,step,Vol,H,sigma_X);
 
@@ -424,7 +429,7 @@ ylabel('Time for Score','FontSize',20)
 
 %Create data and likelihood components objects etc
 nobs = 100; % Y(0) = 0 is counted as an observation
-step = 0.05;
+step = 0.001;
 N = (nobs-1)/step;
 Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
@@ -447,7 +452,7 @@ obstep = 1;
 loop=20000;
 
 
-data_file=strcat('fBMDataNoFine100_H=',num2str(Htrue),'_sigma=',num2str(sigma_X),'.mat');
+data_file=strcat('fBMDataVFine_H=',num2str(Htrue),'_sigma=',num2str(sigma_X),'.mat');
 
 data_files = {'fBMData_H=0.6_sigma=0.1.mat'}
 
@@ -474,13 +479,13 @@ Par.H.MaxLim = 1;
 Par.H.Transf = @logit;
 Par.H.InvTransf = @invlogit;
 Par.H.Corr = @logitCorr;
-Par.H.Estimated = 1;
+Par.H.Estimated = 0;
 Par.sigma_X.MinLim = 0;
 Par.sigma_X.MaxLim = 100;
 Par.sigma_X.Transf = @mylog;
 Par.sigma_X.InvTransf = @invlog;
 Par.sigma_X.Corr = @logCorr;
-Par.sigma_X.Estimated = 1;
+Par.sigma_X.Estimated = 0;
 Par = DefineIndexes(Par);
 
 Par.H.Value = Data.Htrue;
@@ -492,12 +497,12 @@ Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
 else
-    Par.nsteps = 20;
+    Par.nsteps = 10;
 end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.06;
+    Par.h=0.02;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;

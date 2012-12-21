@@ -43,7 +43,7 @@ Liks = ones(1,length(ObservationInstants));
 LogLik = 0;
 FathersTab = zeros(NbResampling,length(ObservationInstants)-1);
 
-if not(Parameters.NoPaths)
+if Parameters.KeepPaths
     Paths = zeros(NbResampling,length(Parameters.PathsToKeep),sum(Data.NbComputingSteps));
 else
     Paths = [];

@@ -90,6 +90,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             disp('Unknown Diffusion')
             die
         end
+        mpred(10) =  InvLogitTransf(mpred(9),0,1);
+
         
         if not(isreal(mpred))
             '....'
@@ -175,6 +177,9 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             Jacobian(9,9) = - 1/rate;
         end
         
+       
+        
+        
         Q = zeros(9,9);
         if or(strcmp(difftype,'Bertallanfy'),strcmp(difftype,'BertallanfyConstr'))
             Q(9,9) = (Parameters.BRsigma.Value*mpred(9))^2;
@@ -210,6 +215,30 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             Crash = 1;
         end
         record(:,IndDiscr)= mtemp;
+        
+        
+        m = 0;
+        M = 1;
+        corr = (((M-m)*exp(mpred(9)))/((1+exp(mpred(9)))^2));     
+        if or(isnan(corr),isinf(corr))
+            corr = ((M-m)/((1+exp(-mpred(9)))*(1+exp(mpred(9)))));     
+        end
+        
+        if length(Data.ObservedVariables{2})==2
+            temp7 = zeros(2,9);
+            temp8 = zeros(1,9);
+            temp7(1,7) = 1;
+            temp7(2,9) = 100*Parameters.Rho.Value*corr;
+            temp8(1,8) = 1;
+            temps{7} = temp7;
+            temps{8} = temp8;
+            Model.ObservationJacobian = {};
+            for i = 1:length(ObsVars)
+                Model.ObservationJacobian{i+1} = temps{ObsVars{i}(1)};
+            end
+        end
+        
+        
         
 %         mpred(1:8) = max(0,mpred(1:8));
     end

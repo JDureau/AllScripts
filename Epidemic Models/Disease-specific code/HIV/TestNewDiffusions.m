@@ -918,12 +918,12 @@ addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
-SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/temp';
 
 
-DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Guntur','Hyderabad','Shimoga'};
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','EastGodavry','Yevatmal','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
 
-for i = 1:length(DistrictNames)
+for i = 5:5%length(DistrictNames)
     try
         clf
         load([SavePath '/HIV_' DistrictNames{i} '.mat'])
@@ -931,7 +931,7 @@ for i = 1:length(DistrictNames)
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
         title([DistrictNames{i} ' BM'],'FontWeight','bold')
-        load([SavePath '/HIV_' DistrictNames{i} '_Sigm_CU20.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '_Sigm.mat'])
         Res.Parameters.PlotIndex = 4;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
@@ -984,12 +984,12 @@ plot(xi,fi,'r')
 plot(xi,fi,'b')
 hold off
 
-Names = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga'};
+Names = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','Guntur','Hyderabad','EastGodavry','Shimoga','Chennai','Madurai','Salem'};
 ests = [];
 randinds = 1:2000;
-for i = 1:length(Names)
+for i = 1:length(Names)-3
     disp(Names{i})
-    load([SavePath '/HIV_' Names{i} '_dBR.mat'])
+%     load([SavePath '/HIV_' Names{i} '_dBR.mat'])
     ResDet = Res;
     randinds = randsample(size(ResDet.Paths,1),min(size(ResDet.Paths,1),4000));
     ResDet.Paths = ResDet.Paths(randinds,:);
@@ -1143,6 +1143,10 @@ for i = 1:length(Names)
     q = 0.5
     quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q)
     quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q)
+    
+    q = 0.05
+    quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q)
+    quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q)
 
 
 %     pause()
@@ -1197,11 +1201,11 @@ addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
-SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/temp';
 
 
-DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga'};
-RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Guntur','Hyderabad','Shimoga'};
+DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
+RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
 for i = 1:length(DistrictNames)
     try
         clf

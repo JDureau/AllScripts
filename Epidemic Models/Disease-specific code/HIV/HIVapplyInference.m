@@ -24,8 +24,10 @@ try
         
         Data.Observations = zeros(10,length(ObsVars)+1);
         for i = 1:length(ObsVars)
-            Data.Observations(ObsVars(i),1+i) = (ObsMin(i)+ObsMax(i))/2*100;
-            Data.ObsSigmas(i+1) = ((ObsMax(i)-ObsMin(i))*100/4);
+            for j = 1:length(ObsVars{i})
+                Data.Observations(ObsVars{i}(j),1+i) = (ObsMin{i}(j)+ObsMax{i}(j))/2*100;
+                Data.ObsSigmas(i+1) = ((ObsMax{i}(j)-ObsMin{i}(j))*100/4);
+            end
         end
         Instants = round((ObsYears-1985)*12);
         Data.Instants = round([0 Instants]/(Parameters.ComputationTStep));
@@ -38,24 +40,27 @@ try
         else
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,(Parameters.ObsMax(IndTime-1)-Parameters.ObsMin(IndTime-1))*100/4)';
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
-            HIVModel.LikFunction = 'binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs(IndTime-1)),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+            HIVModel.LikFunction = 'binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs{IndTime-1}),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables{IndTime})/100)';
         end
 
-        temp7 = zeros(1,9);
+        temp7 = zeros(2,9);
+%         temp7 = zeros(1,9);
         temp8 = zeros(1,9);
         temp7(1,7) = 1;
+        temp7(2,9) = 1;
         temp8(1,8) = 1;
         temps{7} = temp7;
         temps{8} = temp8;
         HIVModel.ObservationJacobian = {};
         for i = 1:length(ObsVars)
-            HIVModel.ObservationJacobian{i+1} = temps{ObsVars(i)};
+            HIVModel.ObservationJacobian{i+1} = temps{ObsVars{i}(1)};
         end
         HIVModel.ObservationMeasurementNoise = {};
-        Obs = Parameters.Obs*100;
         for i = 1:length(ObsVars)
+            for j = 1:length(ObsVars{i})
 %             HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
-            HIVModel.ObservationMeasurementNoise{i+1} = (Obs(i)*(100-Obs(i))/Parameters.NbSamples(i));
+                HIVModel.ObservationMeasurementNoise{i+1}(j) = (Parameters.Obs{i}(j)*100*(100-Parameters.Obs{i}(j)*100)/Parameters.NbSamples(i));
+            end
        end
         NbItsPMCMC = 100000;
         Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
@@ -95,7 +100,8 @@ catch
     end
     
     if or(strcmp(Parameters.DiffusionType,'Bertallanfy'),strcmp(Parameters.DiffusionType,'BertallanfyConstr'))
-        HIVModel.LikFunction = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+        HIVModel.LikFunction1 = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
+        HIVModel.LikFunction2 = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
     else
 %         HIVModel.LikFunction = 'not(Res.Crash)*normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),Data.Observations(Data.ObservedVariables(:,IndTime),IndTime),sqrt(Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)*(100-Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/400)))';
         HIVModel.LikFunction = 'binopdf(round(425*Data.Observations(Data.ObservedVariables(:,IndTime),IndTime)/100),425,Variables(:,Data.ObservedVariables(:,IndTime))/100)';
@@ -272,6 +278,7 @@ if not(AlreadySomething)
         ParametersKalman.CF1.Estimated = 1;
         ParametersKalman.CF2.Estimated = 1;
         ParametersKalman.CM.Estimated = 1;
+        ParametersKalman.Rho.Estimated = 1;
         ParametersKalman.SigmaRW.Estimated = 1;
     elseif strcmp(ParametersKalman.DiffusionType,'AddConstr')
         ParametersKalman.InitialFt.Estimated = 1;
