@@ -124,10 +124,18 @@ for IndTime = 2:length(ObservationInstants)
         catch
             coeff = 1;
         end
-        inds = find(Data.ObservedVariables(:,IndTime));
+        
+        inds = Data.ObservedVariables{IndTime};
         if not(isempty(inds))
-            IndObservedVar = Data.ObservedVariables(inds,IndTime);
-            ypred = mpred(IndObservedVar);
+            IndObservedVar = Data.ObservedVariables{IndTime};
+            if and(strcmp(Parameters.Problem,'ImperialHIV2'),length(IndObservedVar) == 2)
+                ypred = [];
+                ypred(1,1) = mpred(IndObservedVar(1));
+                ypred(2,1) = Parameters.Rho.Value*(InvLogitTransf(mpred(IndObservedVar(2)),0,1))*100;
+%                 disp([ Observations(IndObservedVar,IndTime)  ypred])
+            else
+                ypred = mpred(IndObservedVar);  
+            end
             vk = Observations(IndObservedVar,IndTime) - coeff*ypred; 
 
            
@@ -146,9 +154,11 @@ for IndTime = 2:length(ObservationInstants)
          
 
             
-            Rk = Model.ObservationMeasurementNoise{IndTime}';
+            Rk = diag(Model.ObservationMeasurementNoise{IndTime}');
+           
             try
                 Sk = Ck*Cov1*Ck' + Rk;
+                
             catch
                 'yo'
             end
@@ -163,10 +173,9 @@ for IndTime = 2:length(ObservationInstants)
         %     Sk
         %     die
             if Sk<0
-%                 disp('stop')
-                Res.Crash = 1;
+                disp('stop')
             end
-            Kk = Cov1*Ck'*Sk^-1;
+            Kk = Cov1*Ck'*(Sk^-1);
 
 %             'Ck'
 %             Ck
@@ -202,8 +211,7 @@ for IndTime = 2:length(ObservationInstants)
                 temp = ( V*D*V' + (V*D*V')')/2;
                 Cov = temp;
             catch
-%                 'pb'
-                Res.Crash = 1;
+                'pb'
             end
             
       
@@ -217,12 +225,10 @@ for IndTime = 2:length(ObservationInstants)
             
 
              if sum(not(isreal(Cov)))
-%                  disp('pb')
-                 Res.Crash = 1;
+                 disp('pb')
              end
             if sum((isnan(Cov)))
-%                  disp('pb')
-                 Res.Crash = 1;
+                 disp('pb')
              end
 
 
@@ -230,8 +236,7 @@ for IndTime = 2:length(ObservationInstants)
             Covs(IndTime,:,:) = Cov;
 
             if isnan(Sk)
-                Res.Crash = 1;
-%                 disp('oups')
+                disp('oups')
             end
 
             try
@@ -246,14 +251,12 @@ for IndTime = 2:length(ObservationInstants)
         %             t = 0;%sum(log(normpdf(diff(Res.deltabetas)/Parameters.ComputationTStep,0,sqrt(Parameters.ComputationTStep)*max(eps,Parameters.SigmaRW.Value))));
         %             tempLogLik = t + log(mvnpdf(vk,zeros(size(vk)),Sk));
         %         else
-%         Sk = max(0.1,Sk); %Just commented it june 6th
+        Sk = max(0.1,Sk); %Just commented it june 6th
                     tempLogLik = max(-700,log(not(Res.Crash)*mvnpdf(vk,zeros(size(vk)),Sk)));
         %         end
             catch
-%                 disp('pb')
-                if Res.Crash
-                    tempLogLik = -700;
-                end
+                disp('pb')
+                tempLogLik = -700;
             end
             
 %             'loglik'

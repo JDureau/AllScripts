@@ -43,7 +43,7 @@ Liks = ones(1,length(ObservationInstants));
 LogLik = 0;
 FathersTab = zeros(NbResampling,length(ObservationInstants)-1);
 
-if Parameters.KeepPaths
+if not(Parameters.NoPaths)
     Paths = zeros(NbResampling,length(Parameters.PathsToKeep),sum(Data.NbComputingSteps));
 else
     Paths = [];
@@ -150,8 +150,12 @@ for IndTime = 2:length(ObservationInstants)
     end
     
 
-    
+    if and(strcmp(Parameters.Problem,'ImperialHIV2'),length(Data.ObservedVariables{IndTime}) == 2)
+        Weigths = eval(Model.LikFunction1);
+        Weigths = Weigths.*eval(Model.LikFunction2);
+    else
         Weigths = eval(Model.LikFunction);
+    end
    
     
     Liks(IndTime) = (mean(Weigths));
@@ -337,9 +341,6 @@ for i = 1:length(Names)
 end
 ResultSMC.LogPrior = LogPrior;
 ResultSMC.LogCorr = LogCorr;
-
-
-
 
 
 % ResultSMC.Coalescence = mean(sum((squeeze(ResultSMC.CompletePaths(:,1,:)==repmat(ResultSMC.CompletePaths(1,1,:),NbResampling,1)))'));

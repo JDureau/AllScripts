@@ -87,13 +87,21 @@ if strcmp(Parameters.Problem,'ImperialHIV2')
             plot(Data.Instants, a + b./(c*(1+tmp)),'r')
             hold off
         else
+            if Parameters.Rho.Estimated
+                rho = 1;%Parameters.Rho.Value;
+            else
+                rho = 1;
+            end
             tmp = Temp.PosteriorMeans(9,:);
-            plot(Data.Instants,exp(tmp)./(1+exp(tmp)),'g')
+            plot(Data.Instants,rho*exp(tmp)./(1+exp(tmp)))
             hold on
             tmp = Temp.Posterior975(9,:);
-            plot(Data.Instants,exp(tmp)./(1+exp(tmp)),'r')
+            plot(Data.Instants,rho*exp(tmp)./(1+exp(tmp)),'r')
             tmp = Temp.Posterior025(9,:);
-            plot(Data.Instants,exp(tmp)./(1+exp(tmp)),'r')
+            plot(Data.Instants,rho*exp(tmp)./(1+exp(tmp)),'r')
+            if Parameters.Rho.Estimated
+                plot(Data.Instants,Data.Observations(9,:)/100,'g')
+            end
             hold off
         end
         ylim([0 1])
