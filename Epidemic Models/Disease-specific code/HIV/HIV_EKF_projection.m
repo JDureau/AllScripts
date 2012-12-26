@@ -90,7 +90,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             disp('Unknown Diffusion')
             die
         end
-        mpred(10) =  InvLogitTransf(mpred(9),0,1);
+%         mpred(10) =  InvLogitTransf(mpred(9),0,1);
 
         
         if not(isreal(mpred))
@@ -224,6 +224,7 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             corr = ((M-m)/((1+exp(-mpred(9)))*(1+exp(mpred(9)))));     
         end
         
+        
         if length(Data.ObservedVariables{2})==2
             temp7 = zeros(2,9);
             temp8 = zeros(1,9);
@@ -233,8 +234,8 @@ function Res = HIV_EKF_projection(Data,Model,m,Cov,NbIts,IndTime,Parameters)
             temps{7} = temp7;
             temps{8} = temp8;
             Model.ObservationJacobian = {};
-            for i = 1:length(ObsVars)
-                Model.ObservationJacobian{i+1} = temps{ObsVars{i}(1)};
+            for i = 2:length(Data.ObservedVariables)
+                Model.ObservationJacobian{i} = temps{Data.ObservedVariables{i}(1)};
             end
         end
         

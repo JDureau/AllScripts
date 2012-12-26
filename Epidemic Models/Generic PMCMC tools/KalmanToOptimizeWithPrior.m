@@ -10,7 +10,7 @@ CheckParametersGen(Parameters)
 
 
 
-try
+if 1%try
     Temp = EstimationEKFGen(Data, Model, Parameters);
     logs = [];
     LogPrior = 0;
@@ -31,8 +31,8 @@ try
     end
 %     mPost
 %     disp([Temp.LogLik LogPrior -Temp.LogCorr])
-catch
-    mPost= -Inf;
+% catch
+%     mPost= -Inf;
 end
 
 try

@@ -92,7 +92,7 @@ try
         
         
         NbItsPMCMC = 100000;
-        Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
+        Parameters.TempName = ['Temp_pCU_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
 
     else
         die
