@@ -51,7 +51,7 @@ function Data = HIV_CreateData(Fts,Parameters,Model,Data)
     Data.BuiltTraj = Record;
     Data.Observations = [];
     for i = 2:length(Data.Instants)
-        inds = Data.ObservedVariables(i);
+        inds = Data.ObservedVariables{i};
         if Parameters.MultNoise
             Data.Observations(inds,i) = binornd(425,Record(sum(Data.NbComputingSteps(1:i)),inds)/100)/4.25;  
         else
