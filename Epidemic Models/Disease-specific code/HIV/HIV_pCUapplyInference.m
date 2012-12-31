@@ -6,7 +6,7 @@ HIVModel.InitializeParameters = @HIV_Initialize;
 HIVModel.SMC_projection = @HIV_SMC_projection;
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
-try 
+if 1%try 
     if Parameters.RealData
 
         Parameters.PathsToKeep = [7 8 9];
@@ -99,7 +99,7 @@ try
     end
     
     
-catch
+    else%catch
     Parameters.NbVariables = 9;
     Parameters.Problem = 'ImperialHIV';
     Parameters.ObservationLength = 25*12;
