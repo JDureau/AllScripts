@@ -557,7 +557,14 @@ if not(AlreadySomething)
     Parameters.AdaptC = 0.99;
     Parameters.AdMet = 0;
     Parameters.AdMetBeta = 0.05;
+    
+    Parameters.ModelType = 'Kalman';
+    Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,30000);
     % [ParametersPMCMC, TempPar] = CalibrateMethod( Data, HIVModel, ParametersPMCMC, TempPar);
+    
+    Parameters.ModelType = 'SMC';
+    Cov =  cov(Res.TransfThetas');
+    Parameters.G = Cov^-1;
     Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
 %     Res.Parameters = Parameters;
 
