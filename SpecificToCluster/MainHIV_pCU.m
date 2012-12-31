@@ -6,10 +6,9 @@ ind = ind+1;
 
 %% load paths
 
-
-mode = '';
-
-%  / _Mysore / _MysoreMu / _MysoreCf / _CU20 / _CU20_t2003
+if IndDiff == 1
+    Diffusion = 'Logistic';
+end
 
 cd('/users/ecologie/dureau/src/AllScripts')
 addpath([pwd '/General Tools'])
@@ -33,138 +32,44 @@ addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
 
-temp = load([SavePath 'ParametersMysore' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersMysore.mat']);
 ParametersMysore = temp.Parameters;
 
-
-temp = load([SavePath 'ParametersBelgaum' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersBelgaum.mat']);
 ParametersBelgaum = temp.Parameters;
 
-temp = load([SavePath 'ParametersBellary' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersBellary.mat']);
 ParametersBellary = temp.Parameters;
 
-temp = load([SavePath 'ParametersEastGodavry' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersEastGodavry.mat']);
 ParametersEastGodavry = temp.Parameters;
 
-temp = load([SavePath 'ParametersGuntur' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersGuntur.mat']);
 ParametersGuntur = temp.Parameters;
 
-temp = load([SavePath 'ParametersHyderabad' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersHyderabad.mat']);
 ParametersHyderabad = temp.Parameters;
 
-temp = load([SavePath 'ParametersVisag' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersVisag.mat']);
 ParametersVisag = temp.Parameters;
 
-temp = load([SavePath 'ParametersWarangal' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersWarangal.mat']);
 ParametersWarangal = temp.Parameters;
 
-temp = load([SavePath 'ParametersYevatmal' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersYevatmal.mat']);
 ParametersYevatmal = temp.Parameters;
 
-temp = load([SavePath 'ParametersShimoga' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersShimoga.mat']);
 ParametersShimoga = temp.Parameters;
 
-temp = load([SavePath 'ParametersChennai' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersChennai.mat']);
 ParametersChennai = temp.Parameters;
 
-temp = load([SavePath 'ParametersMadurai' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersMadurai.mat']);
 ParametersMadurai = temp.Parameters;
 
-temp = load([SavePath 'ParametersSalem' mode '.mat']);
-if IndDiff == 1
-    temp.Parameters.DiffusionType = 'Add';
-elseif IndDiff == 2
-    temp.Parameters.DiffusionType = 'Bertallanfy';
-elseif IndDiff == 3
-    temp.Parameters.DiffusionType = 'Sigmoid';
-end
+temp = load([SavePath 'ParametersSalem.mat']);
 ParametersSalem = temp.Parameters;
-
-
 
 
 
@@ -174,6 +79,12 @@ ObsMysore3rds = {[0.2611 0.648],	[0.2424 0.816], [0.054], [0.111 0.941]};
 ObsMysore3rdsMin = {[0.2193 0.602], [0.1911 0.772], [0.032663], [0.06975 0.918]};
 ObsMysore3rdsMax = {[0.3028 0.693], [0.2945 0.860], [0.07557], [0.14818 0.963]};
 ObsVarsMysore3rds = {[7 9], [7 9], [8], [7 9]};
+
+% ObsMysore3rds = {[0.2611 ],	[0.2424 ], [0.054], [0.111 ]};
+% ObsMysore3rdsMin = {[0.2193 ], [0.1911 ], [0.032663 ], [0.06975 ]};
+% ObsMysore3rdsMax = {[0.3028 ], [0.2945 ], [0.07557 ], [0.14818 ]};
+% ObsVarsMysore3rds = {[7 ], [7 ], [8], [7 ]};
+
 NbSamples = [429 425 425 425];
 % ObsYearsMysore2rds = [2004.667	2006.917    2008.834	];
 % ObsMysore2rdsMin = [0.2193 0.1911 0.032663 ];
@@ -183,7 +94,7 @@ NbSamples = [429 425 425 425];
 
 if ind == 1
 
-  Name = ['HIV_Mysore_3rounds' mode];
+  Name = 'HIV_Mysore_3rounds_pCU';
   ParametersMysore.RealData = 1;
   ParametersMysore.ObsYears = ObsYearsMysore3rds;
   ParametersMysore.ObsVars = ObsVarsMysore3rds;
@@ -222,7 +133,7 @@ end
 %     ParametersMysore.DiffusionType = 'Logistic';
 %   end
 %   
-%   Res = HIV_pCUapplyInference([],ParametersMysore);
+%   Res = HIVapplyInference([],ParametersMysore);
 % end
 
  
@@ -241,7 +152,7 @@ NbSamples = [363 408 396 423];
 
 
 if ind == 2
-  Name = ['HIV_Belgaum_3rounds' mode];
+  Name = 'HIV_Belgaum_3rounds_pCU';
   ParametersBelgaum.RealData = 1;
   ParametersBelgaum.ObsYears = ObsYearsBelgaum3rds;
   ParametersBelgaum.ObsVars = ObsVarsBelgaum3rds;
@@ -253,12 +164,12 @@ if ind == 2
 
   
   
-  if IndDiff == 1
+   if IndDiff == 1
     ParametersBelgaum.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersBelgaum.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersBelgaum.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
   Res = HIV_pCUapplyInference([],ParametersBelgaum);
@@ -281,7 +192,7 @@ end
 %     ParametersBelgaum.DiffusionType = 'Logistic';
 %   end
 %   
-%   Res = HIV_pCUapplyInference([],ParametersBelgaum);
+%   Res = HIVapplyInference([],ParametersBelgaum);
 % end
 
 
@@ -294,7 +205,7 @@ NbSamples = [422 424 410 400];
 
 
 if ind == 3
-  Name = ['HIV_Bellary' mode];
+  Name = 'HIV_Bellary_pCU';
   ParametersBellary.RealData = 1;
   ParametersBellary.ObsYears = ObsYearsBellary;
   ParametersBellary.ObsVars = ObsVarsBellary;
@@ -303,14 +214,13 @@ if ind == 3
   ParametersBellary.ObsMax = ObsBellaryMax;
   ParametersBellary.NameToSave = Name;
   ParametersBellary.NbSamples = NbSamples;
-
-  
+ 
   if IndDiff == 1
     ParametersBellary.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersBellary.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersBellary.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
   Res = HIV_pCUapplyInference([],ParametersBellary);
@@ -326,7 +236,7 @@ ObsVarsEastGodavry = {[7 9], [8], [7 9], [8]};
 NbSamples = [422 422 422 422];
 
 if ind == 4
-  Name = ['HIV_EastGodavry' mode];
+  Name = 'HIV_EastGodavry_pCU';
   ParametersEastGodavry.RealData = 1;
   ParametersEastGodavry.ObsYears = ObsYearsEastGodavry;
   ParametersEastGodavry.ObsVars = ObsVarsEastGodavry;
@@ -337,12 +247,12 @@ if ind == 4
   ParametersEastGodavry.NbSamples = NbSamples;
 
   
-  if IndDiff == 1
+ if IndDiff == 1
     ParametersEastGodavry.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersEastGodavry.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersEastGodavry.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
   Res = HIV_pCUapplyInference([],ParametersEastGodavry);
@@ -359,7 +269,7 @@ NbSamples = [405 405 405 405];
 
 
 if ind == 5
-  Name = ['HIV_Guntur' mode];
+  Name = 'HIV_Guntur_pCU';
   ParametersGuntur.RealData = 1;
   ParametersGuntur.ObsYears = ObsYearsGuntur;
   ParametersGuntur.ObsVars = ObsVarsGuntur;
@@ -372,9 +282,9 @@ if ind == 5
   if IndDiff == 1
     ParametersGuntur.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersGuntur.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersGuntur.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
   Res = HIV_pCUapplyInference([],ParametersGuntur);
@@ -392,7 +302,7 @@ NbSamples = [399 399 399 399];
 
 
 if ind == 6
-  Name = ['HIV_Hyderabad' mode];
+  Name = 'HIV_Hyderabad_pCU';
   ParametersHyderabad.RealData = 1;
   ParametersHyderabad.ObsYears = ObsYearsHyderabad;
   ParametersHyderabad.ObsVars = ObsVarsHyderabad;
@@ -405,10 +315,11 @@ if ind == 6
   if IndDiff == 1
     ParametersHyderabad.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersHyderabad.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersHyderabad.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
   Res = HIV_pCUapplyInference([],ParametersHyderabad);
 end
 
@@ -442,7 +353,7 @@ NbSamples = [153 153 153 153];
 
 
 if ind == 7
-  Name = ['HIV_Yevatmal' mode];
+  Name = 'HIV_Yevatmal_pCU';
   ParametersYevatmal.RealData = 1;
   ParametersYevatmal.ObsYears = ObsYearsYevatmal;
   ParametersYevatmal.ObsVars = ObsVarsYevatmal;
@@ -455,10 +366,11 @@ if ind == 7
   if IndDiff == 1
     ParametersYevatmal.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersYevatmal.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersYevatmal.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
   Res = HIV_pCUapplyInference([],ParametersYevatmal);
 end
 
@@ -473,7 +385,7 @@ NbSamples = [389 426 406 396];
 
 
 if ind == 8
-  Name = ['HIV_Shimoga' mode];
+  Name = 'HIV_Shimoga_pCU';
   ParametersShimoga.RealData = 1;
   ParametersShimoga.ObsYears = ObsYearsShimoga;
   ParametersShimoga.ObsVars = ObsVarsShimoga;
@@ -486,26 +398,23 @@ if ind == 8
   if IndDiff == 1
     ParametersShimoga.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersShimoga.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersShimoga.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
   Res = HIV_pCUapplyInference([],ParametersShimoga);
 end
 
-
-
-
-
 ObsYearsChennai = [2006.588	2006.9 2009.5 2009.6];
-ObsChennai = [0.0317 0.022 0.02 0.12];
-ObsChennaiMin = [0.008 0.0085 0.005 0.073];
-ObsChennaiMax = [0.055 0.036 0.035 0.166];
-ObsVarsChennai = [7 8 7 8];
+ObsChennai = {[0.0317 0.96], [0.022], [0.02 0.987], [0.12]};
+ObsChennaiMin = {[0.008 0.937], [0.0085], [0.005 0.976], [0.073]};
+ObsChennaiMax = {[0.055 0.982], [0.036], [0.035 0.998], [0.166]};
+ObsVarsChennai = {[7 9], [8], [7 9], [8]};
 NbSamples = [410 405 397 408];
 
 if ind == 9
-  Name = 'HIV_Chennai';
+  Name = 'HIV_Chennai_pCU';
   ParametersChennai.RealData = 1;
   ParametersChennai.ObsYears = ObsYearsChennai;
   ParametersChennai.ObsVars = ObsVarsChennai;
@@ -518,18 +427,20 @@ if ind == 9
   if IndDiff == 1
     ParametersChennai.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersChennai.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersChennai.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
+  ParametersChennai.ObsVars
   Res = HIV_pCUapplyInference([],ParametersChennai);
 end
 
 ObsYearsMadurai = [2006.3 2006.9	2009.3  2009.67];
-ObsMadurai = [0.057	 0.0225 0.088 0.037 ];
-ObsMaduraiMin = [0.035 0.005 0.058 0.0146];
-ObsMaduraiMax = [0.079 0.04 0.118 0.0617];
-ObsVarsMadurai = [7 8 7 8];
+ObsMadurai = {[0.057 0.850], [0.0225], [0.088 0.994], [0.037 ]};
+ObsMaduraiMin = {[0.035 0.82], [0.005], [0.058 0.987], [0.0146]};
+ObsMaduraiMax = {[0.079 0.899], [0.04], [0.118 1.0], [0.0617]};
+ObsVarsMadurai = {[7 9], [8], [7 9], [8]};
 NbSamples = [402 400 396 401];
 
 if ind == 10
@@ -546,22 +457,23 @@ if ind == 10
   if IndDiff == 1
     ParametersMadurai.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersMadurai.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersMadurai.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
   Res = HIV_pCUapplyInference([],ParametersMadurai);
 end
 
 ObsYearsSalem = [2006.3	2006.8 2009.3  2009.47];
-ObsSalem = [0.1294 	 0.035 0.113 0.019];
-ObsSalemMin = [0.0922 0.011 0.064 0.00];
-ObsSalemMax = [0.1665 0.058 0.1617 0.041];
-ObsVarsSalem = [7 8 7 8];
+ObsSalem = {[0.1294 0.915], [0.035], [0.113 0.99], [0.019]};
+ObsSalemMin = {[0.0922 0.88], [0.011], [0.064 0.98], [0.00]};
+ObsSalemMax = {[0.1665 0.95], [0.058], [0.1617 1.0], [0.041]};
+ObsVarsSalem = {[7 9], [8], [7 9], [8]};
 NbSamples = [392 396 407 407];
 
 if ind == 11
-  Name = 'HIV_Salem';
+  Name = 'HIV_Salem_pCU';
   ParametersSalem.RealData = 1;
   ParametersSalem.ObsYears = ObsYearsSalem;
   ParametersSalem.ObsVars = ObsVarsSalem;
@@ -574,12 +486,11 @@ if ind == 11
   if IndDiff == 1
     ParametersSalem.DiffusionType = 'Add';
   elseif IndDiff == 2
-    ParametersSalem.DiffusionType = 'Bertallanfy';
+    ParametersMysore.DiffusionType = 'Bertallanfy';
   elseif IndDiff == 3
-    ParametersSalem.DiffusionType = 'Sigmoid';
+    ParametersMysore.DiffusionType = 'Sigmoid';
   end
+  
   Res = HIV_pCUapplyInference([],ParametersSalem);
 end
-
-
 
