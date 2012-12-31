@@ -23,7 +23,9 @@ if 1%try
         ObsYears = Parameters.ObsYears;
         
         Data.Observations = zeros(10,length(ObsVars)+1);
+        ObsVars
         for i = 1:length(ObsVars)
+            ObsVars{i}
             for j = 1:length(ObsVars{i})
                 Data.Observations(ObsVars{i}(j),1+i) = (ObsMin{i}(j)+ObsMax{i}(j))/2*100;
 %                 Data.ObsSigmas(i+1) = ((ObsMax{i}(j)-ObsMin{i}(j))*100/4);

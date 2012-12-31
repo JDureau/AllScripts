@@ -432,6 +432,7 @@ if ind == 9
     ParametersMysore.DiffusionType = 'Sigmoid';
   end
   
+  ParametersChennai.ObsVars
   Res = HIV_pCUapplyInference([],ParametersChennai);
 end
 
