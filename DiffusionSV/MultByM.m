@@ -2,7 +2,7 @@ function W = MultByM(N,Z)
 
 % multiplyign by M in O(N) operations
 
-N2 = N-1;
+N2 = N;
 
 W = zeros(2*N2,1);
 W(1,1) = Z(1);

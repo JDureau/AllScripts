@@ -12,5 +12,5 @@ function Bh = Z_to_Bh(Z,N,step,H)
     Z2 = sqrt(real(DiagOfLambda)).*Z2;
 %     Z2 = MultBySqrtDiag(Lambda,Z2);
     Bh = ifft(Z2);
-    Bh = Bh(1:(N-1));
+    Bh = Bh(1:(N));
 

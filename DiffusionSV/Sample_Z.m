@@ -5,4 +5,4 @@ function Z = Sample_Z(N)
     %    X(i) = X(i-1) + Bh(i) with X(0) = 0;
     
     
-    Z = randn(2*(N-1),1);
+    Z = randn(2*(N),1);
