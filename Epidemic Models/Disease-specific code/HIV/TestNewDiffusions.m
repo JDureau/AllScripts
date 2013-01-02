@@ -1206,7 +1206,7 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
 RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
-for i = 8:length(DistrictNames)
+for i = 1:length(DistrictNames)
     try
         clf
         load([SavePath '/HIV_' DistrictNames{i} '_pCU.mat'])
