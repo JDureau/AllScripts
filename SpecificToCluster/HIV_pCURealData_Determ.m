@@ -23,7 +23,7 @@ SavePath = '/users/ecologie/dureau/src/AllData/Avahan/';
     HIVModel.InitializeParameters = @HIV_Initialize;
     HIVModel.SMC_projection = @HIV_SMC_projection;
 
-    NbIts = 30000;
+    NbIts = 50000;
 
     if IndModel == 1
         s = '_dBR';

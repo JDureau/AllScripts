@@ -178,13 +178,7 @@ for  j = 1:NbIts
 %         [LogLik LogLikStar LogPost LogPostStar]
         disp([num2str(j) '    ' num2str(mean(Accepted))  ])
     end
-    tin = Parameters.BRtinfl.Value;
-%     clf
-%     plot([tin tin]*10, [0 1])
-%     hold on
-%     plot(TempSim.Fts)
-%     hold off
-%     pause(0.01)
+
 end
 mean(Accepted)  
 
