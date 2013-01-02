@@ -406,12 +406,12 @@ if ind == 8
   Res = HIV_pCUapplyInference([],ParametersShimoga);
 end
 
-ObsYearsChennai = [2006.588	2006.9 2009.5 2009.6];
+ObsYearsChennai = [2006.588	2006.9 2009.5];
 ObsChennai = {[0.0317 0.96], [0.022], [0.02 0.987]};
 ObsChennaiMin = {[0.008 0.937], [0.0085], [0.005 0.976]};
 ObsChennaiMax = {[0.055 0.982], [0.036], [0.035 0.998]};
 ObsVarsChennai = {[7 9], [8], [7 9]};
-NbSamples = [410 405 397 408];
+NbSamples = [410 405 397];
 
 if ind == 9
   Name = 'HIV_Chennai_pCU';
