@@ -277,7 +277,6 @@ if not(AlreadySomething)
         ParametersKalman.CF1.Estimated = 1;
         ParametersKalman.CF2.Estimated = 1;
         ParametersKalman.CM.Estimated = 1;
-        ParametersKalman.Rho.Estimated = 1;
         ParametersKalman.SigmaRW.Estimated = 1;
     elseif strcmp(ParametersKalman.DiffusionType,'AddConstr')
         ParametersKalman.InitialFt.Estimated = 1;
