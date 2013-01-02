@@ -556,7 +556,7 @@ if not(AlreadySomething)
     Parameters.Correction = 1;
     TempPar = ProposeInitialParameter(Data, HIVModel, Parameters);
     % Parameters.KeepAll = 1;
-    Parameters.AdaptC = 0.99;
+    Parameters.AdaptC = 0.9999;
     Parameters.AdMet = 0;
     Parameters.AdMetBeta = 0.05;
     
@@ -570,7 +570,7 @@ if not(AlreadySomething)
     Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,3000);
 %     Res.Parameters = Parameters;
 
-    for i = 1:3
+    for i = 1:6
         disp(['MCMC ' num2str(i)])
         if Res.AccRate>0.05
             Cov =  cov(Res.TransfThetas');
