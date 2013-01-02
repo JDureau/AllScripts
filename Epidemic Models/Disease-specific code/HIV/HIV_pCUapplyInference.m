@@ -44,7 +44,7 @@ if 1%try
 %             HIVModel.LikFunction = 'normpdf(Variables(:,Data.ObservedVariables(:,IndTime)),(Parameters.ObsMax(IndTime-1)+Parameters.ObsMin(IndTime-1))*100/2,sqrt(Parameters.Obs(IndTime-1)*100*(100-Parameters.Obs(IndTime-1)*100)/400))';
             HIVModel.LikFunction = 'binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs{IndTime-1}),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables{IndTime})/100)';
             HIVModel.LikFunction1 = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables{IndTime}(1),IndTime)/100),425,Variables(:,Data.ObservedVariables{IndTime}(1))/100)';
-            HIVModel.LikFunction2 = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables{IndTime}(2),IndTime)/100),425,InvLogitTransf(Variables(:,Data.ObservedVariables{IndTime}(2)),0,1)*Parameters.Rho.Value)';
+            HIVModel.LikFunction2 = 'not(Res.Crash)*binopdf(round(425*Data.Observations(Data.ObservedVariables{IndTime}(2),IndTime)/100),425,min(1,InvLogitTransf(Variables(:,Data.ObservedVariables{IndTime}(2)),0,1)*Parameters.Rho.Value))';
 
         end
 
