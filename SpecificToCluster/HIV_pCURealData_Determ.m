@@ -444,7 +444,9 @@ end
 
 disp('MCMC')
 Parameters = Res.Parameters;
-Cov = cov(Res.TransfThetas');
+if not(sum(eig(cov(Res.TransfThetas'))<=0))
+    Cov = cov(Res.TransfThetas');
+end
 Parameters.NamesEst = NamesEst;
 Parameters.SaveSpace = 1;
 clear Res;

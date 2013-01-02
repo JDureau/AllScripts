@@ -170,10 +170,10 @@ ParametersSalem = temp.Parameters;
 
 ObsYearsMysore3rds = [2004.667	2006.917    2008.834	2009.26];
 CIMysore3rds = [];
-ObsMysore3rds = [0.2611	0.2424 0.054 0.111];
-ObsMysore3rdsMin = [0.2193 0.1911 0.032663 0.06975];
-ObsMysore3rdsMax = [0.3028 0.2945 0.07557 0.14818];
-ObsVarsMysore3rds = [7 7 8 7];
+ObsMysore3rds = {[0.2611 ],	[0.2424 ], [0.054], [0.111 ]};
+ObsMysore3rdsMin = {[0.2193 ], [0.1911 ], [0.032663], [0.06975 ]};
+ObsMysore3rdsMax = {[0.3028 ], [0.2945 ], [0.07557], [0.14818 ]};
+ObsVarsMysore3rds = {[7 ], [7 ], [8], [7 ]};
 NbSamples = [429 425 425 425];
 % ObsYearsMysore2rds = [2004.667	2006.917    2008.834	];
 % ObsMysore2rdsMin = [0.2193 0.1911 0.032663 ];
@@ -227,10 +227,10 @@ end
 
  
 ObsYearsBelgaum3rds = [2005.834	2007.824    2008.584	2010.71];
-ObsBelgaum3rds = [0.339	0.062 0.273 0.223];
-ObsBelgaum3rdsMin = [0.2762 0.0363 0.2217  0.17552];
-ObsBelgaum3rdsMax = [0.4018 0.0877 0.3251  0.2695];
-ObsVarsBelgaum3rds = [7 8 7 7];
+ObsBelgaum3rds = {[0.339 ],	[0.062], [0.273], [0.223]};
+ObsBelgaum3rdsMin = {[0.2762], [0.0363], [0.2217], [0.17552]};
+ObsBelgaum3rdsMax = {[0.4018], [0.0877], [0.3251], [0.2695]};
+ObsVarsBelgaum3rds = {[7], [8], [7], [7]};
 NbSamples = [363 408 396 423];
 
 % ObsYearsBelgaum2rds = [2005.834	2007.824    2008.584 ];
@@ -286,10 +286,10 @@ end
 
 
 ObsYearsBellary = [2005.908	2007.873  2008.642	2010.865];
-ObsBellary = [0.156	0.060 0.142 0.0634];
-ObsBellaryMin = [0.1106 0.0258 0.1048 0.0377];
-ObsBellaryMax = [0.2003 0.0946 0.1776 0.0892];
-ObsVarsBellary = [7 8 7 7];
+ObsBellary = {[0.156]	[0.060] [0.142] [0.0634]};
+ObsBellaryMin = {[0.1106] [0.0258] [0.1048] [0.0377]};
+ObsBellaryMax = {[0.2003] [0.0946] [0.1776] [0.0892]};
+ObsVarsBellary = {[7] [8] [7] [7]};
 NbSamples = [422 424 410 400];
 
 
@@ -319,10 +319,10 @@ end
 
 
 ObsYearsEastGodavry = [2006.25  2006.84 2009.25 2009.35];
-ObsEastGodavry = [0.263	0.083 0.233 0.096];
-ObsEastGodavryMin = [0.2004 0.0483 0.1514 0.041215];
-ObsEastGodavryMax = [0.3247 0.1184 0.3139 0.150556];
-ObsVarsEastGodavry = [7 8 7 8];
+ObsEastGodavry = {[0.263],	[0.083], [0.233], [0.096]};
+ObsEastGodavryMin = {[0.2004], [0.0483], [0.1514], [0.041215]};
+ObsEastGodavryMax = {[0.3247], [0.1184], [0.3139], [0.150556]};
+ObsVarsEastGodavry = {[7], [8], [7], [8]};
 NbSamples = [422 422 422 422];
 
 if ind == 4
@@ -351,10 +351,10 @@ end
 
 
 ObsYearsGuntur = [2006.38	2006.905   2009.53	2009.59];
-ObsGuntur = [0.213	0.066 0.0839 0.071];
-ObsGunturMin = [0.1639 0.0369 0.0429 0.021891];
-ObsGunturMax = [0.262 0.0956 0.125 0.1206];
-ObsVarsGuntur = [7 8 7 8];
+ObsGuntur = {[0.213],	[0.066], [0.0839], [0.071]};
+ObsGunturMin = {[0.1639], [0.0369], [0.0429], [0.021891]};
+ObsGunturMax = {[0.262 ], [0.0956], [0.125], [0.1206]};
+ObsVarsGuntur = {[7], [8], [7], [8]};
 NbSamples = [405 405 405 405];
 
 
@@ -384,10 +384,10 @@ end
 
 
 ObsYearsHyderabad = [2006.16	2006.96   2009.47	2009.52];
-ObsHyderabad = [0.143	0.024 0.096 0.037];
-ObsHyderabadMin = [0.0906 0.007 0.045 0];
-ObsHyderabadMax = [0.1954 0.0405 0.147 0.0841];
-ObsVarsHyderabad = [7 8 7 8];
+ObsHyderabad = {[0.143],	[0.024], [0.096], [0.037]};
+ObsHyderabadMin = {[0.0906], [0.007], [0.045], [0]};
+ObsHyderabadMax = {[0.1954], [0.0405], [0.147], [0.0841]};
+ObsVarsHyderabad = {[7], [8], [7], [8]};
 NbSamples = [399 399 399 399];
 
 
@@ -434,10 +434,10 @@ end
 
 
 ObsYearsYevatmal = [2006.337	2006.902    2009.728	2009.9];
-ObsYevatmal = [0.373	0.109 0.267 0.117];
-ObsYevatmalMin = [0.2391 0.075527 0.1805 0.065032];
-ObsYevatmalMax = [0.506 0.142355 0.3546 0.168657];
-ObsVarsYevatmal = [7 8 7 8];
+ObsYevatmal = {[0.373],	[0.109], [0.267], [0.117]};
+ObsYevatmalMin = {[0.2391 0.9711], [0.075527], [0.1805], [0.065032]};
+ObsYevatmalMax = {[0.506], [0.142355], [0.3546], [0.168657]};
+ObsVarsYevatmal = {[7], [8], [7], [8]};
 NbSamples = [153 153 153 153];
 
 
@@ -465,10 +465,10 @@ end
 
 
 ObsYearsShimoga = [2005.688	2007.943  2008.718];
-ObsShimoga = [0.0968	 0.023 0.0896];
-ObsShimogaMin = [0.0632 0.0085 0.0566];
-ObsShimogaMax = [0.1305 0.0514 0.1226];
-ObsVarsShimoga = [7 8 7];
+ObsShimoga = {[0.0968],	 [0.023], [0.0896]};
+ObsShimogaMin = {[0.0632], [0.0085], [0.0566]};
+ObsShimogaMax = {[0.1305], [0.0514], [0.1226]};
+ObsVarsShimoga = {[7], [8], [7]};
 NbSamples = [389 426 406 396];
 
 
@@ -498,10 +498,10 @@ end
 
 
 ObsYearsChennai = [2006.588	2006.9 2009.5 2009.6];
-ObsChennai = [0.0317 0.022 0.02 0.12];
-ObsChennaiMin = [0.008 0.0085 0.005 0.073];
-ObsChennaiMax = [0.055 0.036 0.035 0.166];
-ObsVarsChennai = [7 8 7 8];
+ObsChennai = {[0.0317], [0.022], [0.02]};
+ObsChennaiMin = {[0.008], [0.0085], [0.005]};
+ObsChennaiMax = {[0.055], [0.036], [0.035]};
+ObsVarsChennai = {[7], [8], [7]};
 NbSamples = [410 405 397 408];
 
 if ind == 9
@@ -526,10 +526,10 @@ if ind == 9
 end
 
 ObsYearsMadurai = [2006.3 2006.9	2009.3  2009.67];
-ObsMadurai = [0.057	 0.0225 0.088 0.037 ];
-ObsMaduraiMin = [0.035 0.005 0.058 0.0146];
-ObsMaduraiMax = [0.079 0.04 0.118 0.0617];
-ObsVarsMadurai = [7 8 7 8];
+ObsMadurai = {[0.057], [0.0225], [0.088], [0.037 ]};
+ObsMaduraiMin = {[0.035], [0.005], [0.058], [0.0146]};
+ObsMaduraiMax = {[0.079], [0.04], [0.118], [0.0617]};
+ObsVarsMadurai = {[7], [8], [7], [8]};
 NbSamples = [402 400 396 401];
 
 if ind == 10
@@ -554,10 +554,10 @@ if ind == 10
 end
 
 ObsYearsSalem = [2006.3	2006.8 2009.3  2009.47];
-ObsSalem = [0.1294 	 0.035 0.113 0.019];
-ObsSalemMin = [0.0922 0.011 0.064 0.00];
-ObsSalemMax = [0.1665 0.058 0.1617 0.041];
-ObsVarsSalem = [7 8 7 8];
+ObsSalem = {[0.1294], [0.035], [0.113], [0.019]};
+ObsSalemMin = {[0.0922], [0.011], [0.064], [0.00]};
+ObsSalemMax = {[0.1665], [0.058], [0.161], [0.041]};
+ObsVarsSalem = {[7], [8], [7], [8]};
 NbSamples = [392 396 407 407];
 
 if ind == 11

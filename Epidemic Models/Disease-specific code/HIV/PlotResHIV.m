@@ -558,8 +558,9 @@ end
 %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)
         end
     end
-    plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
-    
+    try
+        plot(xs,ys,'or','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',12)
+    end
     
     m = max(tmp);
     ylim([0 1])

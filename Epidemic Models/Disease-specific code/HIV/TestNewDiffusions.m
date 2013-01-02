@@ -1201,25 +1201,34 @@ addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
-SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/temp';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 
 DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
 RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
-for i = 1:length(DistrictNames)
+for i = 8:length(DistrictNames)
     try
         clf
-        load([SavePath '/HIV_' DistrictNames{i} '.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '_pCU.mat'])
         Res.Parameters.PlotIndex = 3;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
-        title([RealDistrictNames{i} ' BM'],'FontWeight','bold')
-        load([SavePath '/HIV_' DistrictNames{i} '_Sigm.mat'])
+        title([RealDistrictNames{i} ' BM plus CU-IBBA'],'FontWeight','bold')
+%         load([SavePath '/HIV_' DistrictNames{i} '_Sigm.mat'])
+%         Res.Parameters.PlotIndex = 4;
+%         Res.Parameters.TypeWork='Boston Examples';
+%         PlotResHIV(Res,Res.Parameters)
+%         title([RealDistrictNames{i} ' dSigm'],'FontWeight','bold')
+
+        load([SavePath '/HIV_' DistrictNames{i} '.mat'])
         Res.Parameters.PlotIndex = 4;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
-        title([RealDistrictNames{i} ' dSigm'],'FontWeight','bold')
+        title([RealDistrictNames{i} ' BM'],'FontWeight','bold')
+        
         DistrictNames{i}
+%         subplot(4,1,4)
+%         hist(Res.Thetas(2,:))
         pause()
     end
 end
@@ -1228,7 +1237,7 @@ end
 
 % estimates
 
-DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga'};
+Names = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga'};
 ests = [];
 randinds = 1:2000;
 for i = 1:length(Names)
@@ -1243,32 +1252,32 @@ for i = 1:length(Names)
     ResAdd.Thetas = ResAdd.Thetas(:,randinds);
 
     % BM 20
-    load([SavePath '/HIV_' Names{i} '.mat'])
+    load([SavePath '/HIV_' Names{i} '_pCU.mat'])
     ResAddCU20 = Res;
     randinds = randsample(size(ResAddCU20.Paths,1),min(size(ResAddCU20.Paths,1),4000));
     ResAddCU20.Paths = ResAddCU20.Paths(randinds,:,:);
     ResAddCU20.Thetas = ResAddCU20.Thetas(:,randinds);
-    
-    % Sigm
-    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
-    ResSigm = Res;
-    randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
-    ResSigm.Paths = ResSigm.Paths(randinds,:);
-    ResSigm.Thetas = ResSigm.Thetas(:,randinds);
-    
-    % Sigm 20
-    load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
-    ResSigmCU20 = Res;
-    randinds = randsample(size(ResSigmCU20.Paths,1),min(size(ResSigmCU20.Paths,1),4000));
-    ResSigmCU20.Paths = ResSigmCU20.Paths(randinds,:);
-    ResSigmCU20.Thetas = ResSigmCU20.Thetas(:,randinds);
+%     
+%     % Sigm
+%     load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+%     ResSigm = Res;
+%     randinds = randsample(size(ResSigm.Paths,1),min(size(ResSigm.Paths,1),4000));
+%     ResSigm.Paths = ResSigm.Paths(randinds,:);
+%     ResSigm.Thetas = ResSigm.Thetas(:,randinds);
+%     
+%     % Sigm 20
+%     load([SavePath '/HIV_' Names{i} '_Sigm.mat'])
+%     ResSigmCU20 = Res;
+%     randinds = randsample(size(ResSigmCU20.Paths,1),min(size(ResSigmCU20.Paths,1),4000));
+%     ResSigmCU20.Paths = ResSigmCU20.Paths(randinds,:);
+%     ResSigmCU20.Thetas = ResSigmCU20.Thetas(:,randinds);
     
     indend = Res.Data.Instants(end);
     
-    FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
-    FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
-    FtSigmCU20 = mean(squeeze(ResSigmCU20.Paths(:,1:indend)));
-    FtsSigmCU20 = (squeeze(ResSigmCU20.Paths(:,1:indend)));
+%     FtSigm = mean(squeeze(ResSigm.Paths(:,1:indend)));
+%     FtsSigm = (squeeze(ResSigm.Paths(:,1:indend)));
+%     FtSigmCU20 = mean(squeeze(ResSigmCU20.Paths(:,1:indend)));
+%     FtsSigmCU20 = (squeeze(ResSigmCU20.Paths(:,1:indend)));
     tmp = squeeze(ResAdd.Paths(:,3,1:indend));
     FtAdd = mean(exp(tmp)./(1+exp(tmp)));
     FtsAdd = (exp(tmp)./(1+exp(tmp)));
@@ -1280,7 +1289,7 @@ for i = 1:length(Names)
     q = 0.5;
     disp(num2str(Res.Data.Instants(end)/24+1985,4))
     disp(['BM :' num2str(quantile(FtsAdd(:,min(indend,582))-FtsAdd(:,585-168),q))])
-    disp(['BM CU20 :' num2str(quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q))])
+%     disp(['BM CU20 :' num2str(quantile(FtsSigm(:,min(indend,582))-FtsSigm(:,585-168),q))])
     disp(['Sigm :' num2str(quantile(FtsAddCU20(:,min(indend,582))-FtsAddCU20(:,585-168),q))])
-    disp(['Sigm CU20 :' num2str(quantile(FtsSigmCU20(:,min(indend,582))-FtsSigmCU20(:,585-168),q))])
+%     disp(['Sigm CU20 :' num2str(quantile(FtsSigmCU20(:,min(indend,582))-FtsSigmCU20(:,585-168),q))])
 end
