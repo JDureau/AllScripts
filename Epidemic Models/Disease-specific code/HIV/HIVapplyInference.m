@@ -43,11 +43,10 @@ if 1%try
             HIVModel.LikFunction = 'binopdf(round(Parameters.NbSamples(IndTime-1)*Parameters.Obs{IndTime-1}),Parameters.NbSamples(IndTime-1),Variables(:,Data.ObservedVariables{IndTime})/100)';
         end
 
-        temp7 = zeros(2,9);
+        temp7 = zeros(1,9);
 %         temp7 = zeros(1,9);
         temp8 = zeros(1,9);
         temp7(1,7) = 1;
-        temp7(2,9) = 1;
         temp8(1,8) = 1;
         temps{7} = temp7;
         temps{8} = temp8;
