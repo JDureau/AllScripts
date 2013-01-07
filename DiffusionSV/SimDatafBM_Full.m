@@ -19,9 +19,14 @@ function SimDatafBM_Full(data_file,N,step,Vol,H,sigma_X,mu,rho,kappa)
     Data.Htrue = H;
     Data.Ztrue = Z;
     Data.sigma_Xtrue = sigma_X;
+    Data.mutrue = mu;
+    Data.rhotrue = rho;
+    Data.kappatrue = kappa;
     Data.nobs = nobs;
     Data.obsstep = obsstep;
     Data.step = step;
+    
+    
     
     SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
     save([SavePath data_file],'Data');

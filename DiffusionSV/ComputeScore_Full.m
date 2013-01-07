@@ -60,23 +60,29 @@ tmp = zeros(N,1);
 denoms = zeros(1,nobs);
 noms = zeros(1,nobs);
 currentk=nobs-1;
-denoms(currentk) = (1-rho^2) *sum(Vols_s((currentk-1)*npoints+1:currentk*npoints).^2)*step;
-noms(currentk)    = (Y(currentk+1) - Y(currentk-1+1) - sum(mu - Vols_s((currentk-1)*npoints+1:currentk*npoints).^2/2)*step - rho* sum(Vols_s((currentk-1)*npoints+1:currentk*npoints)  .* Bh((currentk-1)*npoints+1:currentk*npoints)));
 
-denoms(currentk-1) = (1-rho^2) * sum(Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints).^2)*step;
-noms(currentk-1)    = (Y(currentk-1+1) - Y(currentk-1-1+1) - sum(mu - Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints).^2/2)*step - rho* sum(Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints)  .* Bh((currentk-1-1)*npoints+1:(currentk-1)*npoints)));
+for k = 1:nobs-1
+    denoms(k) = (1-rho^2) *sum(Vols_s((k-1)*npoints+1:k*npoints).^2)*step;
+    noms(k)    = (Y(k+1) - Y(k-1+1) - sum(mu - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
+end
+
+% denoms(currentk) = (1-rho^2) *sum(Vols_s((currentk-1)*npoints+1:currentk*npoints).^2)*step;
+% noms(currentk)    = (Y(currentk+1) - Y(currentk-1+1) - sum(mu - Vols_s((currentk-1)*npoints+1:currentk*npoints).^2/2)*step - rho* sum(Vols_s((currentk-1)*npoints+1:currentk*npoints)  .* Bh((currentk-1)*npoints+1:currentk*npoints)));
+% 
+% denoms(currentk-1) = (1-rho^2) * sum(Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints).^2)*step;
+% noms(currentk-1)    = (Y(currentk-1+1) - Y(currentk-1-1+1) - sum(mu - Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints).^2/2)*step - rho* sum(Vols_s((currentk-1-1)*npoints+1:(currentk-1)*npoints)  .* Bh((currentk-1-1)*npoints+1:(currentk-1)*npoints)));
 
 b(N) = 0;
 tmp(N) = rho* Vols_s(N) * noms(currentk)/(denoms(currentk));
 for j = N-1:-1:1
     k = ceil((j+1)/npoints);
-    if k<currentk
-        currentk=k;
-        if k>1
-            denoms(k-1) = (1-rho^2) * sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2)*step;
-            noms(k-1)   = (Y(k-1+1) - Y(k-1-1+1) - sum(mu - Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2/2)*step - rho* sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).* Bh((k-1-1)*npoints+1:(k-1)*npoints)));
-        end
-    end
+%     if k<currentk
+%         currentk=k;
+%         if k>1
+%             denoms(k-1) = (1-rho^2) * sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2)*step;
+%             noms(k-1)   = (Y(k-1+1) - Y(k-1-1+1) - sum(mu - Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2/2)*step - rho* sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).* Bh((k-1-1)*npoints+1:(k-1)*npoints)));
+%         end
+%     end
     
     c = b(j+1);
     
@@ -104,7 +110,7 @@ if or(strcmp(Par.theta_sampler,'GibbsRW'),or(strcmp(Par.theta_sampler,'JointHMC'
     Score = tmp;
     Score = [Score zeros(1,length(Score))];
     Score = ifft(Score);%,'symmetric');
-    Score = sqrt(real(DiagOfLambda)).*Score;
+    Score = sqrt(2*N)*sqrt(real(DiagOfLambda)).*Score;
     % Score = MultBySqrtDiag(Lambda,Score);
     Score = MultByMfromRight(N,Score);
 
@@ -115,23 +121,23 @@ end
 if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_sampler,'GibbsHMC'))),Par.sigma_X.Estimated)
    
     %%% tmp = dlog(Y|B)/dsigma_X
-    denoms = zeros(1,nobs);
-    noms = zeros(1,nobs);
+%     denoms = zeros(1,nobs);
+%     noms = zeros(1,nobs);
     currentk=1;
 
-    for k = 1:nobs-1
-        denoms(k) = (1-rho^2) *sum(Vols_s((k-1)*npoints+1:k*npoints).^2)*step;
-        noms(k)    = (Y(k+1) - Y(k-1+1) - sum(mu - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
-    end
+%     for k = 1:nobs-1
+%         denoms(k) = (1-rho^2) *sum(Vols_s((k-1)*npoints+1:k*npoints).^2)*step;
+%         noms(k)    = (Y(k+1) - Y(k-1+1) - sum(mu - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
+%     end
 
 
     b = 0; % b = dX_i/d\sigma_X
     tmp = 0;
     for j = 2:N
         k = ceil((j)/npoints);
-        if k>currentk
-            currentk=k;
-        end
+%         if k>currentk
+%             currentk=k;
+%         end
 
         b = (1+kappa*step) * b + Bh(j-1);
 
@@ -157,6 +163,65 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     end
 end
 
+
+%% d L / d k
+
+if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_sampler,'GibbsHMC'))),Par.kappa.Estimated)
+   
+    %%% tmp = dlog(Y|B)/dk
+%     denoms = zeros(1,nobs);
+%     noms = zeros(1,nobs);
+    currentk=1;
+
+%     for k = 1:nobs-1
+%         denoms(k) = (1-rho^2) *sum(Vols_s((k-1)*npoints+1:k*npoints).^2)*step;
+%         noms(k)    = (Y(k+1) - Y(k-1+1) - sum(mu - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
+%     end
+
+
+    b = 0; % b = dX_i/d\sigma_X
+    tmp = 0;
+    for j = 2:N
+        k = ceil((j)/npoints);
+%         if k>currentk
+%             currentk=k;
+%         end
+
+        b = (1+kappa*step) * b + X(j-1)*step;
+
+        tmp = tmp - (1-rho^2) * b * Vols_s_prime(j)*Vols_s(j)*step/denoms(k);
+
+        tmp = tmp + 1/denoms(k) * ( - b  * Vols_s_prime(j) * Vols_s(j) * step + rho* b * Vols_s_prime(j) * Bh(j))*noms(k);
+
+        tmp = tmp + noms(k)^2 * (1-rho^2) * b  * Vols_s_prime(j) * Vols_s(j) * step/(denoms(k)^2);
+
+    end
+
+    
+    
+    if strcmp(Par.theta_sampler,'JointHMC')
+        Score(length(Z)+Par.kappa.Index) = tmp;
+        if Par.GradCorr
+            Score(length(Z)+Par.kappa.Index) = Score(length(Z)+Par.kappa.Index)/(Par.kappa.Corr('kappa',Par));
+        end
+        if isnan(Score(length(Z)+Par.kappa.Index))
+            'stop';
+        end
+    elseif strcmp(Par.theta_sampler,'GibbsHMC')
+        Score(Par.kappa.Index) = tmp;
+        if Par.GradCorr
+            Score(Par.kappa.Index,1) = Score(Par.kappa.Index)/(Par.kappa.Corr('kappa',Par));
+        end
+        if isnan(Score(Par.kappa.Index))
+            'stop';
+        end
+    end
+   
+end
+
+
+
+
 %% dL/dH
 
 if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_sampler,'GibbsHMC'))),Par.H.Estimated)
@@ -173,17 +238,17 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
 %     tmp = real(DerOfSqrtDiagLambda.*tmp);
     
     tmp2 = MultByM(N,Z);
-    tmp2 = (DerOfSqrtDiagLambda'.*tmp2);
+    tmp2 = sqrt(2*N)*(DerOfSqrtDiagLambda'.*tmp2);
     tmp2 = ifft(tmp2);
     tmp2 = tmp2(1:(N));
     
     
     if strcmp(Par.theta_sampler,'JointHMC')
-        Score(length(a)*2+Par.H.Index) = real(tmp*tmp2);
+        Score(length(Z)+Par.H.Index) = real(tmp*tmp2);
         if Par.GradCorr
-            Score(length(a)*2+Par.H.Index) = Score(length(a)*2+Par.H.Index)/(Par.H.Corr('H',Par));
+            Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
         end
-        if isnan(Score(length(a)*2+Par.H.Index))
+        if isnan(Score(length(Z)+Par.H.Index))
             'stop';
         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
@@ -205,11 +270,11 @@ end
 if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_sampler,'GibbsHMC'))),Par.mu.Estimated)
     tmp = sum(noms(1:nobs-1)./denoms(1:nobs-1));
     if strcmp(Par.theta_sampler,'JointHMC')
-        Score(length(Z)*2+Par.mu.Index) = tmp;
+        Score(length(Z)+Par.mu.Index) = tmp;
         if Par.GradCorr
-            Score(length(Z)*2+Par.mu.Index) = Score(length(Z)*2+Par.mu.Index)/(Par.mu.Corr('mu',Par));
+            Score(length(Z)+Par.mu.Index) = Score(length(Z)+Par.mu.Index)/(Par.mu.Corr('mu',Par));
         end
-        if isnan(Score(length(Z)*2+Par.mu.Index))
+        if isnan(Score(length(Z)+Par.mu.Index))
             'stop';
         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
@@ -231,32 +296,28 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     tmp = (nobs-1)*rho/(1-rho^2);
     
     for k = 1:nobs-1
-        tmp = tmp + sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).* Bh((k-1-1)*npoints+1:(k-1)*npoints))*nom(k)/denom(k);
-        tmp = tmp - rho*nom(k)^2/((1-rho^2)^2*denom(k));
+        tmp = tmp + sum(Vols_s((k-1)*npoints+1:(k)*npoints).* Bh((k-1)*npoints+1:(k)*npoints))*noms(k)/denoms(k);
+        tmp = tmp - rho*noms(k)^2/((1-rho^2)*denoms(k));
     end
     
     if strcmp(Par.theta_sampler,'JointHMC')
-        Score(length(Z)*2+Par.rho.Index) = tmp;
+        Score(length(Z)+Par.rho.Index) = tmp;
         if Par.GradCorr
-            Score(length(Z)*2+Par.rho.Index) = Score(length(Z)*2+Par.rho.Index)/(Par.rho.Corr('mu',Par));
+            Score(length(Z)+Par.rho.Index) = Score(length(Z)+Par.rho.Index)/(Par.rho.Corr('mu',Par));
         end
-        if isnan(Score(length(Z)*2+Par.rho.Index))
+        if isnan(Score(length(Z)+Par.rho.Index))
             'stop';
         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.rho.Index) = tmp;
         if Par.GradCorr
-            Score(Par.mu.Index,1) = Score(Par.rho.Index)/(Par.rho.Corr('mu',Par));
+            Score(Par.rho.Index,1) = Score(Par.rho.Index)/(Par.rho.Corr('mu',Par));
         end
         if isnan(Score(Par.rho.Index))
             'stop';
         end
     end
 end
-
-
-
-
 
 
 

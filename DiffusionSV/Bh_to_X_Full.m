@@ -7,7 +7,7 @@ function X = Bh_to_X_Full(B,H,step,sigma_X,kappa)
 
 X = zeros(length(B),1); 
 for i = 1:length(B)-1
-    X(i+1) = X(i) + kappa * X(i) * step + sigma_X*B(i);
+    X(i+1,1) = X(i,1)*(1+kappa*step) + sigma_X*B(i);
 %     X(i+1) = X(i) + kappa * X(i) * step + sigma_X*(step^H)*B(i);
 end
     

@@ -24,7 +24,7 @@ v(2) = 2*log(step)*step^(2*H)*(0.5*(2).^(2*H) - 1) + step^(2*H)*(log(2).*(2).^(2
 
 
 
-DiagOfDerLambda = (fft([v v(end) v(end:-1:2)]));
+DiagOfDerLambda = (fft([v 0 v(end:-1:2)]));
 
 
 DiagOfLambda = ComputeDiagOfLambda(N,step,H);

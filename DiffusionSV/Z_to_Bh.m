@@ -9,8 +9,8 @@ function Bh = Z_to_Bh(Z,N,step,H)
 %     Lambda = ComputeLambda(N,step,H)';
     DiagOfLambda = ComputeDiagOfLambda(N,step,H)';
     Z2 = MultByM(N,Z);
-    Z2 = sqrt(real(DiagOfLambda)).*Z2;
+    Z2 = sqrt(2*N)*sqrt(real(DiagOfLambda)).*Z2; % sqrt(2N) is because Matlab's inverse fft divides by N...
 %     Z2 = MultBySqrtDiag(Lambda,Z2);
     Bh = ifft(Z2);
-    Bh = Bh(1:(N));
-
+    Bh = real(Bh(1:(N)));
+    

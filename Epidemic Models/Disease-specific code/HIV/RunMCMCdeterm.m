@@ -112,6 +112,7 @@ for  j = 1:NbIts
     end
     
     
+    
   
     
     
@@ -122,7 +123,7 @@ for  j = 1:NbIts
     for i = 2:length(Data.ObservedVariables)
 %         tmpLogLik = tmpLogLik + max(-700,log(normpdf(Data.Observations(Data.ObservedVariables(i),i),TempSimStar.Observations(Data.ObservedVariables(i),i),sqrt(Data.Observations(Data.ObservedVariables(i),i)*(100-Data.Observations(Data.ObservedVariables(i),i))/400))));
 %         tmpLogLik = tmpLogLik + max(-700,not(TempSim.Crash)*log(binopdf(round(425*Data.Observations(Data.ObservedVariables(:,i),i)),425,TempSim.Observations(Data.ObservedVariables(i),i)/100)));
-         tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(Parameters.NbSamples(i-1)*Data.Observations(Data.ObservedVariables{i}(1),i)),Parameters.NbSamples(i-1),TempSim.Observations(Data.ObservedVariables{i}(1),i)/100)));  
+         tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(Parameters.NbSamples(i-1)*Data.Observations(Data.ObservedVariables{i}(1),i)),Parameters.NbSamples(i-1),TempSimStar.Observations(Data.ObservedVariables{i}(1),i)/100)));  
         if length(Data.ObservedVariables{i})==2
             corr = TempSim.Observations(Data.ObservedVariables{i}(2),i);
             tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(425*Data.Observations(Data.ObservedVariables{i}(2),i)),425,Parameters.Rho.Value*corr)));
@@ -145,6 +146,7 @@ for  j = 1:NbIts
    
 %     if log(rand(1,1))<LogPostStar+LogqStarTemp-LogPost-LogqTempStar
 % LogPostStar-LogPost
+
     if log(rand(1,1))<LogPostStar-LogPost
         x = xstar;
         Parameters = ParametersStar;
