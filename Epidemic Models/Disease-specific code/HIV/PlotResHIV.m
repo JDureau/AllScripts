@@ -546,13 +546,17 @@ end
 
     end
 
+    
+    xs = [];
+    ys = [];
+    es = [];
     for i = 2:size(Data.Observations,2)
         if Data.Observations(9,i)>0
             xs(end+1) = Data.Instants(i);
             try
                 ys(end+1) = (Parameters.ObsMin(i-1) + Parameters.ObsMax(i-1))/2*100;
             catch
-                ys(end+1) = Res.Data.Observations(9,i)/100;
+                ys(end+1) = Res.Data.Observations(9,i);
             end
 %             es(end+1) = -(Parameters.ObsMin(i-1) - Parameters.ObsMax(i-1))/2*100;
 %             plot(Data.Instants(i)*ones(1,2),[Parameters.ObsMin(i-1) Parameters.ObsMax(i-1)]*100,'r','LineWidth',3)

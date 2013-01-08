@@ -430,7 +430,7 @@ PlotResHIV(Res,Res.Parameters)
 
 
 
-for i = 1:5
+for i =     1:5
     
     disp(['Burn-in ' num2str(i)])
     Parameters = Res.Parameters;
