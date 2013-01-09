@@ -126,7 +126,7 @@ for  j = 1:NbIts
          tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(Parameters.NbSamples(i-1)*Data.Observations(Data.ObservedVariables{i}(1),i)),Parameters.NbSamples(i-1),TempSimStar.Observations(Data.ObservedVariables{i}(1),i)/100)));  
         if length(Data.ObservedVariables{i})==2
             corr = TempSimStar.Observations(Data.ObservedVariables{i}(2),i);
-            tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(425*Data.Observations(Data.ObservedVariables{i}(2),i)),425,Parameters.Rho.Value*corr)));
+            tmpLogLik = tmpLogLik + max(-700,log(binopdf(round(425*Data.Observations(Data.ObservedVariables{i}(2),i)),425,ParametersStar.Rho.Value*corr)));
         end
     end
     for i = 1:length(NamesEst)
