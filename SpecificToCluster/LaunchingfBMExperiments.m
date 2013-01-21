@@ -69,6 +69,11 @@ Par.kappa.MaxLim = 1;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
+for k2 = 1:length(Par.Names.All)
+   Par.(Par.Names.All{k2}).Estimated = 1;
+end
+Par = DefineIndexes(Par);
+Par = NoTransfToTransf(Par);
 
 Data = SimDatafBM_Full(N,step,Vol,Par);
 Res = RunJointMCMC_Full(Data,Par);
