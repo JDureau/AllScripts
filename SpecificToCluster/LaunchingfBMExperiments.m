@@ -20,7 +20,7 @@ VolDer = @DerClassicVol; % its derivative
 
 Par.Qsampler='HybridMC';
 Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
-Par.loop = 100;
+Par.loop = 20000;
 Par.nsteps = 10;
 Par.h=0.015;
 
