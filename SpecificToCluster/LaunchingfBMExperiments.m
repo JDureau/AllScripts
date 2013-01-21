@@ -18,8 +18,8 @@ N = (nobs-1)/step;
 Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
 
-Qsampler='HybridMC';
-theta_sampler='JointHMC'; % JointHMC or GibbsRW
+Par.Qsampler='HybridMC';
+Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
 Par.loop = 100;
 Par.Qsampler = Qsampler;
 Par.nsteps = 10;
