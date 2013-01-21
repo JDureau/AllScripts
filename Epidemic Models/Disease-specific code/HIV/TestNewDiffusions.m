@@ -1214,7 +1214,7 @@ for i = 1:length(DistrictNames)
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
         title([RealDistrictNames{i} ' BM plus CU-IBBA'],'FontWeight','bold')
-        load([SavePath '/HIV_' DistrictNames{i} '_Sigm.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '_Sigm_pCU.mat'])
         Res.Parameters.PlotIndex = 4;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)

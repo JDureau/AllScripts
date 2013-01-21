@@ -1,11 +1,11 @@
-function Bh = Z_to_Bh(Z,N,step,H)
+function Bh = Z_to_Bh(Z,N,step,Par)
 
     % Length of Z : 2*(N-1)
     % Length of Bh : N-1
     % Length of X : N-1  
     %    X(i) = X(i-1) + Bh(i) with X(0) = 0;
 
-   
+   H = Par.H.Value;
 %     Lambda = ComputeLambda(N,step,H)';
     DiagOfLambda = ComputeDiagOfLambda(N,step,H)';
     Z2 = MultByM(N,Z);

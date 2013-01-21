@@ -12,17 +12,20 @@ step = 100/N;
 Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
 
+Par.H.Value = 0.6;
+Par.sigma_X.Value = 0.08;
+Par.rho.Value = 0;
+Par.mu_Y.Value = -0.0014;
+Par.mu_X.Value = -0.0014;
+Par.X0.Value = 0;
+Par.kappa.Value = 0.023;
+Par.obstep = 1;
+Par.loop=20000;
 
-
-H = 0.5;
-sigma_X = 1;
-rho = 0.3;
-mu = 0;
-kappa = 0;
 Z = Sample_Z(N);
-Bh = Z_to_Bh(Z,N,step,H);
-X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
+Bh = Z_to_Bh(Z,N,step,Par);
+X = Bh_to_X_Full(Bh,step,Par);
+Y = SampleObs_Full(X,Bh,step,Vol,Par);
 subplot(2,1,1)
 plot(X)
 ylabel('Vol')
@@ -33,7 +36,7 @@ ylabel('Price')
 
 H = 0.95;
 Z = Sample_Z(N);
-Bh = Z_to_Bh(Z,N,step,H);
+Bh = Z_to_Bh(Z,N,step,Par);
 X = Bh_to_X(Bh,sigma_X);
 Y = SampleObs(X,step,Vol);
 subplot(2,1,1)
@@ -43,7 +46,7 @@ plot(Y)
 
 H = 0.55;
 Z = Sample_Z(N);
-Bh = Z_to_Bh(Z,N,step,H);
+Bh = Z_to_Bh(Z,N,step,Par);
 X = Bh_to_X(Bh,sigma_X);
 Y = SampleObs(X,step,Vol);
 subplot(2,1,1)
@@ -53,7 +56,7 @@ plot(Y)
 
 H = 0.25;
 Z = Sample_Z(N);
-Bh = Z_to_Bh(Z,N,step,H);
+Bh = Z_to_Bh(Z,N,step,Par);
 X = Bh_to_X(Bh,sigma_X);
 Y = SampleObs(X,step,Vol);
 subplot(2,1,1)
@@ -70,53 +73,51 @@ VolDer = @DerClassicVol; % its derivative
 nobs = 10;
 step = 0.05;
 N = nobs/step;
-H = 0.55;
-sigma_X = 0.1;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
-Par.theta_sampler='JointHMC';
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
+Par.H.Value = 0.6;
+Par.sigma_X.Value = 0.08;
+Par.rho.Value = -0.1;
+Par.mu_Y.Value = -0.0014;
+Par.mu_X.Value = 0.1;
+Par.X0.Value = 0.8;
+Par.kappa.Value = 0.027;
 
-Par.Names.All = {'H','sigma_X'};
 Par.H.MinLim = 0;
 Par.H.MaxLim = 1;
 Par.H.Transf = @logit;
 Par.H.InvTransf = @invlogit;
 Par.H.Corr = @logitCorr;
-
 Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = 0;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @mylog;
-Par.mu.InvTransf = @invlog;
-Par.mu.Corr = @logCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
+Par.sigma_X.MaxLim = 10;
+Par.sigma_X.Transf = @logit;
+Par.sigma_X.InvTransf = @invlogit;
+Par.sigma_X.Corr = @logitCorr;
+Par.mu_Y.MinLim = -10;
+Par.mu_Y.MaxLim =  10;
+Par.mu_Y.Transf = @logit;
+Par.mu_Y.InvTransf = @invlogit;
+Par.mu_Y.Corr = @logitCorr;
+Par.mu_X.MinLim = -10;
+Par.mu_X.MaxLim =  10;
+Par.mu_X.Transf = @logit;
+Par.mu_X.InvTransf = @invlogit;
+Par.mu_X.Corr = @logitCorr;
+Par.X0.MinLim = -10;
+Par.X0.MaxLim =  10;
+Par.X0.Transf = @logit;
+Par.X0.InvTransf = @invlogit;
+Par.X0.Corr = @logitCorr;
+Par.rho.MinLim = -1;
+Par.rho.MaxLim = 0;
+Par.rho.Transf = @logit;
+Par.rho.InvTransf = @invlogit;
+Par.rho.Corr = @logitCorr;
 Par.kappa.MinLim = 0;
 Par.kappa.MaxLim = 1;
-Par.kappa.Transf = @mylog;
-Par.kappa.InvTransf = @invlog;
-Par.kappa.Corr = @logCorr;
-SimDatafBM_Full('scoreTest.mat',N,step,Vol,H,sigma_X,mu,rho,kappa);
+Par.kappa.Transf = @logit;
+Par.kappa.InvTransf = @invlogit;
+Par.kappa.Corr = @logitCorr;
+
+% SimDatafBM_Full('scoreTest.mat',N,step,Vol,Par);
 
 
 ratios = [];
@@ -128,18 +129,13 @@ for i = 1:50
     sigma_X = 0.4;
 
     Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
+    Bh = Z_to_Bh(Z,N,step,Par);
+    X = Bh_to_X_Full(Bh,step,Par);
+    Y = SampleObs_Full(X,Bh,step,Vol,Par);
 
     % dL/dZ 
     ind = ceil(rand(1,1)*N);
     inds(i) = ind;
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
     LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
     epsil = 0.000001;    
     Z2 = Z;
@@ -160,520 +156,60 @@ plot(xi,fi)
 title(['Analytic/Numerical Gradient ratios (Z)'],'FontSize',20)
 disp([median(ratios) std(ratios)])
 
-plot(inds,ratios,'.')
 
+% parameters
 
-% sigma_X score
-Vol = @ClassicVol; % how the volatility X plays on the price
-VolDer = @DerClassicVol; % its derivative
-nobs = 10;
-step = 0.005;
-N = nobs/step;
-H = 0.55;
-sigma_X = 0.01;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
-
-Par.Names.All = {'H','sigma_X'};
-Par.H.MinLim = 0;
-Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
-
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = 0;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @mylog;
-Par.mu.InvTransf = @invlog;
-Par.mu.Corr = @logCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
-Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
-Par.kappa.Transf = @mylog;
-Par.kappa.InvTransf = @invlog;
-Par.kappa.Corr = @logCorr;
-
+Par.H.Value = 0.6;
+Par.sigma_X.Value = 0.08;
+Par.rho.Value = -0.1;
+Par.mu_Y.Value = -0.0014;
+Par.mu_X.Value = 0.1;
+Par.X0.Value = 0.8;
+Par.kappa.Value = 0.027;
 Par.GradCorr = 0;
 
-Par.theta_sampler='JointHMC';
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
-ratios = [];
-
-
-for i = 1:100
-    H = 0.55;
-    sigma_X = 0.05+0.2*rand;
-
-    
-    Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
-    
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
-    Par.sigma_X.Estimated = 1;
-    Par = DefineIndexes(Par);
-    Par = NoTransfToTransf(Par);
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
-
-    LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    epsil = 0.0000001;    
-    Par2 = Par;
-    Par2.sigma_X.Value = Par.sigma_X.Value + epsil;
-    Par2 = NoTransfToTransf(Par2);
-    LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-    ratios(i)=ScoreAnalytic(end)/ScoreNumerical;
-    
-end
-
-
-clf
-[fi,xi] = ksdensity(ratios);
-plot(xi,fi)
-title(['Density of numerical/analytic \sigma_X - gradient ratios'],'FontSize',20)
-
-
-
-
-% H score
-Vol = @ClassicVol; % how the volatility X plays on the price
-VolDer = @DerClassicVol; % its derivative
-nobs = 10;
-step = 0.005;
-N = nobs/step;
-H = 0.55;
-sigma_X = 0.01;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
-
-Par.Names.All = {'H','sigma_X'};
-Par.H.MinLim = 0;
-Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
-
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = -1;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @logit;
-Par.mu.InvTransf = @invlogot;
-Par.mu.Corr = @logitCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
-Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
-Par.kappa.Transf = @mylog;
-Par.kappa.InvTransf = @invlog;
-Par.kappa.Corr = @logCorr;
-
-Par.theta_sampler='JointHMC' ;
-Par.GradCorr = 0;
-
-ratios = [];
-
-for i = 1:100
-    H = 0.65+0.1*rand;
-    sigma_X = 0.1;
-
-    
-    Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
-    
-    Par.JointHMC = 1;
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
-    Par.H.Estimated = 1;
-    Par.H.Index = 1;
-    Par.sigma_X.Estimated = 0;
-    Par.sigma_X.Index = 1;
-    Par = DefineIndexes(Par);
-    Par = NoTransfToTransf(Par);
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
-
-    LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    epsil = 0.0000001;    
-    Par2 = Par;
-    Par2.H.Value = Par.H.Value + epsil;
-    LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-    ratios(i) = ScoreAnalytic(end)/ScoreNumerical;
-    if not(isreal(ratios(i)))
-        die 
+for k = 1:length(Par.Names.All)
+    for k2 = 1:length(Par.Names.All)
+        Par.(Par.Names.All{k2}).Estimated = 0;
     end
-end
-
-
-[fi,xi] = ksdensity(ratios);
-plot(xi,fi)
-title(['Density of numerical/analytic H - gradient ratios'],'FontSize',20)
-
-
-
-
-% mu score
-Vol = @ClassicVol; % how the volatility X plays on the price
-VolDer = @DerClassicVol; % its derivative
-nobs = 10;
-step = 0.005;
-N = nobs/step;
-H = 0.55;
-sigma_X = 0.01;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
-
-Par.Names.All = {'H','sigma_X'};
-Par.H.MinLim = 0;
-Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
-
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = -1;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @logit;
-Par.mu.InvTransf = @invlogot;
-Par.mu.Corr = @logitCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
-Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
-Par.kappa.Transf = @mylog;
-Par.kappa.InvTransf = @invlog;
-Par.kappa.Corr = @logCorr;
-
-Par.theta_sampler='JointHMC' ;
-Par.GradCorr = 0;
-
-ratios = [];
-
-for i = 1:100
-    H = 0.65;
-    sigma_X = 0.1;
-    mu = randn(1,1);
-    
-    Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
-    
-    Par.JointHMC = 1;
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
-    Par.mu.Estimated = 1;
-    Par.mu.Index = 1;
-    Par.sigma_X.Estimated = 0;
-    Par.sigma_X.Index = 1;
+    Par.(Par.Names.All{k}).Estimated = 1;
     Par = DefineIndexes(Par);
     Par = NoTransfToTransf(Par);
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
-
-    LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    epsil = 0.0000001;    
-    Par2 = Par;
-    Par2.mu.Value = Par.mu.Value + epsil;
-    LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-    ratios(i) = ScoreAnalytic(end)/ScoreNumerical;
+    ratios = [];
+  
+    for i = 1:50
+        
+        Z = Sample_Z(N);
+        Bh = Z_to_Bh(Z,N,step,Par);
+        X = Bh_to_X_Full(Bh,step,Par);
+        Y = SampleObs_Full(X,Bh,step,Vol,Par);
     
+        
+        ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
+
+        LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+        epsil = 0.0000001;    
+        Par2 = Par;
+        Par2.(Par.Names.All{k}).Value = Par.(Par.Names.All{k}).Value + epsil;
+        Par2 = NoTransfToTransf(Par2);
+        LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
+        ScoreNumerical = (LogLik2 - LogLik1)/epsil;
+        disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
+        ratios(i)=ScoreAnalytic(end)/ScoreNumerical;
+    end
+    
+    clf
+    [fi,xi] = ksdensity(ratios);
+    plot(xi,fi)
+    title(['Density of numerical/analytic' Par.Names.All{k} '- gradient ratios'],'FontSize',20)
+    
+    pause()
 end
 
-
-[fi,xi] = ksdensity(ratios);
-plot(xi,fi)
-title(['Density of numerical/analytic H - gradient ratios'],'FontSize',20)
-
-
-
-
-% rho score
-Vol = @ClassicVol; % how the volatility X plays on the price
-VolDer = @DerClassicVol; % its derivative
-nobs = 10;
-step = 0.005;
-N = nobs/step;
-H = 0.55;
-sigma_X = 0.01;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
-
-Par.Names.All = {'H','sigma_X'};
-Par.H.MinLim = 0;
-Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
-
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = 0;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @mylog;
-Par.mu.InvTransf = @invlog;
-Par.mu.Corr = @logCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
-Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
-Par.kappa.Transf = @mylog;
-Par.kappa.InvTransf = @invlog;
-Par.kappa.Corr = @logCorr;
-
-Par.theta_sampler='JointHMC' ;
-Par.GradCorr = 0;
-
-ratios = [];
-
-for i = 1:100
-    H = 0.65;
-    sigma_X = 0.1;
-    rho = rand(1,1);
     
-    Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
     
-    Par.JointHMC = 1;
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
-    Par.rho.Estimated = 1;
-    Par.rho.Index = 1;
-    Par.sigma_X.Estimated = 0;
-    Par.sigma_X.Index = 1;
-    Par = DefineIndexes(Par);
-    Par = NoTransfToTransf(Par);
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
-
-    LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    epsil = 0.0000001;    
-    Par2 = Par;
-    Par2.rho.Value = Par.rho.Value + epsil;
-    LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-    ratios(i) = ScoreAnalytic(end)/ScoreNumerical;
-    
-end
-
-
-[fi,xi] = ksdensity(ratios);
-plot(xi,fi)
-title(['Density of numerical/analytic H - gradient ratios'],'FontSize',20)
-
-
-
-
-% k score
-Vol = @ClassicVol; % how the volatility X plays on the price
-VolDer = @DerClassicVol; % its derivative
-nobs = 10;
-step = 0.005;
-N = nobs/step;
-H = 0.6;
-sigma_X = 0.1;
-rho = 0.3;
-mu = 0.1;
-kappa = -0.1;
-
-Par.theta_sampler='JointHMC';
-Par.thetafixed=1;
-Par.Zfixed=0;
-Par.sigma_X.Estimated = 0;
-Par.H.Estimated = 0;
-Par.sigma_X.Estimated = 0;
-Par.mu.Estimated = 0;
-Par.rho.Estimated = 0;
-Par.kappa.Estimated = 0;
-
-Par.Names.All = {'H','sigma_X'};
-Par.H.MinLim = 0;
-Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
-
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 1;
-Par.sigma_X.Transf = @mylog;
-Par.sigma_X.InvTransf = @invlog;
-Par.sigma_X.Corr = @logCorr;
-
-Par.mu.MinLim = 0;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @mylog;
-Par.mu.InvTransf = @invlog;
-Par.mu.Corr = @logCorr;
-
-Par.rho.MinLim = 0;
-Par.rho.MaxLim = 1;
-Par.rho.Transf = @mylog;
-Par.rho.InvTransf = @invlog;
-Par.rho.Corr = @logCorr;
-
-Par.kappa.MinLim = -1;
-Par.kappa.MaxLim = 0;
-Par.kappa.Transf = @logit;
-Par.kappa.InvTransf = @invlogit;
-Par.kappa.Corr = @logitCorr;
-
-Par.theta_sampler='JointHMC' ;
-Par.GradCorr = 0;
-Par.Names.All = {'H','sigma_X','mu','rho','kappa'};
-
-ratios = [];
-
-for i = 1:100
-    H = 0.65;
-    sigma_X = 0.1;
-    kappa = -rand(1,1);
-    
-    Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
-    
-    Par.JointHMC = 1;
-    Par.H.Value = H;
-    Par.sigma_X.Value = sigma_X;
-    Par.mu.Value = mu;
-    Par.rho.Value = rho;
-    Par.kappa.Value = kappa;
-    Par.kappa.Estimated = 1;
-    Par.rho.Estimated = 1;
-    Par.mu.Estimated = 1;
-    Par.H.Estimated = 1;
-    Par.sigma_X.Estimated = 1;
-    Par.kappa.Index = 1;
-    Par = DefineIndexes(Par);
-    Par = NoTransfToTransf(Par);
-
-%     Par.GradCorr = 1;
-
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
-
-    LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    epsil = 0.0000001;    
-    Par2 = Par;
-    Par2.kappa.Value = Par.kappa.Value + epsil;
-
-%     Par2.kappa.TransfValue = Par.kappa.TransfValue + epsil;
-%     Par2 = TransfToNoTransf(Par2);
-
-    
-    LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-    ratios(i) = ScoreAnalytic(end)/ScoreNumerical;
-    ScoreAnalytic(end)
-end
-
-
-[fi,xi] = ksdensity(ratios);
-plot(xi,fi)
-title(['Density of numerical/analytic H - gradient ratios'],'FontSize',20)
-
 
 
 %% confirming that cost is O(nlogn)
@@ -727,9 +263,9 @@ for i = 1:length(Ns)
     
     tic;
     Z = Sample_Z(N);
-    Bh = Z_to_Bh(Z,N,step,H);
-    X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
-    Y = SampleObs_Full(X,Bh,H,step,Vol,rho,mu);
+    Bh = Z_to_Bh(Z,N,step,Par);
+    X = Bh_to_X_Full(Bh,step,Par);
+    Y = SampleObs_Full(X,Bh,step,Vol,Par);
     ts_sample(i)=toc;
     
     tic;
@@ -767,14 +303,95 @@ theta_sampler='JointHMC'; % JointHMC or GibbsRW
 % theta_sampler='GibbsHMC';
 % theta_sampler='Blocks';
 
+Par.thetafixed = 0;
+Par.Zfixed = 0;
 % PARAMETERS
-Htrue = 0.6;
-sigma_Xtrue = 0.5;
-rhotrue = 0.3;
-mutrue = 0.1;
-kappatrue = -0.2;
-obstep = 1;
-loop=20000;
+Par.H.Value = 0.6;
+Par.sigma_X.Value = 0.08;
+Par.rho.Value = -0.1;
+Par.mu_Y.Value = -0.0014;
+Par.mu_X.Value = 0.1;
+Par.X0.Value = 0.8;
+Par.kappa.Value = 0.027;
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
+
+Par.H.MinLim = 0;
+Par.H.MaxLim = 1;
+Par.H.Transf = @logit;
+Par.H.InvTransf = @invlogit;
+Par.H.Corr = @logitCorr;
+Par.sigma_X.MinLim = 0;
+Par.sigma_X.MaxLim = 10;
+Par.sigma_X.Transf = @logit;
+Par.sigma_X.InvTransf = @invlogit;
+Par.sigma_X.Corr = @logitCorr;
+Par.mu_Y.MinLim = -10;
+Par.mu_Y.MaxLim =  10;
+Par.mu_Y.Transf = @logit;
+Par.mu_Y.InvTransf = @invlogit;
+Par.mu_Y.Corr = @logitCorr;
+Par.mu_X.MinLim = -10;
+Par.mu_X.MaxLim =  10;
+Par.mu_X.Transf = @logit;
+Par.mu_X.InvTransf = @invlogit;
+Par.mu_X.Corr = @logitCorr;
+Par.X0.MinLim = -10;
+Par.X0.MaxLim =  10;
+Par.X0.Transf = @logit;
+Par.X0.InvTransf = @invlogit;
+Par.X0.Corr = @logitCorr;
+Par.rho.MinLim = -1;
+Par.rho.MaxLim = 0;
+Par.rho.Transf = @logit;
+Par.rho.InvTransf = @invlogit;
+Par.rho.Corr = @logitCorr;
+Par.kappa.MinLim = 0;
+Par.kappa.MaxLim = 1;
+Par.kappa.Transf = @logit;
+Par.kappa.InvTransf = @invlogit;
+Par.kappa.Corr = @logitCorr;
+
+Data = SimDatafBM_Full(N,step,Vol,Par);
+
+
+Par.loop = 1;
+Par.Qsampler = Qsampler;
+if strcmp(Qsampler,'MALA')
+    Par.nsteps = 1;
+else
+    Par.nsteps = 10;
+end
+
+Par.theta_sampler = theta_sampler;
+if strcmp(theta_sampler,'JointHMC')
+    Par.h=0.01;
+elseif strcmp(theta_sampler,'GibbsHMC')
+    Par.hZ=0.19;
+    Par.htheta=0.13;
+elseif strcmp(theta_sampler,'GibbsRW')
+    Par.hH = 0.5;
+    Par.hZ = 0.1;
+    Par.hmu = 0.1;
+    Par.hrho = 0.1;
+    Par.hkappa = 0.1;
+    Par.hsig = 1;
+elseif strcmp(theta_sampler,'Blocks')
+    Par.d = 10;
+end
+
+for k2 = 1:length(Par.Names.All)
+   Par.(Par.Names.All{k2}).Estimated = 1;
+end
+Par = DefineIndexes(Par);
+Par = NoTransfToTransf(Par);
+
+
+Res = RunJointMCMC_Full(Data,Par)
+
+
+
+
+
 
 
 data_file=strcat('fBMData_H=',num2str(Htrue),'_sigma=',num2str(sigma_Xtrue),'_mu=',num2str(mutrue),'_rho=',num2str(rhotrue),'_kappa=',num2str(kappatrue),'.mat');
@@ -782,7 +399,7 @@ data_file=strcat('fBMData_H=',num2str(Htrue),'_sigma=',num2str(sigma_Xtrue),'_mu
 data_files = {'fBMData_H=0.6_sigma=0.1_mu=0.1_rho=0.9_kappa=0.1.mat'}
 
 % DATA
-SimDatafBM_Full(data_file,N,step,Vol,Htrue,sigma_Xtrue,mutrue,rhotrue,kappatrue);
+SimDatafBM_Full(data_file,N,step,Vol,Par);
 
 SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 
@@ -797,7 +414,7 @@ load([SavePath '/' data_file]);
 
 
 Par = struct();
-Par.Names.All = {'H','sigma_X'};
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 Par.H.MinLim = 0.4;
 Par.H.MaxLim = 1;
 Par.H.Transf = @logit;
@@ -810,20 +427,20 @@ Par.sigma_X.Transf = @mylog;
 Par.sigma_X.InvTransf = @invlog;
 Par.sigma_X.Corr = @logCorr;
 Par.sigma_X.Estimated = 0;
-Par.mu.MinLim = 0;
-Par.mu.MaxLim = 1;
-Par.mu.Transf = @mylog;
-Par.mu.InvTransf = @invlog;
-Par.mu.Corr = @logCorr;
+Par.mu.MinLim = -1;
+Par.mu.MaxLim =  1;
+Par.mu.Transf = @logit;
+Par.mu.InvTransf = @invlogit;
+Par.mu.Corr = @logitCorr;
 Par.mu.Estimated = 0;
-Par.rho.MinLim = 0;
+Par.rho.MinLim = -1;
 Par.rho.MaxLim = 1;
 Par.rho.Transf = @logit;
 Par.rho.InvTransf = @invlogit;
 Par.rho.Corr = @logitCorr;
 Par.rho.Estimated = 0;
 Par.kappa.MinLim = -1;
-Par.kappa.MaxLim = 0;
+Par.kappa.MaxLim = 1;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
@@ -834,10 +451,8 @@ Par.sigma_X.Value = Data.sigma_Xtrue;
 Par.mu.Value = Data.mutrue;
 Par.rho.Value = Data.rhotrue;
 Par.kappa.Value = Data.kappatrue;
-Par = NoTransfToTransf(Par);
 
 
-Par.Names.All = {'H','sigma_X','mu','rho','kappa'};
 for i = 1:length(Par.Names.All)
     Par.(Par.Names.All{i}).Estimated = 1;
 end
@@ -855,7 +470,7 @@ end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.05;
+    Par.h=0.0001;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;
@@ -870,7 +485,11 @@ elseif strcmp(theta_sampler,'Blocks')
     Par.d = 10;
 end
 
-@
+
+
+Res = RunJointMCMC_Full(Data,Par)
+
+
 save([SavePath '/Res_JointHMC10_Allest_' data_file],'Res')
 
 
@@ -900,7 +519,7 @@ xlabel('H','FontSize',20)
 h = legend('Gibbs-RW: ESS=0.4%','Joint-MALA: ESS=0.5%','Joint-HMC: ESS=6.4%');
 set(h,'FontSize',20)
 
-load([SavePath 'fBMData_H=0.6_sigma=0.1_mu=0.1_rho=0.3_kappa=-0.2.mat'])
+load([SavePath 'Res_JointHMC10_Allest_fBMData_H=0.6_sigma=0.5_mu=0.1_rho=0.3_kappa=-0.2.mat'])
 
 Ress = {ResRW,ResMALA,ResHMC5,ResHMC10,ResHMC20};
 Ress = {Res,Res};

@@ -7,7 +7,7 @@ function LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par)
 
 H = Par.H.Value;
 sigma_X = Par.sigma_X.Value;
-mu = Par.mu.Value;
+mu_Y = Par.mu_Y.Value;
 rho = Par.rho.Value;
 kappa = Par.kappa.Value;
 
@@ -17,8 +17,8 @@ nobs = length(Y);
 step = (nobs-1)/N;
 npoints = N/(nobs-1);
 
-Bh = Z_to_Bh(Z,N,step,H);
-X = Bh_to_X_Full(Bh,H,step,sigma_X,kappa);
+Bh = Z_to_Bh(Z,N,step,Par);
+X = Bh_to_X_Full(Bh,step,Par);
 
 
 subplot(2,1,1)
@@ -36,7 +36,7 @@ LogLik = 0;
 % ests(2) = sqrt(sum(Vol(X(1:npoints-1)).^2)*step);
 for i = 2:nobs
     mean = Y(i-1);
-    mean = mean + sum((mu-Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step);
+    mean = mean + sum((mu_Y-Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step);
     mean = mean + rho*sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).*Bh((i-2)*npoints+1:(i-1)*npoints));
     LogLik = LogLik + log(normpdf(Y(i),mean,sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));   
 %     ests(i) = Y(i-1) + sqrt(sum(Vol(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step);
