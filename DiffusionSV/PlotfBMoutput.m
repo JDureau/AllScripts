@@ -13,7 +13,11 @@ if k>1
     subplot(k+1,k,1:k)
 end    
 xis = step:step:nobs-1-step;
-plot(Data.X(obsstep:obsstep:N-1),'g')
+try
+    plot(Data.X(obsstep:obsstep:N-1),'g')
+catch
+    q50 = quantile(Res.out_Xs,0.5);
+end    
 hold on
 q2p5 = quantile(Res.out_Xs,0.025);
 q25 = quantile(Res.out_Xs,0.25);

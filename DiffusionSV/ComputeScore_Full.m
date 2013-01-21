@@ -14,10 +14,10 @@ rho = Par.rho.Value;
 kappa = Par.kappa.Value;
 mu_X = Par.mu_X.Value;
 
-N = length(Z)/2;
-nobs = length(Y);
-step = (nobs-1)/N;
-npoints = N/(nobs-1);
+N = Par.N ;
+nobs = Par.nobs ;
+step = Par.step ;
+npoints = Par.npoints ;
 
 Bh = Z_to_Bh(Z,N,step,Par);
 X = Bh_to_X_Full(Bh,step,Par);

@@ -10,31 +10,34 @@ SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
 files = {'15sep08_15sep09.csv','15mar07_15mar08.csv'};
 
-csvread([SavePath '/' files{ind}]);
-
-
-
-SimSeries = 'TestingHidentifiability';
-
-nobs = 250; % Y(0) = 0 is counted as an observation
 step = 0.05;
-N = (nobs-1)/step;
+Data = LoadYahooData([SavePath '/' files{ind}],step);
+Par.N = Data.N;
+Par.nobs = Data.nobs;
+Par.step = Data.step;
+Par.npoints = Data.npoints;
+
+
+DataSeries = 'SP500';
+
 Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
 
 Par.Qsampler='HybridMC';
 Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
-Par.loop = 20000;
+Par.loop = 1000;
 Par.nsteps = 10;
 Par.h=0.015;
 
-
+Par.H.Value = 0.5;
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
 Par.kappa.Value = 0.027;
+Data.ParTrue = Par;
+Data.Z = Sample_Z(Data.N);
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
@@ -79,9 +82,10 @@ end
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
-Data = SimDatafBM_Full(N,step,Vol,Par);
 Res = RunJointMCMC_Full(Data,Par);
-save([SavePath '/' SimSeries '_' num2str(ind)],'Res')
+
+
+save([SavePath '/' DataSeries '_' num2str(ind)],'Res')
 
 
 
