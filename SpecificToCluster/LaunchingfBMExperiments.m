@@ -27,7 +27,11 @@ Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
 Par.loop = 20000;
 Par.nsteps = 10;
 Par.h=0.015;
-
+Par.N = N;
+Par.nobs = nobs;
+Par.step = step;
+npoints = N/(nobs-1);
+Par.npoints = npoints;
 
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.1;
@@ -36,7 +40,7 @@ Par.mu_X.Value = 0;
 Par.X0.Value = 0;
 Par.kappa.Value = 0.027;
 
-Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa'};%,'mu_X','X0'};
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.H.MinLim = 0;
 Par.H.MaxLim = 1;
@@ -76,6 +80,8 @@ Par.kappa.Corr = @logitCorr;
 for k2 = 1:length(Par.Names.All)
    Par.(Par.Names.All{k2}).Estimated = 1;
 end
+Par.mu_X.Estimated = 0;
+Par.X0.Estimated = 0;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
