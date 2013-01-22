@@ -354,7 +354,7 @@ Par.kappa.Corr = @logitCorr;
 Data = SimDatafBM_Full(N,step,Vol,Par);
 
 
-Par.loop = 1;
+Par.loop = 100;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
@@ -364,7 +364,7 @@ end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.01;
+    Par.h=0.02;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;

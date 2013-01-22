@@ -2,6 +2,10 @@ function [] = LaunchingfBMExperiments(ind)
 
 ind = ind+1;
 
+s = RandStream('mcg16807','Seed',ind);
+RandStream.setDefaultStream(s)
+
+
 cd('/users/ecologie/dureau/src/AllScripts')
 addpath([pwd '/DiffusionSV'])
 
@@ -28,11 +32,11 @@ Par.h=0.015;
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
-Par.mu_X.Value = 0.1;
-Par.X0.Value = 0.8;
+Par.mu_X.Value = 0;
+Par.X0.Value = 0;
 Par.kappa.Value = 0.027;
 
-Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa'};%,'mu_X','X0'};
 
 Par.H.MinLim = 0;
 Par.H.MaxLim = 1;
