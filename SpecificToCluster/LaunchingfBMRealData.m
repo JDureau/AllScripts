@@ -79,6 +79,7 @@ Par.kappa.Corr = @logitCorr;
 for k2 = 1:length(Par.Names.All)
    Par.(Par.Names.All{k2}).Estimated = 1;
 end
+%Par.mu_X.Estimated = 0;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
