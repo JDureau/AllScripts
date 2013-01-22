@@ -41,7 +41,7 @@ Data.Z = Sample_Z(Data.N);
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
-Par.H.MinLim = 0;
+Par.H.MinLim = 0.4;
 Par.H.MaxLim = 1;
 Par.H.Transf = @logit;
 Par.H.InvTransf = @invlogit;
