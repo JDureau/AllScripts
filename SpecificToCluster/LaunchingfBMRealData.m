@@ -8,8 +8,7 @@ addpath([pwd '/DiffusionSV'])
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
 
-files = {'15sep08_15sep09.csv','15mar07_15mar08.csv'};
-
+files = {'15sep08_15sep09.csv','15mar07_15mar08.csv','15jan12_15jan13.csv','15oct08_15oct10.csv','15oct08_15oct09.csv','15feb06_15feb08.csv','15jan07_15jan08.csv','15feb07_15feb08.csv'};
 step = 0.05;
 Data = LoadYahooData([SavePath '/' files{ind}],step);
 Par.N = Data.N;
