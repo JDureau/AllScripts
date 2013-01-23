@@ -84,7 +84,7 @@ Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
 
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
-Par.H.MinLim = 0;
+Par.H.MinLim = 0.4;
 Par.H.MaxLim = 1;
 Par.H.Transf = @mylog;
 Par.H.InvTransf = @invlog;
