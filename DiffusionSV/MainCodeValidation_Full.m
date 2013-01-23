@@ -83,14 +83,16 @@ Par.kappa.Value = 0.027;
 
 Par.H.MinLim = 0;
 Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
+Par.H.Transf = @mylog;
+Par.H.InvTransf = @invlog;
+Par.H.Corr = @logCorr;
+Par.H.CorrDer = @logCorrDer;
 Par.sigma_X.MinLim = 0;
 Par.sigma_X.MaxLim = 10;
 Par.sigma_X.Transf = @logit;
 Par.sigma_X.InvTransf = @invlogit;
 Par.sigma_X.Corr = @logitCorr;
+Par.sigma_X.CorrDer = @logitCorrDer;
 Par.mu_Y.MinLim = -10;
 Par.mu_Y.MaxLim =  10;
 Par.mu_Y.Transf = @logit;
@@ -119,9 +121,16 @@ Par.kappa.Corr = @logitCorr;
 
 % SimDatafBM_Full('scoreTest.mat',N,step,Vol,Par);
 
+for k = 1:length(Par.Names.All)
+   Par.(Par.Names.All{k}).Estimated = 0;
+end
+Par = DefineIndexes(Par);
+Par = NoTransfToTransf(Par);
+
 
 ratios = [];
 inds = [];
+Par.GradCorr = 1;
 
 for i = 1:50
     % sample data
@@ -142,7 +151,7 @@ for i = 1:50
     Z2(ind) = Z2(ind) + epsil;
     LogLik2 = ComputeLogLikZ_Full(Z2,Y,Vol,Par);
     ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
+        ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
     disp(['ratio between the two gradient estimates (comp ' num2str(ind) '): ' num2str(ScoreAnalytic(ind)/ScoreNumerical,10)]);
     ratios(i)=ScoreAnalytic(ind)/ScoreNumerical;
     if isnan(ratios(i))
@@ -192,6 +201,8 @@ for k = 1:length(Par.Names.All)
         LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
         epsil = 0.0000001;    
         Par2 = Par;
+%         Par2.(Par.Names.All{k}).TransfValue = Par.(Par.Names.All{k}).TransfValue + epsil;
+%         Par2 = TransfToNoTransf(Par2);
         Par2.(Par.Names.All{k}).Value = Par.(Par.Names.All{k}).Value + epsil;
         Par2 = NoTransfToTransf(Par2);
         LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);

@@ -39,11 +39,7 @@ for i = 1:length(Names)
 end
 
 
-ks = zeros(1,N);
-for j = 1:N
-    ks(j) = ceil((j)/npoints);
-end
-Par.ks = ks;
+
 
 
 Z = Data.Z; % initialise Z with true path

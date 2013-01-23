@@ -14,17 +14,34 @@ rho = Par.rho.Value;
 kappa = Par.kappa.Value;
 mu_X = Par.mu_X.Value;
 
-N = Par.N ;
-nobs = Par.nobs ;
-step = Par.step ;
-npoints = Par.npoints ;
+N = length(Z)/2;
+nobs = length(Y);
+step = (nobs-1)/N;
+npoints = N/(nobs-1);
+
+ks = zeros(1,N);
+for j = 1:N
+    ks(j) = ceil((j)/npoints);
+end
 
 Bh = Z_to_Bh(Z,N,step,Par);
 X = Bh_to_X_Full(Bh,step,Par);
-ks = Par.ks;
 
 Vols_s = Vol(X);
 Vols_s_prime = VolDer(X);
+
+
+try
+    Par.thetafixed;
+catch
+    Par.thetafixed = 0;
+end
+try
+    Par.Zfixed;
+catch
+    Par.Zfixed = 0;
+end
+
 
 % %  This was from first trials with simple model. After that we had to
 % compute directly dlog(Y|B)/dB
@@ -120,6 +137,8 @@ Grads = Grads + (-Vols_s_prime.* Vols_s *step + rho*Vols_s_prime.*Bh)./denomsful
 Grads = Grads + (nomsfull.^2).*(1-rho^2) .* Vols_s_prime.* Vols_s*step./(denomsfull.^2);
 
 
+
+
 tmp = tmp';
 a = tmp;
 
@@ -169,12 +188,12 @@ GradX0 = Grads' * bX0';
 
 
 if Par.sigma_X.Estimated
-    if Par.GradCorr
-        Gradsigma_X = Gradsigma_X/(Par.sigma_X.Corr('sigma_X',Par));
-    end
-    if isnan(tmp)
-        'stop';
-    end
+%     if Par.GradCorr
+%         Gradsigma_X = -Gradsigma_X*Par.sigma_X.CorrDer('sigma_X',Par)^2/(Par.sigma_X.Corr('sigma_X',Par)^2);
+%     end
+%     if isnan(tmp)
+%         'stop';
+%     end
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.sigma_X.Index) = Gradsigma_X;
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
@@ -184,12 +203,12 @@ end
 if Par.kappa.Estimated
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.kappa.Index) = Gradkappa;
-        if Par.GradCorr
-            Score(length(Z)+Par.kappa.Index) = Score(length(Z)+Par.kappa.Index)/(Par.kappa.Corr('kappa',Par));
-        end
-        if isnan(Score(length(Z)+Par.kappa.Index))
-%             'stop'
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.kappa.Index) = Score(length(Z)+Par.kappa.Index)/(Par.kappa.Corr('kappa',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.kappa.Index))
+% %             'stop'
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.kappa.Index) = Gradkappa;
         if Par.GradCorr
@@ -203,12 +222,12 @@ end
 if Par.mu_X.Estimated
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.mu_X.Index) = Gradmu_X;
-        if Par.GradCorr
-            Score(length(Z)+Par.mu_X.Index) = Score(length(Z)+Par.mu_X.Index)/(Par.mu_X.Corr('mu_X',Par));
-        end
-        if isnan(Score(length(Z)+Par.mu_X.Index))
-%             'stop'
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.mu_X.Index) = Score(length(Z)+Par.mu_X.Index)/(Par.mu_X.Corr('mu_X',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.mu_X.Index))
+% %             'stop'
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.mu_X.Index) = Gradmu_X;
         if Par.GradCorr
@@ -222,12 +241,12 @@ end
 if Par.X0.Estimated
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.X0.Index) = GradX0;
-        if Par.GradCorr
-            Score(length(Z)+Par.X0.Index) = Score(length(Z)+Par.X0.Index)/(Par.X0.Corr('X0',Par));
-        end
-        if isnan(Score(length(Z)+Par.X0.Index))
-            'stop'
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.X0.Index) = Score(length(Z)+Par.X0.Index)/(Par.X0.Corr('X0',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.X0.Index))
+%             'stop'
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.X0.Index) = GradX0;
         if Par.GradCorr
@@ -500,12 +519,12 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.H.Index) = real(tmp*tmp2);
-        if Par.GradCorr
-            Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
-        end
-        if isnan(Score(length(Z)+Par.H.Index))
-            'stop';
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.H.Index))
+%             'stop';
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.H.Index) = real(tmp*tmp2);
         if Par.GradCorr
@@ -526,12 +545,12 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     tmp = sum(noms(1:nobs-1)./denoms(1:nobs-1));
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.mu_Y.Index) = tmp;
-        if Par.GradCorr
-            Score(length(Z)+Par.mu_Y.Index) = Score(length(Z)+Par.mu_Y.Index)/(Par.mu_Y.Corr('mu_Y',Par));
-        end
-        if isnan(Score(length(Z)+Par.mu_Y.Index))
-            'stop';
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.mu_Y.Index) = Score(length(Z)+Par.mu_Y.Index)/(Par.mu_Y.Corr('mu_Y',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.mu_Y.Index))
+%             'stop';
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.mu.Index) = tmp;
         if Par.GradCorr
@@ -557,12 +576,12 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.rho.Index) = tmp;
-        if Par.GradCorr
-            Score(length(Z)+Par.rho.Index) = Score(length(Z)+Par.rho.Index)/(Par.rho.Corr('rho',Par));
-        end
-        if isnan(Score(length(Z)+Par.rho.Index))
-            'stop';
-        end
+%         if Par.GradCorr
+%             Score(length(Z)+Par.rho.Index) = Score(length(Z)+Par.rho.Index)/(Par.rho.Corr('rho',Par));
+%         end
+%         if isnan(Score(length(Z)+Par.rho.Index))
+%             'stop';
+%         end
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
         Score(Par.rho.Index) = tmp;
         if Par.GradCorr
@@ -574,6 +593,14 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     end
 end
 
+
+Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
+for i = 1:length(Names)
+    ind = length(Z)+Par.(Names{i}).Index;
+    Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
+    Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
+    Score(ind) = Score(ind);%-(Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
+end
 
 
     
