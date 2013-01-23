@@ -105,16 +105,17 @@ denomsfull = zeros(N,1);
 nomsfull(1) = noms(1);
 denomsfull(1) = denoms(1);
 for j = N-1:-1:1
-%     if k<currentk
-%         currentk=k;
+    k = ceil((j+1)/npoints);
+    if k<currentk
+        currentk=k;
 %         if k>1
 %             denoms(k-1) = (1-rho^2) * sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2)*step;
 %             noms(k-1)   = (Y(k-1+1) - Y(k-1-1+1) - sum(mu - Vols_s((k-1-1)*npoints+1:(k-1)*npoints).^2/2)*step - rho* sum(Vols_s((k-1-1)*npoints+1:(k-1)*npoints).* Bh((k-1-1)*npoints+1:(k-1)*npoints)));
 %         end
-%     end
+    end
+    ks(j) = k;
     nomsfull(j+1) = noms(ks(j));
     denomsfull(j+1) = denoms(ks(j));
-    
     c = b(j+1);
     
 %     bZ(j ) = (1-kappa*step) * bZ(j+1);
@@ -522,7 +523,7 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.H.Index) = real(tmp*tmp2);
         if Par.GradCorr
-            Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
+            Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index);%/(Par.H.Corr('H',Par));
         end
 %         if isnan(Score(length(Z)+Par.H.Index))
 %             'stop';
@@ -595,14 +596,14 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     end
 end
 
-
-% Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
-% for i = 1:length(Names)
-%     ind = length(Z)+Par.(Names{i}).Index;
-%     Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
-%     Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
-%     Score(ind) = Score(ind);%-(Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
-% end
+LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
+for i = 1:length(Names)
+    ind = length(Z)+Par.(Names{i}).Index;
+    Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
+    Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
+    Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
+end
 
 
     
