@@ -80,13 +80,16 @@ Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
 Par.kappa.Value = 0.027;
+Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
 
+
+Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 Par.H.MinLim = 0;
 Par.H.MaxLim = 1;
-Par.H.Transf = @mylog;
-Par.H.InvTransf = @invlog;
-Par.H.Corr = @logCorr;
-Par.H.CorrDer = @logCorrDer;
+Par.H.Transf = @logit;
+Par.H.InvTransf = @invlogit;
+Par.H.Corr = @logitCorr;
+Par.H.CorrDer = @logitCorrDer;
 Par.sigma_X.MinLim = 0;
 Par.sigma_X.MaxLim = 10;
 Par.sigma_X.Transf = @logit;
@@ -120,7 +123,6 @@ Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
 
 % SimDatafBM_Full('scoreTest.mat',N,step,Vol,Par);
-
 for k = 1:length(Par.Names.All)
    Par.(Par.Names.All{k}).Estimated = 0;
 end
@@ -130,7 +132,7 @@ Par = NoTransfToTransf(Par);
 
 ratios = [];
 inds = [];
-Par.GradCorr = 1;
+Par.GradCorr = 0;
 
 for i = 1:50
     % sample data
@@ -151,7 +153,7 @@ for i = 1:50
     Z2(ind) = Z2(ind) + epsil;
     LogLik2 = ComputeLogLikZ_Full(Z2,Y,Vol,Par);
     ScoreNumerical = (LogLik2 - LogLik1)/epsil;
-        ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
+    ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
     disp(['ratio between the two gradient estimates (comp ' num2str(ind) '): ' num2str(ScoreAnalytic(ind)/ScoreNumerical,10)]);
     ratios(i)=ScoreAnalytic(ind)/ScoreNumerical;
     if isnan(ratios(i))
@@ -175,7 +177,7 @@ Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
 Par.kappa.Value = 0.027;
-Par.GradCorr = 0;
+Par.GradCorr = 1;
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 

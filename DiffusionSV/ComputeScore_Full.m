@@ -19,6 +19,8 @@ nobs = length(Y);
 step = (nobs-1)/N;
 npoints = N/(nobs-1);
 
+
+
 ks = zeros(1,N);
 for j = 1:N
     ks(j) = ceil((j)/npoints);
@@ -519,9 +521,9 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     
     if strcmp(Par.theta_sampler,'JointHMC')
         Score(length(Z)+Par.H.Index) = real(tmp*tmp2);
-%         if Par.GradCorr
-%             Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
-%         end
+        if Par.GradCorr
+            Score(length(Z)+Par.H.Index) = Score(length(Z)+Par.H.Index)/(Par.H.Corr('H',Par));
+        end
 %         if isnan(Score(length(Z)+Par.H.Index))
 %             'stop';
 %         end
@@ -594,13 +596,13 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
 end
 
 
-Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
-for i = 1:length(Names)
-    ind = length(Z)+Par.(Names{i}).Index;
-    Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
-    Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
-    Score(ind) = Score(ind);%-(Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
-end
+% Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
+% for i = 1:length(Names)
+%     ind = length(Z)+Par.(Names{i}).Index;
+%     Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
+%     Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
+%     Score(ind) = Score(ind);%-(Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
+% end
 
 
     

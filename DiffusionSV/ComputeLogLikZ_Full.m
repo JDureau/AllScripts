@@ -45,7 +45,7 @@ end
 Names = Par.Names.Estimated;
 if Par.GradCorr
     for j = 1:length(Names)
-        LogLik = LogLik - log(Par.(Names{j}).Corr(Names{j},Par));
+        LogLik = LogLik ;%- log(Par.(Names{j}).Corr(Names{j},Par));
     end
 end
 
