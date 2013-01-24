@@ -234,7 +234,7 @@ for iter=1:loop %mcmc loop
 
 
         disp(['Acc= ' num2str(mean(Accepted)) '   h=' num2str(h)])
-%         h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
+        h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
 
 
     
