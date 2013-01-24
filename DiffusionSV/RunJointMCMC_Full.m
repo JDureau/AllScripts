@@ -50,7 +50,7 @@ step = Data.step;
 nobs = Data.nobs;
 
 LogLik   = -Inf;%ComputeLogLikZ_Full(Z,Y,Vol,Par);
-LogPrior = -10000000;
+LogPrior = -Inf;
 
 n2 = length(obsstep:obsstep:2*(N-1));
 n1 = length(obsstep:obsstep:(N-1));
@@ -122,9 +122,9 @@ for iter=1:loop %mcmc loop
 
         % Accept / reject Z
         LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
-        LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
+%         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = LogLikStar + LogPriorStar*0 - LogLik - LogPrior*0  - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vestar')*Vestar +0.5*(Ve')*Ve;
+        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vestar')*Vestar +0.5*(Ve')*Ve;
         if isnan(alpha)
             disp('nan')
         end
