@@ -150,7 +150,7 @@ a = tmp;
 DiagOfLambda = ComputeDiagOfLambda(N,step,H);
 
 
-if or(strcmp(Par.theta_sampler,'GibbsRW'),or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHMC'),Par.thetafixed)))
+if 1;%or(strcmp(Par.theta_sampler,'GibbsRW'),or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHMC'),Par.thetafixed)))
     Score = tmp;
     Score = [Score zeros(1,length(Score))];
     Score = ifft(Score);%,'symmetric');
@@ -608,7 +608,7 @@ if Par.Prior
         ind = length(Z)+Par.(Names{i}).Index;
     %     Score(1:ind-1)   = Score(1:ind-1)+log(Par.(Names{i}).Corr(Names{i},Par));
     %     Score(ind+1:end) = Score(ind+1:end)+log(Par.(Names{i}).Corr(Names{i},Par));
-        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) ;% + (Par.(Names{i}).CorrDer(Names{i},Par))'/Par.(Names{i}).Corr(Names{i},Par);
+        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (Par.(Names{i}).CorrDer(Names{i},Par))'/Par.(Names{i}).Corr(Names{i},Par);
     end
 end
 
