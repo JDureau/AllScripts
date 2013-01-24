@@ -139,7 +139,7 @@ for iter=1:loop %mcmc loop
            Z = Zstar;
            Ve = Vestar;
            LogLik = LogLikStar;
-           LogPrior = LogPriorStar;
+%            LogPrior = LogPriorStar;
            Par = ParStar;
            Accepted(iter) = 1;
         else
@@ -392,7 +392,7 @@ for iter=1:loop %mcmc loop
     end
     
     
-    out_Ls(iter) = LogLik + LogPrior;
+    out_Ls(iter) = LogLik ;%+ LogPrior;
     out_Zs(iter,:) = Z(obsstep:obsstep:2*(N-1));
     out_Bhs(iter,:) = Bh(obsstep:obsstep:N-1);
     out_Xs(iter,:) = X(obsstep:obsstep:N-1);
