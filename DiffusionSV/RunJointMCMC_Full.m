@@ -4,6 +4,7 @@ Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
 
 Par.GradCorr = 1;
+Par.Prior = 1;
 
 Accepted = [];
 
@@ -48,7 +49,8 @@ Z = Data.Z; % initialise Z with true path
 step = Data.step;
 nobs = Data.nobs;
 
-L = -Inf;%ComputeLogLikZ_Full(Z,Y,Vol,Par);
+LogLik   = -Inf;%ComputeLogLikZ_Full(Z,Y,Vol,Par);
+LogPrior = -10000000;
 
 n2 = length(obsstep:obsstep:2*(N-1));
 n1 = length(obsstep:obsstep:(N-1));
@@ -88,6 +90,8 @@ for iter=1:loop %mcmc loop
             end
             try
                 ParStar = TransfToNoTransf(ParStar);
+            catch
+                'stop';
             end        
             Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,ParStar);
             Zestar_h = 4/(4+h^2)*(Zestar + h*Vestar - h^2/4*Zestar - h^2/2*Grad);
@@ -117,26 +121,25 @@ for iter=1:loop %mcmc loop
         end
 
         % Accept / reject Z
-        Lstar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
-        logPropRatio= -0.5*Zestar'*Zestar - 0.5*Vestar'*Vestar + 0.5*Ze'*Ze+0.5*Ve'*Ve;
-        
-        
+        LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
+        LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = Lstar - L + logPropRatio;
+        alpha = LogLikStar + LogPriorStar*0 - LogLik - LogPrior*0  - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vestar')*Vestar +0.5*(Ve')*Ve;
         if isnan(alpha)
             disp('nan')
         end
-        
+        alpha
         if Par.GradCorr
             for k = 1:length(Names)
-                alpha = alpha - log(Par.(Names{k}).Corr(Names{k},Par)) + log(Par.(Names{k}).Corr(Names{k},ParStar));
+                alpha = alpha + log(Par.(Names{k}).Corr(Names{k},ParStar)) - log(Par.(Names{k}).Corr(Names{k},Par));
             end
         end
         
         if ( alpha >= log(rand) )
            Z = Zstar;
            Ve = Vestar;
-           L = Lstar;
+           LogLik = LogLikStar;
+           LogPrior = LogPriorStar;
            Par = ParStar;
            Accepted(iter) = 1;
         else
@@ -145,7 +148,7 @@ for iter=1:loop %mcmc loop
 
 
         disp(['Acc= ' num2str(mean(Accepted)) '   h=' num2str(h)])
-        h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
+%         h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
 
     
     elseif strcmp(Par.theta_sampler,'GibbsRW')
@@ -389,7 +392,7 @@ for iter=1:loop %mcmc loop
     end
     
     
-    out_Ls(iter) = L;
+    out_Ls(iter) = LogLik + LogPrior;
     out_Zs(iter,:) = Z(obsstep:obsstep:2*(N-1));
     out_Bhs(iter,:) = Bh(obsstep:obsstep:N-1);
     out_Xs(iter,:) = X(obsstep:obsstep:N-1);

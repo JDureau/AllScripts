@@ -129,7 +129,7 @@ Par.kappa.CorrDer = @logitCorrDer;
 
 % SimDatafBM_Full('scoreTest.mat',N,step,Vol,Par);
 for k = 1:length(Par.Names.All)
-   Par.(Par.Names.All{k}).Estimated = 0;
+   Par.(Par.Names.All{k}).Estimated = 1;
 end
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
@@ -137,7 +137,9 @@ Par = NoTransfToTransf(Par);
 
 ratios = [];
 inds = [];
-Par.GradCorr = 0;
+Par.GradCorr = 1;
+Par.Prior = 1;
+
 
 for i = 1:50
     % sample data
@@ -151,11 +153,13 @@ for i = 1:50
     ind = ceil(rand(1,1)*N);
     inds(i) = ind;
     LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+    LogPrior1 = ComputeLogPriorZ_Full(Z,Par);
     epsil = 0.000001;    
     Z2 = Z;
     Z2(ind) = Z2(ind) + epsil;
     LogLik2 = ComputeLogLikZ_Full(Z2,Y,Vol,Par);
-    ScoreNumerical = (LogLik2 - LogLik1)/epsil;
+    LogPrior2 = ComputeLogPriorZ_Full(Z2,Par);
+    ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
     ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
     disp(['ratio between the two gradient estimates (comp ' num2str(ind) '): ' num2str(ScoreAnalytic(ind)/ScoreNumerical,10)]);
     ratios(i)=ScoreAnalytic(ind)/ScoreNumerical;
@@ -181,6 +185,7 @@ Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
 Par.kappa.Value = 0.027;
 Par.GradCorr = 1;
+Par.Prior = 1;
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
@@ -204,6 +209,7 @@ for k = 1:length(Par.Names.All)
         ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
 
         LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+        LogPrior1 = ComputeLogPriorZ_Full(Z,Par);
         epsil = 0.0000001;    
         Par2 = Par;
         Par2.(Par.Names.All{k}).TransfValue = Par.(Par.Names.All{k}).TransfValue + epsil;
@@ -211,9 +217,10 @@ for k = 1:length(Par.Names.All)
 %         Par2.(Par.Names.All{k}).Value = Par.(Par.Names.All{k}).Value + epsil;
 %         Par2 = NoTransfToTransf(Par2);
         LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-        ScoreNumerical = (LogLik2 - LogLik1)/epsil;
+        LogPrior2 = ComputeLogPriorZ_Full(Z,Par2);
+        ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
         disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
-        ratios(i)=ScoreAnalytic(end)/ScoreNumerical;
+        ratios(i)=ScoreAnalytic(length(Z)+Par.(Par.Names.All{k}).Index)/ScoreNumerical;
     end
     
     clf
@@ -232,29 +239,28 @@ end
 
 
 
-
-H = 0.6;
-sigma_X = 0.1;
-rho = 0.9;
-mu = 0.1;
-kappa = 0.1;
+Par.H.Value = 0.6;
+Par.sigma_X.Value = 0.08;
+Par.rho.Value = -0.1;
+Par.mu_Y.Value = -0.0014;
+Par.mu_X.Value = 0;
+Par.X0.Value = 0;
+Par.kappa.Value = 0.027;
 
 obstep = 1;
 loop=20000;
 
+
+
 data_file=strcat('fBMDataVFine_H=',num2str(H),'_sigma=',num2str(sigma_X),'.mat');
-SimDatafBM_Full(data_file,N,step,Vol,H,sigma_X,mu,rho,kappa);
-SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
-load([SavePath '/' data_file]);
+Data = SimDatafBM_Full(N,step,Vol,Par);
+% SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
+% load([SavePath '/' data_file]);
 
-Par.H.Value = H;
-Par.sigma_X.Value = sigma_X;
-Par.rho.Value = rho;
-Par.mu.Value = mu;
-Par.kappa.Value = kappa;
-Par = NoTransfToTransf(Par);
+Par = Data.ParTrue;
 
-Par.loop = 20000;
+
+Par.loop = 200;
 Par.hH = 0.00000000004;
 Par.hZ = 0.1;
 Par.hsig = 1;
@@ -326,51 +332,69 @@ Par.H.Value = 0.6;
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
-Par.mu_X.Value = 0.1;
-Par.X0.Value = 0.8;
+Par.mu_X.Value = 0;
+Par.X0.Value = 0;
 Par.kappa.Value = 0.027;
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
-Par.H.MinLim = 0;
+Par.H.MinLim = 0.4;
 Par.H.MaxLim = 1;
-Par.H.Transf = @logit;
-Par.H.InvTransf = @invlogit;
-Par.H.Corr = @logitCorr;
+Par.H.MinLim = 0.4;
+Par.H.MaxLim = 1;
+Par.H.Transf = @mylog;
+Par.H.InvTransf = @invlog;
+Par.H.Corr = @logCorr;
+Par.H.CorrDer = @logCorrDer;
 Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 10;
+Par.sigma_X.MaxLim = 2;
 Par.sigma_X.Transf = @logit;
 Par.sigma_X.InvTransf = @invlogit;
 Par.sigma_X.Corr = @logitCorr;
-Par.mu_Y.MinLim = -10;
-Par.mu_Y.MaxLim =  10;
+Par.sigma_X.CorrDer = @logitCorrDer;
+Par.mu_Y.MinLim = -2;
+Par.mu_Y.MaxLim =  2;
 Par.mu_Y.Transf = @logit;
 Par.mu_Y.InvTransf = @invlogit;
 Par.mu_Y.Corr = @logitCorr;
-Par.mu_X.MinLim = -10;
-Par.mu_X.MaxLim =  10;
+Par.mu_Y.CorrDer = @logitCorrDer;
+Par.mu_X.MinLim = -2;
+Par.mu_X.MaxLim =  2;
 Par.mu_X.Transf = @logit;
 Par.mu_X.InvTransf = @invlogit;
 Par.mu_X.Corr = @logitCorr;
-Par.X0.MinLim = -10;
-Par.X0.MaxLim =  10;
+Par.mu_X.CorrDer = @logitCorrDer;
+Par.X0.MinLim = -2;
+Par.X0.MaxLim =  2;
 Par.X0.Transf = @logit;
 Par.X0.InvTransf = @invlogit;
 Par.X0.Corr = @logitCorr;
+Par.X0.CorrDer = @logitCorrDer;
 Par.rho.MinLim = -1;
 Par.rho.MaxLim = 0;
 Par.rho.Transf = @logit;
 Par.rho.InvTransf = @invlogit;
 Par.rho.Corr = @logitCorr;
+Par.rho.CorrDer = @logitCorrDer;
 Par.kappa.MinLim = 0;
 Par.kappa.MaxLim = 1;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
+Par.kappa.CorrDer = @logitCorrDer;
+
+for k2 = 1:length(Par.Names.All)
+    Par.(Par.Names.All{k2}).Estimated = 1;
+end
+Par.X0.Estimated = 0;
+Par.mu_X.Estimated = 0;
+Par = DefineIndexes(Par);
+Par = NoTransfToTransf(Par);
+
 
 Data = SimDatafBM_Full(N,step,Vol,Par);
 
 
-Par.loop = 100;
+Par.loop = 200;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
@@ -380,7 +404,7 @@ end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.02;
+    Par.h=0.05;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;
@@ -395,11 +419,6 @@ elseif strcmp(theta_sampler,'Blocks')
     Par.d = 10;
 end
 
-for k2 = 1:length(Par.Names.All)
-   Par.(Par.Names.All{k2}).Estimated = 1;
-end
-Par = DefineIndexes(Par);
-Par = NoTransfToTransf(Par);
 
 
 Res = RunJointMCMC_Full(Data,Par)

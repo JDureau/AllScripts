@@ -142,6 +142,7 @@ Grads = Grads + (nomsfull.^2).*(1-rho^2) .* Vols_s_prime.* Vols_s*step./(denomsf
 
 
 
+
 tmp = tmp';
 a = tmp;
 
@@ -158,6 +159,11 @@ if or(strcmp(Par.theta_sampler,'GibbsRW'),or(strcmp(Par.theta_sampler,'JointHMC'
     Score = MultByMfromRight(N,Score);
 
     Score = real(Score);
+    
+    % accunting for the prior
+    if Par.Prior
+        Score = Score ;%- Z;
+    end
 end
 
 %%%% Computing b = dX/dpar for par = {sigma_X,kappa,mu_X,X0}
@@ -596,13 +602,14 @@ if and(or(strcmp(Par.theta_sampler,'JointHMC'),and(Par.Zfixed,strcmp(Par.theta_s
     end
 end
 
-LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
-for i = 1:length(Names)
-    ind = length(Z)+Par.(Names{i}).Index;
-    Score(1:ind-1)   = Score(1:ind-1)-log(Par.(Names{i}).Corr(Names{i},Par));
-    Score(ind+1:end) = Score(ind+1:end)-log(Par.(Names{i}).Corr(Names{i},Par));
-    Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
+if Par.Prior
+    Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
+    for i = 1:length(Names)
+        ind = length(Z)+Par.(Names{i}).Index;
+    %     Score(1:ind-1)   = Score(1:ind-1)+log(Par.(Names{i}).Corr(Names{i},Par));
+    %     Score(ind+1:end) = Score(ind+1:end)+log(Par.(Names{i}).Corr(Names{i},Par));
+        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) ;% + (Par.(Names{i}).CorrDer(Names{i},Par))'/Par.(Names{i}).Corr(Names{i},Par);
+    end
 end
 
 

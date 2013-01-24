@@ -8,8 +8,9 @@ for i = 1:10
     load([SavePath '/' SimSeries '_' num2str(i)],'Res')
 %     plot(Res.Data.Y)
 %     hold on
-    PlotfBMoutput(Res)
-    pause()
+%     PlotfBMoutput(Res)
+    disp(length(unique(Res.out_Ls))/20000);
+%     pause()
 end
 % hold off
 

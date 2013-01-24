@@ -1,4 +1,7 @@
 function LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par)
+
+
+
     % Length of Z : 2*(N-1)
     % Length of Bh : N-1
     % Length of X : N-1  
@@ -42,13 +45,12 @@ for i = 2:nobs
 %     ests(i) = Y(i-1) + sqrt(sum(Vol(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step);
 end
 
-Names = Par.Names.Estimated;
-if Par.GradCorr
-    for j = 1:length(Names)
-        LogLik = LogLik + log(Par.(Names{j}).Corr(Names{j},Par));
-    end
-end
-
+% Names = Par.Names.Estimated;
+% if Par.GradCorr
+%     for j = 1:length(Names)
+%         LogLik = LogLik + log(Par.(Names{j}).Corr(Names{j},Par));
+%     end
+% end
 
 
 
