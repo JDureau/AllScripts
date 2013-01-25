@@ -8,7 +8,7 @@ addpath([pwd '/DiffusionSV'])
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
 
-files = {'15sep08_15sep09.csv','15mar07_15mar08.csv','15jan12_15jan13.csv','15oct08_15oct10.csv','15oct08_15oct09.csv','15feb06_15feb08.csv','15jan07_15jan08.csv','15feb07_15feb08.csv'};
+files = {'15sep08_15sep09.csv','15mar07_15mar08.csv','15jan12_15jan13.csv','15oct08_15oct09.csv','15jan07_15jan08.csv','15feb07_15feb08.csv'};
 step = 0.01;
 Data = LoadYahooData([SavePath '/' files{ind}],step);
 Par.N = Data.N;
@@ -94,12 +94,24 @@ end
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
-
+Par.nsteps = 1;
 Par.loop = 100;
 Par.h = 0.004;
 Res = RunJointMCMC_Full(Data,Par);
 
-save([SavePath '/' DataSeries '_' num2str(ind) '_' num2str(MorePars) '.mat'],'Res')
+
+Data.ParTrue = Res.Par;
+Data.Z = Res.Z;
+load([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
+
+
+Par.nsteps = 10;
+Par.loop = 10;
+Par.h = 0.002;
+Res = RunJointMCMC_Full(Data,Par);
+
+save([SavePath '/' DataSeries '_' num2str(ind) '_' num2str(MorePars) '_HMC.mat'],'Res')
+
 
 
 % Par = Res.Par;
