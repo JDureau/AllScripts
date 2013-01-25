@@ -46,7 +46,9 @@ if k>1
                 [fi,xi]=ksdensity(Res.Thetas(ind,:));
                 plot(xi,fi)
                 hold on
-                plot(Data.ParTrue.(Names{i}).Value,0,'og','MarkerEdgeColor','g','MarkerFaceColor','g')
+                try
+                    plot(Data.ParTrue.(Names{i}).Value,0,'og','MarkerEdgeColor','g','MarkerFaceColor','g')
+                end
                 hold off
                 ylabel(Names{i},'FontSize',12)
             elseif i>j

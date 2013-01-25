@@ -4,7 +4,7 @@ function Data = LoadYahooData(file,step)
     tab = csvread(file,1,1);
 
     nobs = size(tab,1);
-    Y = tab(:,1);
+    Y = log(tab(:,1));
     N = (nobs-1)/step;
     
     nobs = length(Y);
@@ -19,7 +19,7 @@ function Data = LoadYahooData(file,step)
     Data.nobs = nobs;
     Data.obsstep = obsstep;
     Data.step = step;
-    
+    Data.Z = Sample_Z(N);
     
     
 %     save([SavePath data_file],'Data');

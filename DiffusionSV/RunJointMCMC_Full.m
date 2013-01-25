@@ -23,7 +23,10 @@ elseif strcmp(Par.theta_sampler,'GibbsRW')
 elseif strcmp(Par.theta_sampler,'Blocks')
     d = Par.d;
 end
-    
+  
+
+TellParValues(Par)
+
 loop = Par.loop;
 nsteps = Par.nsteps;
 
@@ -34,12 +37,13 @@ Y = Data.Y;
 nobs = length(Y);
 npoints = N/(nobs-1);
 
-Names = Par.Names.Estimated;
-for i = 1:length(Names)
-    Par.(Names{i}).TransfValue = (1+0.00001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+try
+    Names = Par.Names.Estimated;
+    for i = 1:length(Names)
+        Par.(Names{i}).TransfValue = (1+0.00001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+    end
+    Par = TransfToNoTransf(Par);
 end
-Par = TransfToNoTransf(Par);
-
 
 
 
@@ -230,7 +234,7 @@ for iter=1:loop %mcmc loop
            LogLik = LogLikStar;
 %            LogPrior = LogPriorStar;
            Par = ParStar;
-           LogPost = LogLikStar - 0.5*(Z')*Z - 0.5*(Vz')*Vz - 0.5*(Vp')*Vp + log(Par.(Names{k}).Corr(Names{k},Par));
+           LogPost = LogLikStar  + log(Par.(Names{k}).Corr(Names{k},ParStar));
            Accepted(iter) = 1;
         else
            Accepted(iter) = 0;
@@ -490,6 +494,8 @@ for iter=1:loop %mcmc loop
     out_Xs(iter,:) = X(obsstep:obsstep:N-1);
 end %MCMC loop
 
+TellParValues(Par)
+
 
 N = (nobs-1)/step;
 obsstep = N/(nobs-1);
@@ -498,11 +504,14 @@ obsstep = N/(nobs-1);
 
 Res.Thetas = Thetas;
 Res.Ztrue = Data.Z;
-Res.ParTrue = Data.ParTrue;
+try
+    Res.ParTrue = Data.ParTrue;
+end
 Res.out_Ls = out_Ls;
 Res.out_Lposts = out_Lposts;
 Res.out_Zs = out_Zs;
 Res.out_Xs = out_Xs;
+Res.Z = Z;
 
 if strcmp(Par.theta_sampler,'JointHMC')
     Res.h = h;
