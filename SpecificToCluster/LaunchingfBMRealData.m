@@ -99,7 +99,7 @@ Par.loop = 100;
 Par.h = 0.004;
 Res = RunJointMCMC_Full(Data,Par);
 
-save([SavePath '/' DataSeries '_' num2str(ind)],'Res')
+save([SavePath '/' DataSeries '_' num2str(ind) '_' num2str(MorePars) '.mat'],'Res')
 
 
 % Par = Res.Par;
