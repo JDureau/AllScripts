@@ -102,7 +102,7 @@ Res = RunJointMCMC_Full(Data,Par);
 
 Data.ParTrue = Res.Par;
 Data.Z = Res.Z;
-load([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
+save([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
 
 
 Par.nsteps = 10;
