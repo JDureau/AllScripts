@@ -25,7 +25,7 @@ Par.mu_X.Estimated = 0;
 Par.X0.Estimated = 0;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
-Par.loop = 150;
+Par.loop = 20000;
 
 Res = RunJointMCMC_Full(Data,Par);
 save([SavePath '/Res_Hsims_' num2str(ind)],'Res')
