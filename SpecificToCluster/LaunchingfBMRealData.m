@@ -95,7 +95,7 @@ Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
 Par.nsteps = 1;
-Par.loop = 100;
+Par.loop = 100000;
 Par.h = 0.004;
 Res = RunJointMCMC_Full(Data,Par);
 
@@ -106,7 +106,7 @@ save([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data')
 
 
 Par.nsteps = 10;
-Par.loop = 10;
+Par.loop = 100000;
 Par.h = 0.002;
 Res = RunJointMCMC_Full(Data,Par);
 
