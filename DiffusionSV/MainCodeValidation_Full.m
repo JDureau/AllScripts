@@ -329,24 +329,22 @@ Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
 Par.H.Value = 0.6;
-Par.sigma_X.Value = 0.08;
-Par.rho.Value = -0.1;
-Par.mu_Y.Value = -0.0014;
+Par.sigma_X.Value = 0.1;
+Par.rho.Value = -0.3;
+Par.mu_Y.Value = -0.002;
 Par.mu_X.Value = 0;
 Par.X0.Value = 0;
-Par.kappa.Value = 0.027;
+Par.kappa.Value = 0.02;
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.H.MinLim = 0.4;
 Par.H.MaxLim = 1;
-Par.H.MinLim = 0.4;
-Par.H.MaxLim = 1;
-Par.H.Transf = @mylog;
-Par.H.InvTransf = @invlog;
-Par.H.Corr = @logCorr;
-Par.H.CorrDer = @logCorrDer;
+Par.H.Transf = @logit;
+Par.H.InvTransf = @invlogit;
+Par.H.Corr = @logitCorr;
+Par.H.CorrDer = @logitCorrDer;
 Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 2;
+Par.sigma_X.MaxLim = 0.5;
 Par.sigma_X.Transf = @logit;
 Par.sigma_X.InvTransf = @invlogit;
 Par.sigma_X.Corr = @logitCorr;
@@ -387,6 +385,7 @@ for k2 = 1:length(Par.Names.All)
 end
 Par.X0.Estimated = 0;
 Par.mu_X.Estimated = 0;
+% Par.sigma_X.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -394,7 +393,7 @@ Par = NoTransfToTransf(Par);
 Data = SimDatafBM_Full(N,step,Vol,Par);
 
 
-Par.loop = 200;
+Par.loop = 1500;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
@@ -404,7 +403,7 @@ end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.05;
+    Par.h=0.08;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;
@@ -424,7 +423,10 @@ end
 Res = RunJointMCMC_Full(Data,Par)
 
 
+save([SavePath '/Data_Hsims_0.8.mat'],'Data')
 
+
+load([SavePath 'Res_JointHMC10_Allest_fBMData_H=0.6_sigma=0.5_mu=0.1_rho=0.3_kappa=-0.2.mat'])
 
 
 

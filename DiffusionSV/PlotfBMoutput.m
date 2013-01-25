@@ -8,6 +8,7 @@ obsstep = Data.obsstep;
 N = Data.N;
 k = length(Res.Par.Names.Estimated);
 
+figure(1)
 clf
 if k>1
     subplot(k+1,k,1:k)
@@ -64,14 +65,23 @@ if k>1
     end
 end
 
-figure
+figure(2)
 for i = 1:k
-    subplot(ceil(sqrt(k)),ceil(sqrt(k)),i)
+    subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),i)
     ind = Res.Par.(Names{i}).Index;
     plot(Res.Thetas(ind,:));
     title(Names{i})
 end
 
+subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),k+1)
+plot(Res.out_Ls)
+% ylim([-500 -200])
+title('LogLiks')
+subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),k+2)
+plot(Res.out_Lposts(10:end))
+% ylim([-500 -200])
+title('LogPosts')
+    
 %
 % 
 % subplot(4,2,3)

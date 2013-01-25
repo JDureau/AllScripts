@@ -1,4 +1,4 @@
-function res = InvLogitTransf(x,Min,Max)
+function res = invlogit(x,Min,Max)
 
 
 if nargin == 1
