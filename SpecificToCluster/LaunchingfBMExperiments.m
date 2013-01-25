@@ -17,7 +17,7 @@ hs = 0.5:0.1:0.9;
 
 load([SavePath '/Data_Hsims_' num2str(hs(ind)) '.mat'])
 
-Par = Data.Par;
+Par = Data.ParTrue;
 for k2 = 1:length(Par.Names.All)
    Par.(Par.Names.All{k2}).Estimated = 1;
 end
