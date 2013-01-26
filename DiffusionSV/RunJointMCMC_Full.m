@@ -220,9 +220,11 @@ for iter=1:loop %mcmc loop
         if isnan(alpha)
             disp('nan')
         end
+        LogPriorStar = ComputeLogPriorZ_Full(ParStar);
+        LogPrior     = ComputeLogPriorZ_Full(Par);
         if Par.GradCorr
             for k = 1:length(Names)
-                alpha = alpha + log(Par.(Names{k}).Corr(Names{k},ParStar)) - log(Par.(Names{k}).Corr(Names{k},Par));
+                alpha = alpha + LogPriorStar - LogPrior;
             end
         end
         alpha
@@ -234,7 +236,7 @@ for iter=1:loop %mcmc loop
            LogLik = LogLikStar;
 %            LogPrior = LogPriorStar;
            Par = ParStar;
-           LogPost = LogLikStar  + log(Par.(Names{k}).Corr(Names{k},ParStar));
+           LogPost = LogLikStar  + LogPriorStar;
            Accepted(iter) = 1;
         else
            Accepted(iter) = 0;

@@ -608,7 +608,9 @@ if Par.Prior
         ind = length(Z)+Par.(Names{i}).Index;
     %     Score(1:ind-1)   = Score(1:ind-1)+log(Par.(Names{i}).Corr(Names{i},Par));
     %     Score(ind+1:end) = Score(ind+1:end)+log(Par.(Names{i}).Corr(Names{i},Par));
-        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (Par.(Names{i}).CorrDer(Names{i},Par))/Par.(Names{i}).Corr(Names{i},Par);
+        temp = Par.(Names{i}).Prior(Names{i},Par);
+        tempDer = Par.(Names{i}).DerPrior(Names{i},Par);
+        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (temp*Par.(Names{i}).CorrDer(Names{i},Par)+tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp*Par.(Names{i}).Corr(Names{i},Par));
     end
 end
 

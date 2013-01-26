@@ -343,42 +343,49 @@ Par.H.Transf = @logit;
 Par.H.InvTransf = @invlogit;
 Par.H.Corr = @logitCorr;
 Par.H.CorrDer = @logitCorrDer;
+Par.H.TransfType = 'Logit';
 Par.sigma_X.MinLim = 0;
 Par.sigma_X.MaxLim = 0.5;
 Par.sigma_X.Transf = @logit;
 Par.sigma_X.InvTransf = @invlogit;
 Par.sigma_X.Corr = @logitCorr;
 Par.sigma_X.CorrDer = @logitCorrDer;
+Par.sigma_X.TransfType = 'Logit';
 Par.mu_Y.MinLim = -2;
 Par.mu_Y.MaxLim =  2;
 Par.mu_Y.Transf = @logit;
 Par.mu_Y.InvTransf = @invlogit;
 Par.mu_Y.Corr = @logitCorr;
 Par.mu_Y.CorrDer = @logitCorrDer;
+Par.mu_Y.TransfType = 'Logit';
 Par.mu_X.MinLim = -2;
 Par.mu_X.MaxLim =  2;
 Par.mu_X.Transf = @logit;
 Par.mu_X.InvTransf = @invlogit;
 Par.mu_X.Corr = @logitCorr;
 Par.mu_X.CorrDer = @logitCorrDer;
+Par.mu_X.TransfType = 'Logit';
 Par.X0.MinLim = -2;
 Par.X0.MaxLim =  2;
 Par.X0.Transf = @logit;
 Par.X0.InvTransf = @invlogit;
 Par.X0.Corr = @logitCorr;
 Par.X0.CorrDer = @logitCorrDer;
+Par.X0.TransfType = 'Logit';
 Par.rho.MinLim = -1;
 Par.rho.MaxLim = 0;
 Par.rho.Transf = @logit;
 Par.rho.InvTransf = @invlogit;
 Par.rho.Corr = @logitCorr;
 Par.rho.CorrDer = @logitCorrDer;
+Par.rho.TransfType = 'Logit';
 Par.kappa.MinLim = 0;
 Par.kappa.MaxLim = 1;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
 Par.kappa.CorrDer = @logitCorrDer;
+Par.kappa.TransfType = 'Logit';
 
 for k2 = 1:length(Par.Names.All)
     Par.(Par.Names.All{k2}).Estimated = 1;
@@ -423,7 +430,11 @@ end
 Res = RunJointMCMC_Full(Data,Par)
 
 
-save([SavePath '/Data_Hsims_0.8.mat'],'Data')
+Data.ParTrue = Par;
+save([SavePath '/Data_Hsims_0.9.mat'],'Data')
+
+
+save([SavePath '/Data_Hsims_0.9.mat'],'Data')
 
 
 load([SavePath 'Res_JointHMC10_Allest_fBMData_H=0.6_sigma=0.5_mu=0.1_rho=0.3_kappa=-0.2.mat'])
