@@ -102,7 +102,9 @@ Par = NoTransfToTransf(Par);
 % Data.Z = Res.Z;
 % save([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
 
+load([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'])
 
+Par = Data.ParTrue;
 Par.nsteps = 10;
 Par.loop = 20000;
 Par.h = 0.002;

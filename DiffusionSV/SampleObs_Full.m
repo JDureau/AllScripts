@@ -18,3 +18,4 @@ for i = 2:nobs
     Y(i) = Y(i)   + sum((mu_Y-sigma(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step) ;
     Y(i) = Y(i)   + rho*sum(sigma(X((i-2)*npoints+1:(i-1)*npoints)).*B((i-2)*npoints+1:(i-1)*npoints));
 end
+

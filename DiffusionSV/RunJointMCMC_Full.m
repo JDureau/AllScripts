@@ -37,10 +37,10 @@ Y = Data.Y;
 nobs = length(Y);
 npoints = N/(nobs-1);
 
-try
+if 1;%try
     Names = Par.Names.Estimated;
     for i = 1:length(Names)
-        Par.(Names{i}).TransfValue = (1+0.00001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+        Par.(Names{i}).TransfValue = (1+0.1*randn)*Data.ParTrue.(Names{i}).TransfValue;
     end
     Par = TransfToNoTransf(Par);
 end
@@ -53,8 +53,10 @@ Z = Data.Z; % initialise Z with true path
 step = Data.step;
 nobs = Data.nobs;
 
-LogLik   = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par);
 LogPost = LogLik;
+LogPriorTheta = ComputeLogPriorZ_Full(Par);
+LogPriorZ = - 0.5*(Z')*Z;
 % LogPrior = -Inf;
 
 n2 = length(obsstep:obsstep:2*(N-1));
@@ -65,7 +67,8 @@ out_Lposts = zeros(loop,1); % Logliks
 out_Zs = zeros(loop,n2);
 out_Bhs = zeros(loop,n1);
 out_Xs = zeros(loop,n1);
-
+out_Lpriorthetas= zeros(loop,1);
+out_LpriorZ= zeros(loop,1);
 
 Par.thetafixed = 0;
 Par.Zfixed = 0;
@@ -234,13 +237,15 @@ for iter=1:loop %mcmc loop
            Vz = Vzstar;
            Vp = Vpstar;
            LogLik = LogLikStar;
+           LogPriorTheta = LogPriorStar;
+           LogPriorZ = - 0.5*(Z')*Z;
 %            LogPrior = LogPriorStar;
            Par = ParStar;
-           LogPost = LogLikStar  + LogPriorStar;
            Accepted(iter) = 1;
         else
            Accepted(iter) = 0;
         end
+        LogPost = LogLik  + LogPrior - 0.5*(Z')*Z;
 
 
         disp(['Acc= ' num2str(mean(Accepted)) '   h=' num2str(h)])
@@ -488,7 +493,8 @@ for iter=1:loop %mcmc loop
         Thetas(Par.(Names{k}).Index,iter) = Par.(Names{k}).Value;
     end
     
-    
+    out_Lpriorthetas(iter) = LogPriorTheta;
+    out_LpriorZ(iter) = LogPriorZ;
     out_Ls(iter) = LogLik ;%+ LogPrior;
     out_Lposts(iter) = LogPost ;
     out_Zs(iter,:) = Z(obsstep:obsstep:2*(N-1));
@@ -511,6 +517,8 @@ try
 end
 Res.out_Ls = out_Ls;
 Res.out_Lposts = out_Lposts;
+Res.out_Lpriorthetas = out_Lpriorthetas;
+Res.out_LpriorZ = out_LpriorZ;
 Res.out_Zs = out_Zs;
 Res.out_Xs = out_Xs;
 Res.Z = Z;

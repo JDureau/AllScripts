@@ -329,11 +329,11 @@ Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
 Par.H.Value = 0.6;
-Par.sigma_X.Value = 0.1;
+Par.sigma_X.Value = 0.2;
 Par.rho.Value = -0.3;
 Par.mu_Y.Value = -0.002;
-Par.mu_X.Value = 0;
-Par.X0.Value = 0;
+Par.mu_X.Value = -1.5;
+Par.X0.Value = -0.9;
 Par.kappa.Value = 0.02;
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
@@ -358,8 +358,8 @@ Par.mu_Y.InvTransf = @invlogit;
 Par.mu_Y.Corr = @logitCorr;
 Par.mu_Y.CorrDer = @logitCorrDer;
 Par.mu_Y.TransfType = 'Logit';
-Par.mu_X.MinLim = -2;
-Par.mu_X.MaxLim =  2;
+Par.mu_X.MinLim = -10;
+Par.mu_X.MaxLim =  10;
 Par.mu_X.Transf = @logit;
 Par.mu_X.InvTransf = @invlogit;
 Par.mu_X.Corr = @logitCorr;
@@ -380,7 +380,7 @@ Par.rho.Corr = @logitCorr;
 Par.rho.CorrDer = @logitCorrDer;
 Par.rho.TransfType = 'Logit';
 Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
+Par.kappa.MaxLim = 0.1;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
@@ -390,17 +390,17 @@ Par.kappa.TransfType = 'Logit';
 for k2 = 1:length(Par.Names.All)
     Par.(Par.Names.All{k2}).Estimated = 1;
 end
-Par.X0.Estimated = 0;
-Par.mu_X.Estimated = 0;
+Par.X0.Estimated = 1;
+Par.mu_X.Estimated = 1;
 % Par.sigma_X.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
-
+clf
 Data = SimDatafBM_Full(N,step,Vol,Par);
+plot(Data.Y)
 
-
-Par.loop = 1500;
+Par.loop = 20000;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
@@ -410,7 +410,7 @@ end
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.08;
+    Par.h=0.01;
 elseif strcmp(theta_sampler,'GibbsHMC')
     Par.hZ=0.19;
     Par.htheta=0.13;

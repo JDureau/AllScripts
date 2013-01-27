@@ -610,7 +610,8 @@ if Par.Prior
     %     Score(ind+1:end) = Score(ind+1:end)+log(Par.(Names{i}).Corr(Names{i},Par));
         temp = Par.(Names{i}).Prior(Names{i},Par);
         tempDer = Par.(Names{i}).DerPrior(Names{i},Par);
-        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) + (temp*Par.(Names{i}).CorrDer(Names{i},Par)+tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp*Par.(Names{i}).Corr(Names{i},Par));
+        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) +  (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp);
+%         Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par)) +  (temp*Par.(Names{i}).CorrDer(Names{i},Par)+tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp*Par.(Names{i}).Corr(Names{i},Par));
     end
 end
 

@@ -68,21 +68,39 @@ if k>1
 end
 
 figure(2)
+clf
 for i = 1:k
-    subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),i)
+    subplot(ceil(sqrt(k+3)),ceil(sqrt(k+3)),i)
     ind = Res.Par.(Names{i}).Index;
     plot(Res.Thetas(ind,:));
     title(Names{i})
 end
 
-subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),k+1)
+subplot(ceil(sqrt(k+3)),ceil(sqrt(k+3)),k+1)
 plot(Res.out_Ls)
 % ylim([-500 -200])
 title('LogLiks')
-subplot(ceil(sqrt(k+2)),ceil(sqrt(k+2)),k+2)
-plot(Res.out_Lposts(10:end))
+tmp = 1;
+ind = 0;
+while tmp
+    subplot(ceil(sqrt(k+3)),ceil(sqrt(k+3)),k+2)
+    ind = ind+1;
+    plot(Res.out_Lpriorthetas(ind:end))
+    tmp = 0;
+end
 % ylim([-500 -200])
-title('LogPosts')
+title('LogPriorthetas')
+
+tmp = 1;
+ind = 0;
+while tmp
+    subplot(ceil(sqrt(k+3)),ceil(sqrt(k+3)),k+3)
+    ind = ind+1;
+    plot(Res.out_LpriorZ(ind:end))
+    tmp = 0;
+end
+% ylim([-500 -200])
+title('LogPriorZ')
     
 %
 % 
