@@ -140,7 +140,6 @@ inds = [];
 Par.GradCorr = 1;
 Par.Prior = 1;
 
-
 for i = 1:50
     % sample data
 
@@ -153,12 +152,12 @@ for i = 1:50
     ind = ceil(rand(1,1)*N);
     inds(i) = ind;
     LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-    LogPrior1 = ComputeLogPriorZ_Full(Z,Par);
+    LogPrior1 = ComputeLogPriorZ_Full(Par);
     epsil = 0.000001;    
     Z2 = Z;
     Z2(ind) = Z2(ind) + epsil;
     LogLik2 = ComputeLogLikZ_Full(Z2,Y,Vol,Par);
-    LogPrior2 = ComputeLogPriorZ_Full(Z2,Par);
+    LogPrior2 = ComputeLogPriorZ_Full(Par);
     ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
     ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
     disp(['ratio between the two gradient estimates (comp ' num2str(ind) '): ' num2str(ScoreAnalytic(ind)/ScoreNumerical,10)]);
@@ -186,6 +185,8 @@ Par.X0.Value = 0.8;
 Par.kappa.Value = 0.027;
 Par.GradCorr = 1;
 Par.Prior = 1;
+Par.theta_sampler='JointHMC'; 
+
 
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
@@ -209,7 +210,7 @@ for k = 1:length(Par.Names.All)
         ScoreAnalytic = ComputeScore_Full(Z,Y,Vol,VolDer,Par);
 
         LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
-        LogPrior1 = ComputeLogPriorZ_Full(Z,Par);
+        LogPrior1 = ComputeLogPriorZ_Full(Par);
         epsil = 0.0000001;    
         Par2 = Par;
         Par2.(Par.Names.All{k}).TransfValue = Par.(Par.Names.All{k}).TransfValue + epsil;
@@ -217,7 +218,7 @@ for k = 1:length(Par.Names.All)
 %         Par2.(Par.Names.All{k}).Value = Par.(Par.Names.All{k}).Value + epsil;
 %         Par2 = NoTransfToTransf(Par2);
         LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
-        LogPrior2 = ComputeLogPriorZ_Full(Z,Par2);
+        LogPrior2 = ComputeLogPriorZ_Full(Par2);
         ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
         disp(['ratio between the two gradient estimates: ' num2str(ScoreAnalytic(end)/ScoreNumerical,10)]);
         ratios(i)=ScoreAnalytic(length(Z)+Par.(Par.Names.All{k}).Index)/ScoreNumerical;
@@ -328,13 +329,13 @@ theta_sampler='JointHMC'; % JointHMC or GibbsRW
 Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
-Par.H.Value = 0.6;
-Par.sigma_X.Value = 0.2;
+Par.H.Value = 0.85;
+Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.3;
 Par.mu_Y.Value = -0.002;
-Par.mu_X.Value = -1.5;
-Par.X0.Value = -0.9;
-Par.kappa.Value = 0.02;
+Par.mu_X.Value = 0;
+Par.X0.Value = 0;
+Par.kappa.Value = 0.03;
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.H.MinLim = 0.4;
@@ -379,8 +380,15 @@ Par.rho.InvTransf = @invlogit;
 Par.rho.Corr = @logitCorr;
 Par.rho.CorrDer = @logitCorrDer;
 Par.rho.TransfType = 'Logit';
+% Par.kappa.MinLim = 0;
+% Par.kappa.MaxLim = 1;
+% Par.kappa.Transf = @mylog;
+% Par.kappa.InvTransf = @invlog;
+% Par.kappa.Corr = @logCorr;
+% Par.kappa.CorrDer = @logCorrDer;
+% Par.kappa.TransfType = 'Log';
 Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 0.1;
+Par.kappa.MaxLim = 10;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
@@ -390,17 +398,20 @@ Par.kappa.TransfType = 'Logit';
 for k2 = 1:length(Par.Names.All)
     Par.(Par.Names.All{k2}).Estimated = 1;
 end
-Par.X0.Estimated = 1;
-Par.mu_X.Estimated = 1;
-% Par.sigma_X.Estimated = 1;
+Par.X0.Estimated = 0;
+Par.mu_X.Estimated = 0;
+Par.kappa.Estimated = 1;
+Par.H.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
 clf
 Data = SimDatafBM_Full(N,step,Vol,Par);
-plot(Data.Y)
+plot(Data.X)
+ 
 
-Par.loop = 20000;
+
+Par.loop = 500;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
@@ -408,12 +419,18 @@ else
     Par.nsteps = 10;
 end
 
+Par = Data.ParTrue;
+theta_sampler='JointHMC'
+Par.loop = 20;
+Par = DefineIndexes(Par);
+Par = NoTransfToTransf(Par);
+
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.01;
+    Par.h=0.04;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.19;
-    Par.htheta=0.13;
+    Par.hZ=0.12;%0.08;
+    Par.hP=0.04;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
     Par.hZ = 0.1;
@@ -426,13 +443,81 @@ elseif strcmp(theta_sampler,'Blocks')
 end
 
 
-
 Res = RunJointMCMC_Full(Data,Par)
+PlotfBMoutput(Res)
+
+
+
+% Data = SimDatafBM_Full(N,step,Vol,Par);
+Par.Epsil = 1;
+Par.MCMCType = 'Rand';
+Par.G = eye(length(Par.Names.Estimated));
+Par.ModelType='SMC';
+Par.NbVariables = 3;
+Par.NbParticules = 100;
+Par.NoPaths = 0;
+Par.PathsToKeep = [1];
+Par.NbParsEstimated  =length(Par.Names.Estimated);
+Par.ComputationTStep = Data.step;
+Par.Vol = Vol;
+Par.Problem = 'vol';
+Data.ObservedVariables = 1;
+Par.AdaptC = 0.999;
+Par.GMeth =  'cst given';
+Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
+fullvolModel.InitializeParameters = @fullvolInitialize;
+fullvolModel.SMC_projection = @fullvol_SMC_projection;
+fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
+TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 5000);
+PlotfBMpmcmc(Res)
+
+Par.G = cov(Res.TransfThetas')^(-1);
+TempPar = Res.TempPar;
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 10000);
+PlotfBMpmcmc(Res)
+
+
+Data.Cov = cov(Res.TransfThetas')^(-1);
+
+Par.NbParticules = 100;
+Res = EstimationSMCsmoothGen(Data, fullvolModel, Par);
+Res.LogLik
+
+clf
+xis = step:step:nobs-1-step;
+try
+    plot(Data.X(obsstep:obsstep:N-1),'g')
+catch
+    q50 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.5);
+end    
+hold on
+try
+    q2p5 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.025);
+    q25 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.25);
+    q50 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.5);
+    q75 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.75);
+    q97p5 = quantile(squeeze(Res.CompletePaths(:,1,cumsum(Res.Data.NbComputingSteps)+1)),0.975);
+    plot(q2p5,':')
+    plot(q25,'--')
+    plot(q50,'-')
+    plot(q75,'--')
+    plot(q97p5,':')
+end
+legend('True volatility','95% c.i.','50% c.i.','Posterior median')
+hold off
+ylabel('Volatility','FontSize',12)
+xlabel('Time','FontSize',12)
+
+
+
 
 
 Data.ParTrue = Par;
-save([SavePath '/Data_Hsims_0.9.mat'],'Data')
+save([SavePath '/DataSet2.mat'],'Data')
 
+
+load([SavePath '/DataSet2.mat'])
 
 save([SavePath '/Data_Hsims_0.9.mat'],'Data')
 
@@ -499,7 +584,6 @@ Par.sigma_X.Value = Data.sigma_Xtrue;
 Par.mu.Value = Data.mutrue;
 Par.rho.Value = Data.rhotrue;
 Par.kappa.Value = Data.kappatrue;
-
 
 for i = 1:length(Par.Names.All)
     Par.(Par.Names.All{i}).Estimated = 1;

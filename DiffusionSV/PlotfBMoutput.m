@@ -89,18 +89,18 @@ while tmp
     tmp = 0;
 end
 % ylim([-500 -200])
-title('LogPriorthetas')
+title('LogPriorPar')
 
 tmp = 1;
 ind = 0;
 while tmp
     subplot(ceil(sqrt(k+3)),ceil(sqrt(k+3)),k+3)
     ind = ind+1;
-    plot(Res.out_LpriorZ(ind:end))
+    plot(Res.out_LogLikGain(ind:end))
     tmp = 0;
 end
 % ylim([-500 -200])
-title('LogPriorZ')
+title('LogLikGain')
     
 %
 % 

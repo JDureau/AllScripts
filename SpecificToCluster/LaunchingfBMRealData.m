@@ -9,7 +9,7 @@ SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
 
 files = {'15sep08_15sep09.csv','15mar07_15mar08.csv','15jan12_15jan13.csv','15oct08_15oct09.csv','15jan07_15jan08.csv','15feb07_15feb08.csv'};
-step = 0.01;
+step = 0.05;
 Data = LoadYahooData([SavePath '/' files{ind}],step);
 Par.N = Data.N;
 Par.nobs = Data.nobs;
@@ -46,45 +46,59 @@ Par.H.Transf = @logit;
 Par.H.InvTransf = @invlogit;
 Par.H.Corr = @logitCorr;
 Par.H.CorrDer = @logitCorrDer;
+Par.H.TransfType = 'Logit';
 Par.sigma_X.MinLim = 0;
 Par.sigma_X.MaxLim = 0.5;
 Par.sigma_X.Transf = @logit;
 Par.sigma_X.InvTransf = @invlogit;
 Par.sigma_X.Corr = @logitCorr;
 Par.sigma_X.CorrDer = @logitCorrDer;
+Par.sigma_X.TransfType = 'Logit';
 Par.mu_Y.MinLim = -2;
 Par.mu_Y.MaxLim =  2;
 Par.mu_Y.Transf = @logit;
 Par.mu_Y.InvTransf = @invlogit;
 Par.mu_Y.Corr = @logitCorr;
 Par.mu_Y.CorrDer = @logitCorrDer;
-Par.mu_X.MinLim = -2;
-Par.mu_X.MaxLim =  2;
+Par.mu_Y.TransfType = 'Logit';
+Par.mu_X.MinLim = -10;
+Par.mu_X.MaxLim =  10;
 Par.mu_X.Transf = @logit;
 Par.mu_X.InvTransf = @invlogit;
 Par.mu_X.Corr = @logitCorr;
 Par.mu_X.CorrDer = @logitCorrDer;
+Par.mu_X.TransfType = 'Logit';
 Par.X0.MinLim = -2;
 Par.X0.MaxLim =  2;
 Par.X0.Transf = @logit;
 Par.X0.InvTransf = @invlogit;
 Par.X0.Corr = @logitCorr;
 Par.X0.CorrDer = @logitCorrDer;
+Par.X0.TransfType = 'Logit';
 Par.rho.MinLim = -1;
 Par.rho.MaxLim = 0;
 Par.rho.Transf = @logit;
 Par.rho.InvTransf = @invlogit;
 Par.rho.Corr = @logitCorr;
 Par.rho.CorrDer = @logitCorrDer;
+Par.rho.TransfType = 'Logit';
+% Par.kappa.MinLim = 0;
+% Par.kappa.MaxLim = 1;
+% Par.kappa.Transf = @mylog;
+% Par.kappa.InvTransf = @invlog;
+% Par.kappa.Corr = @logCorr;
+% Par.kappa.CorrDer = @logCorrDer;
+% Par.kappa.TransfType = 'Log';
 Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 1;
+Par.kappa.MaxLim = 0.2;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
 Par.kappa.CorrDer = @logitCorrDer;
+Par.kappa.TransfType = 'Logit';
 
 for k2 = 1:length(Par.Names.All)
-   Par.(Par.Names.All{k2}).Estimated = 1;
+   Par.(Par.Names.All{k2}).Estimated = 0;
 end
 %Par.mu_X.Estimated = 0;
 if not(MorePars)
@@ -94,13 +108,13 @@ end
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
-% Par.nsteps = 1;
-% Par.loop = 100000;
-% Par.h = 0.004;
-% Res = RunJointMCMC_Full(Data,Par);
-% Data.ParTrue = Res.Par;
-% Data.Z = Res.Z;
-% save([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
+Par.nsteps = 1;
+Par.loop = 10000;
+Par.h = 0.01;
+Res = RunJointMCMC_Full(Data,Par);
+Data.ParTrue = Res.Par;
+Data.Z = Res.Z;
+save([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'],'Data');
 
 load([SavePath '/Data_SP500_' num2str(ind) '_' num2str(MorePars) '.mat'])
 
