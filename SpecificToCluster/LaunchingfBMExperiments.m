@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 50;
+loop = 40000;
 
 if DataSet == 1
     load([SavePath '/DataSet1.mat'])
