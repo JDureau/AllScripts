@@ -20,9 +20,9 @@ for ind = 1:7
 %     hold on
 %     plot(Res.Data.Y)
 %     hold on
-%     PlotfBMoutput(Res)
+    PlotfBMoutput(Res)
 %     disp(length(unique(Res.out_Ls))/150);
-%     pause()
+    pause()
 end
 % hold off
 
@@ -31,7 +31,7 @@ end
 
 ESSs = {};
 
-for k = 1:1
+for k = 1:7
     k
     Res = Ress{k};
 %     Ress{k}.h
@@ -50,7 +50,7 @@ for k = 1:1
     for i = 1:length(Names)
         ind = Res.Par.(Names{i}).Index;
         r=sum(autocorr(Ress{k}.Thetas(ind,:),1200));
-        disp([Names{i} num2str(100/(1+2*r))]);
+        disp([Names{i} '   ' num2str(100/(1+2*r))]);
     end
 %     r=sum(autocorr(Ress{k}.out_Hs,1200));
 %     disp(100/(1+2*r));
