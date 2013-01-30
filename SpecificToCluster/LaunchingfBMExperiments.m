@@ -16,7 +16,7 @@ loop = 40000;
 if DataSet == 1
     load([SavePath '/DataSet1.mat'])
 else
-    load([SavePath '/DataSet1.mat'])
+    load([SavePath '/DataSet2.mat'])
 end
 
 Vol = @ClassicVol; % how the volatility X plays on the price

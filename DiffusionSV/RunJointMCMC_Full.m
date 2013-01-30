@@ -262,6 +262,11 @@ for iter=1:loop %mcmc loop
         
         % advanced on Z, normal on theta
         
+        if rand<0.05
+            h = Par.h/2;
+        else
+            h = Par.h;
+        end
         
         % Update Ze : HMC / MALA
         Vz=(randn(1,2*(N)))';
@@ -355,6 +360,15 @@ for iter=1:loop %mcmc loop
 
 
     elseif strcmp(Par.theta_sampler,'GibbsHMC')
+        
+        if rand<0.05
+            hZ = Par.hZ/2;
+            hP = Par.hP/2;
+        else
+            hZ = Par.hZ;
+            hP = Par.hP;
+        end
+    
         % Update Z : HMC / MALA
         Vz=(randn(1,2*(N)))';
         Vzstar = Vz;

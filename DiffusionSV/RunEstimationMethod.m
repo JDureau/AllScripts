@@ -276,6 +276,7 @@ if strcmp(Parameters.PMCMC,'Gibbs')
     Res.EstimatedSigs = EstimatedSigs; 
 end
     
+Res.Par = Parameters;
     
 
 try

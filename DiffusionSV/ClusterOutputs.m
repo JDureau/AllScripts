@@ -4,16 +4,83 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 
 SimSeries = 'TestingHidentifiability';
 
-for i = 1:5
-    load([SavePath '/Res_Hsims_' num2str(i)],'Res')
+DataSet = 1;
+
+
+hs = [];
+clf
+Ress = {};
+for ind = 1:7
+    ind
+    load([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)])
+    Ress{ind} = Res;
+%     hs(ind,:) = Res.Thetas(1,:);
+%     [fi,xi] = ksdensity(Res.Thetas(1,:));
+%     plot(xi,fi)
+%     hold on
 %     plot(Res.Data.Y)
 %     hold on
-    PlotfBMoutput(Res)
+%     PlotfBMoutput(Res)
 %     disp(length(unique(Res.out_Ls))/150);
-    pause()
+%     pause()
 end
 % hold off
 
+
+
+
+ESSs = {};
+
+for k = 1:1
+    k
+    Res = Ress{k};
+%     Ress{k}.h
+    %figure(11); for i=10:10:min(500,loop); plot(out_Q(i,:),'b');hold on; end; plot(out_Q(1,:),'r');hold off
+    ESS=zeros(size(Res.out_Zs,2),1);
+    for i=1:size(Res.out_Zs,2)
+        r=sum(autocorr(Ress{k}.out_Zs(:,i),100));
+        ESS(i)=100/(1+2*r);
+    end
+    ESSs{k} = ESS;
+    
+    figure(12);plot(ESS);title('ESS (%) for each v over time')   
+    disp([min(ESS),median(ESS),max(ESS)])   
+    
+    Names = Res.Par.Names.Estimated;
+    for i = 1:length(Names)
+        ind = Res.Par.(Names{i}).Index;
+        r=sum(autocorr(Ress{k}.Thetas(ind,:),1200));
+        disp([Names{i} num2str(100/(1+2*r))]);
+    end
+%     r=sum(autocorr(Ress{k}.out_Hs,1200));
+%     disp(100/(1+2*r));
+%     r=sum(autocorr(Ress{k}.out_sigs,1200));
+%     disp(100/(1+2*r));
+end
+    
+plot(ESSs{1},'k')
+hold on
+plot(ESSs{2},'g')
+plot(ESSs{3},'b')
+hold off
+ylabel('ESS(Z_t)','FontSize',20)
+xlabel('t','FontSize',20)
+h = legend('Gibbs-RW: ESS_{min}=0.1%','Joint-MALA: ESS_{min}=0.1%','Joint-HMC: ESS_{min}=1.1%');
+set(h,'FontSize',20)
+
+
+
+
+Par = Res.Par;
+Names = Par.Names.Estimated;
+for i = 1:length(Names)
+    ind = Par.(Names{i}).Index;
+    Par.(Names{i}).Value = Res.Thetas(ind,20000); 
+end
+Par = NoTransfToTransf(Par);
+
+Data = Res.Data;
+Res2 = RunJointMCMC_Full(Data,Par);
 
 
 files = {'15sep08_15sep09.csv','15mar07_15mar08.csv'};

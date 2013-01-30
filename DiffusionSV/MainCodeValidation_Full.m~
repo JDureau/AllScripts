@@ -421,7 +421,7 @@ end
 
 Par = Data.ParTrue;
 theta_sampler='JointHMC'
-Par.loop = 2000;
+Par.loop = 20;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -514,7 +514,7 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet2.mat'],'Data')
+save([SavePath '/DataSet1.mat'],'Data')
 
 
 load([SavePath '/DataSet2.mat'])
