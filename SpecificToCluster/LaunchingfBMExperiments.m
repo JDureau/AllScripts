@@ -30,7 +30,13 @@ switch ind
     case 1
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 1;
-        Par.hZ = 1;
+        if DataSet == 1
+            Par.hZ = 1;
+            Par.hP = 0.11;
+        else
+            Par.hZ = 0.1;
+            Par.hP = 0.04;
+        end
         Par.hP = 0.11;
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -38,37 +44,59 @@ switch ind
     case 2
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
-        Par.hZ = 1;
-        Par.hP = 0.11;
+        if DataSet == 1
+            Par.hZ = 1;
+            Par.hP = 0.11;
+        else
+            Par.hZ = 0.1;
+            Par.hP = 0.04;
+        end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
     case 3
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
-        Par.hZ = 1;
-        Par.hP = 0.11;
+        if DataSet == 1
+            Par.hZ = 1;
+            Par.hP = 0.11;
+        else
+            Par.hZ = 0.1;
+            Par.hP = 0.04;
+        end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
     case 4
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
-        Par.h = 0.1;
+        if DataSet == 1
+            Par.h = 0.1;
+        else
+            Par.h = 0.035;
+        end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
     case 5
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
-        Par.h = 0.1;
+        if DataSet == 1
+            Par.h = 0.1;
+        else
+            Par.h = 0.035;
+        end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
     case 6
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
-        Par.h = 0.1;
+        if DataSet == 1
+            Par.h = 0.1;
+        else
+            Par.h = 0.035;
+        end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
