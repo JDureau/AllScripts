@@ -75,7 +75,7 @@ step = 0.05;
 N = nobs/step;
 Par.H.Value = 0.6;
 Par.sigma_X.Value = 0.08;
-Par.rho.Value = -0.7;
+Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
@@ -178,7 +178,7 @@ disp([median(ratios) std(ratios)])
 
 Par.H.Value = 0.6;
 Par.sigma_X.Value = 0.08;
-Par.rho.Value = -0.7;
+Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
@@ -416,20 +416,20 @@ Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
 else
-    Par.nsteps = 20;
+    Par.nsteps = 10;
 end
 
 Par = Data.ParTrue;
 theta_sampler='JointHMC'
-Par.loop = 2000;
+Par.loop = 20;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.035;
+    Par.h=0.04;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.03;%0.08;
+    Par.hZ=0.12;%0.08;
     Par.hP=0.04;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
@@ -514,7 +514,7 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet2.mat'],'Data')
+save([SavePath '/DataSet1.mat'],'Data')
 
 
 load([SavePath '/DataSet2.mat'])

@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 1000;
+loop = 100;
 
 if DataSet == 1
     load([SavePath '/DataSet1.mat'])
@@ -37,7 +37,6 @@ switch ind
             Par.hZ = 0.1;
             Par.hP = 0.04;
         end
-        Par.hP = 0.11;
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
