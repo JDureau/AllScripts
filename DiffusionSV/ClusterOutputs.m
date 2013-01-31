@@ -36,9 +36,14 @@ for k = 1:7
     Res = Ress{k};
 %     Ress{k}.h
     %figure(11); for i=10:10:min(500,loop); plot(out_Q(i,:),'b');hold on; end; plot(out_Q(1,:),'r');hold off
-    ESS=zeros(size(Res.out_Zs,2),1);
-    for i=1:size(Res.out_Zs,2)
-        r=sum(autocorr(Ress{k}.out_Zs(:,i),100));
+    try
+        paths = Res.out_Zs;
+    catch
+        paths = squeeze(Res.Paths);
+    end
+    ESS=zeros(size(paths,2),1);
+    for i=1:size(paths,2)
+        r=sum(autocorr(paths(:,i),100));
         ESS(i)=100/(1+2*r);
     end
     ESSs{k} = ESS;
