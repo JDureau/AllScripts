@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 500;
+loop = 2000;
 
 if DataSet == 1
     load([SavePath '/DataSet1.mat'])
@@ -31,11 +31,11 @@ switch ind
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 1;
         if DataSet == 1
-            Par.hZ=0.6;
-            Par.hP=0.025;
+            Par.hZ=0.65;
+            Par.hP=0.03;
         else
-            Par.hZ=0.1;
-            Par.hP=0.025;
+            Par.hZ=0.11;
+            Par.hP=0.03;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -47,8 +47,8 @@ switch ind
             Par.hZ=0.6;
             Par.hP=0.025;
         else
-            Par.hZ=0.1;
-            Par.hP=0.025;
+            Par.hZ=0.11;
+            Par.hP=0.03;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -60,8 +60,8 @@ switch ind
             Par.hZ=0.6;
             Par.hP=0.025;
         else
-            Par.hZ=0.1;
-            Par.hP=0.025;
+            Par.hZ=0.11;
+            Par.hP=0.03;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);

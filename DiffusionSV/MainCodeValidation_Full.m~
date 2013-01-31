@@ -329,12 +329,12 @@ theta_sampler='JointHMC'; % JointHMC or GibbsRW
 Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
-Par.H.Value = 0.5;
+Par.H.Value = 0.85;
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.3;
 Par.mu_Y.Value = -0.002;
-Par.mu_X.Value = 0;
-Par.X0.Value = 0;
+Par.mu_X.Value = -3;
+Par.X0.Value = 3;
 Par.kappa.Value = 0.03;
 Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
@@ -425,10 +425,10 @@ Par = NoTransfToTransf(Par);
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.5;
+    Par.h=0.025;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=1;%0.08;
-    Par.hP=0.11;
+    Par.hZ=0.6;
+    Par.hP=0.025;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
     Par.hZ = 0.1;
@@ -454,12 +454,12 @@ save([SavePath '/Test.mat'],'Data')
 
 % Data = SimDatafBM_Full(N,step,Vol,Par);
 Par = Data.ParTrue;
-Par.Epsil = 0.1;
+Par.Epsil = 1;
 Par.MCMCType = 'Rand';
 Par.G = eye(length(Par.Names.Estimated));
 Par.ModelType='SMC';
 Par.NbVariables = 3;
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Par.NoPaths = 0;
 Par.PathsToKeep = [1];
 Par.NbParsEstimated  =length(Par.Names.Estimated);
@@ -474,7 +474,7 @@ fullvolModel.InitializeParameters = @fullvolInitialize;
 fullvolModel.SMC_projection = @fullvol_SMC_projection;
 fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
 TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
-Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 200);
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 3000);
 PlotfBMpmcmc(Res)
 
 Par.G = cov(Res.TransfThetas')^(-1);
@@ -485,7 +485,7 @@ PlotfBMpmcmc(Res)
 
 Data.Cov = cov(Res.TransfThetas')^(-1);
 
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Res = EstimationSMCsmoothGen(Data, fullvolModel, Par);
 Res.LogLik
 
@@ -519,7 +519,7 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet1.mat'],'Data')
+save([SavePath '/DataSet2.mat'],'Data')
 
 
 load([SavePath '/DataSet1.mat'])
