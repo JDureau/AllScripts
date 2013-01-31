@@ -6,3 +6,4 @@ function corr = logitCorr(Name,Parameters)
     if or(isnan(corr),isinf(corr))
         corr = ((M-m)/((1+exp(-Parameters.(Name).TransfValue))*(1+exp(Parameters.(Name).TransfValue))));     
     end
+    corr = max(corr,eps);

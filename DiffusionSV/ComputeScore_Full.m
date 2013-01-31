@@ -288,7 +288,6 @@ if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHM
         elseif strcmp(Par.theta_sampler,'GibbsHMC')
             ind = Par.(Names{i}).Index;
         end
-        
         temp = Par.(Names{i}).Prior(Names{i},Par);
         tempDer = Par.(Names{i}).DerPrior(Names{i},Par);
         Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par))  + (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp) + Par.(Names{i}).CorrDer(Names{i},Par)/Par.(Names{i}).Corr(Names{i},Par);

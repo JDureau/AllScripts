@@ -31,6 +31,7 @@ subplot(2,1,2)
 plot(Vol(X))
 pause(0.01)
 
+vals = [0];
 LogLik = 0;
 % mean = sum((mu-Vol(X(1:npoints)).^2/2)*step);
 % mean = mean + rho*sum(Vol(X(1:npoints-1)).*Bh(1:npoints-1));
@@ -42,9 +43,9 @@ for i = 2:nobs
     mean = mean + sum((mu_Y-Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step);
     mean = mean + rho*sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).*Bh((i-2)*npoints+1:(i-1)*npoints));
     LogLik = LogLik + log(normpdf(Y(i),mean,sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));   
-%     ests(i) = Y(i-1) + sqrt(sum(Vol(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step);
+    %     ests(i) = Y(i-1) + sqrt(sum(Vol(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step);
+    vals(i) = LogLik;
 end
-
 % Names = Par.Names.Estimated;
 % if Par.GradCorr
 %     for j = 1:length(Names)

@@ -75,7 +75,7 @@ step = 0.05;
 N = nobs/step;
 Par.H.Value = 0.6;
 Par.sigma_X.Value = 0.08;
-Par.rho.Value = -0.7;
+Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
@@ -178,7 +178,7 @@ disp([median(ratios) std(ratios)])
 
 Par.H.Value = 0.6;
 Par.sigma_X.Value = 0.08;
-Par.rho.Value = -0.7;
+Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
@@ -309,7 +309,7 @@ ylabel('Time for Score','FontSize',20)
 
 
 %Create data and likelihood components objects etc
-nobs = 250; % Y(0) = 0 is counted as an observation
+nobs = 2; % Y(0) = 0 is counted as an observation
 step = 0.05;
 N = (nobs-1)/step;
 Vol = @ClassicVol; % how the volatility X plays on the price
@@ -329,7 +329,7 @@ theta_sampler='JointHMC'; % JointHMC or GibbsRW
 Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
-Par.H.Value = 0.85;
+Par.H.Value = 0.5;
 Par.sigma_X.Value = 0.08;
 Par.rho.Value = -0.3;
 Par.mu_Y.Value = -0.002;
@@ -366,8 +366,8 @@ Par.mu_X.InvTransf = @invlogit;
 Par.mu_X.Corr = @logitCorr;
 Par.mu_X.CorrDer = @logitCorrDer;
 Par.mu_X.TransfType = 'Logit';
-Par.X0.MinLim = -2;
-Par.X0.MaxLim =  2;
+Par.X0.MinLim = -10;
+Par.X0.MaxLim =  10;
 Par.X0.Transf = @logit;
 Par.X0.InvTransf = @invlogit;
 Par.X0.Corr = @logitCorr;
@@ -398,8 +398,8 @@ Par.kappa.TransfType = 'Logit';
 for k2 = 1:length(Par.Names.All)
     Par.(Par.Names.All{k2}).Estimated = 1;
 end
-Par.X0.Estimated = 0;
-Par.mu_X.Estimated = 0;
+Par.X0.Estimated = 1;
+Par.mu_X.Estimated = 1;
 Par.kappa.Estimated = 1;
 Par.H.Estimated = 1;
 Par = DefineIndexes(Par);
@@ -411,26 +411,24 @@ plot(Data.X)
  
 
 
-Par.loop = 500;
+Par.loop = 2000;
 Par.Qsampler = Qsampler;
 if strcmp(Qsampler,'MALA')
     Par.nsteps = 1;
 else
-    Par.nsteps = 20;
+    Par.nsteps = 10;
 end
 
-Par = Data.ParTrue;
 theta_sampler='JointHMC'
-Par.loop = 2000;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.035;
+    Par.h=0.5;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.03;%0.08;
-    Par.hP=0.04;
+    Par.hZ=1;%0.08;
+    Par.hP=0.11;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
     Par.hZ = 0.1;
@@ -447,14 +445,21 @@ Res = RunJointMCMC_Full(Data,Par)
 PlotfBMoutput(Res)
 
 
+load([SavePath '/Test.mat'])
+save([SavePath '/Test.mat'],'Data')
+
+
+
+
 
 % Data = SimDatafBM_Full(N,step,Vol,Par);
-Par.Epsil = 1;
+Par = Data.ParTrue;
+Par.Epsil = 0.1;
 Par.MCMCType = 'Rand';
 Par.G = eye(length(Par.Names.Estimated));
 Par.ModelType='SMC';
 Par.NbVariables = 3;
-Par.NbParticules = 100;
+Par.NbParticules = 1000;
 Par.NoPaths = 0;
 Par.PathsToKeep = [1];
 Par.NbParsEstimated  =length(Par.Names.Estimated);
@@ -462,14 +467,14 @@ Par.ComputationTStep = Data.step;
 Par.Vol = Vol;
 Par.Problem = 'vol';
 Data.ObservedVariables = 1;
-Par.AdaptC = 0.999;
+Par.AdaptC = 0.98;
 Par.GMeth =  'cst given';
 Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
 fullvolModel.InitializeParameters = @fullvolInitialize;
 fullvolModel.SMC_projection = @fullvol_SMC_projection;
 fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
 TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
-Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 5000);
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 200);
 PlotfBMpmcmc(Res)
 
 Par.G = cov(Res.TransfThetas')^(-1);
@@ -480,7 +485,7 @@ PlotfBMpmcmc(Res)
 
 Data.Cov = cov(Res.TransfThetas')^(-1);
 
-Par.NbParticules = 100;
+Par.NbParticules = 1000;
 Res = EstimationSMCsmoothGen(Data, fullvolModel, Par);
 Res.LogLik
 
@@ -514,10 +519,25 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet2.mat'],'Data')
+save([SavePath '/DataSet1.mat'],'Data')
 
 
-load([SavePath '/DataSet2.mat'])
+load([SavePath '/DataSet1.mat'])
+
+
+
+load([SavePath '/StateBug.mat'])
+Data = state.Data;
+Par = state.Par;
+Data.ParTrue = Par;
+Data.Z  = state.Z;
+Par.loop = 200;
+Par.h = 0.02;
+Par.nsteps = 10;
+Res = RunJointMCMC_Full(Data,Par)
+PlotfBMoutput(Res)
+
+
 
 save([SavePath '/Data_Hsims_0.9.mat'],'Data')
 

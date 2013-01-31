@@ -26,6 +26,18 @@ elseif strcmp(Par.theta_sampler,'Blocks')
     d = Par.d;
 end
   
+try
+    die
+    M = Data.Cov;
+    Mm1 = M^(-1);
+    chM = chol(M);
+catch
+    M = eye(length(Par.Names.Estimated));
+    Mm1 = M;
+    chM = M;
+end
+M
+
 
 TellParValues(Par)
 
@@ -79,6 +91,7 @@ Par.Zfixed = 0;
 Thetas = zeros(length(Par.Names.Estimated),loop);
 TransfThetas = zeros(length(Par.Names.Estimated),loop);
 
+cpt = 0;
 for iter=1:loop %mcmc loop
     disp(iter)
 
@@ -270,7 +283,7 @@ for iter=1:loop %mcmc loop
         
         % Update Ze : HMC / MALA
         Vz=(randn(1,2*(N)))';
-        Vp=(randn(1,length(Par.Names.Estimated)))';
+        Vp=chM*(randn(1,length(Par.Names.Estimated)))';
         Vzstar = Vz;
         Vpstar = Vp;
         Zstar = Z;
@@ -283,6 +296,8 @@ for iter=1:loop %mcmc loop
         ParStar = Par;
         Par.Zfixed = 0;
         Par.thetafixed = 0;
+
+        
 
         for i = 1:nsteps
             
@@ -298,7 +313,7 @@ for iter=1:loop %mcmc loop
             Zstar_h = 4/(4+h^2)*(Zstar + h*Vzstar - h^2/4*Zstar - h^2/2*Grad(1:length(Zstar)));
             Vzstar_hd2 =  Vzstar - h/2 * (Zstar + Zstar_h)/2 - h/2 *Grad(1:length(Zstar));
             
-            Vpstar_hd2 = Vpstar  - h/2*Grad(length(Zstar)+1:end); % the -h/2 Pstar corresponding to the gradient of the prior is included in Grad
+            Vpstar_hd2 = Vpstar  - h/2*M*Grad(length(Zstar)+1:end); % the -h/2 Pstar corresponding to the gradient of the prior is included in Grad
             Pstar_h = Pstar + h*Vpstar_hd2;
             ParStar_h = ParStar;
             for k = 1:length(Names)
@@ -314,7 +329,7 @@ for iter=1:loop %mcmc loop
             end
             
             Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,ParStar_h); % gradient
-            Vpstar_h = Vpstar_hd2 - h/2*Grad(length(Zstar)+1:end); % again prior gradient in Grad;
+            Vpstar_h = Vpstar_hd2 - h/2*M*Grad(length(Zstar)+1:end); % again prior gradient in Grad;
             Vzstar_h = Vzstar_hd2 - h/2*(Zstar + Zstar_h)/2 - h/2 * Grad(1:length(Zstar));
             Zstar = Zstar_h;
             Vzstar = Vzstar_h;
@@ -328,7 +343,7 @@ for iter=1:loop %mcmc loop
         LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
 %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar')*Vzstar +0.5*(Vz')*Vz - 0.5*(Vpstar')*Vpstar +0.5*(Vp')*Vp ;
+        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar')*Vzstar +0.5*(Vz')*Vz - 0.5*(Vpstar')*Mm1*Vpstar +0.5*(Vp')*Mm1*Vp ;
 %         alpha =  - 0.5*(Vpstar')*Vpstar +0.5*(Vp')*Vp ;
         if (not(isreal(alpha)))
             disp('nan')
@@ -349,8 +364,13 @@ for iter=1:loop %mcmc loop
 %            LogPrior = LogPriorStar;
            Par = ParStar;
            Accepted(iter) = 1;
+           cpt = 0;
         else
            Accepted(iter) = 0;
+           cpt = cpt + 1;
+        end
+        if cpt>50
+            'stop';
         end
         LogPost = LogLik  + LogPrior - 0.5*(Z')*Z;
 

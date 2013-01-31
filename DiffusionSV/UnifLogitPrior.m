@@ -40,4 +40,4 @@ else
     prior = tmp;     
 end
 
-tmp = max(tmp,0);
+prior = max(tmp,eps);

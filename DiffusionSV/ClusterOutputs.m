@@ -10,7 +10,7 @@ DataSet = 1;
 hs = [];
 clf
 Ress = {};
-for ind = 1:7
+for ind = 1:6
     ind
     load([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)])
     Ress{ind} = Res;
@@ -26,6 +26,8 @@ for ind = 1:7
 end
 % hold off
 
+
+load([SavePath '/D1_SavingPMCMC'])
 
 
 
@@ -54,7 +56,7 @@ for k = 1:7
     Names = Res.Par.Names.Estimated;
     for i = 1:length(Names)
         ind = Res.Par.(Names{i}).Index;
-        r=sum(autocorr(Ress{k}.Thetas(ind,:),1200));
+        r=sum(autocorr(Res.Thetas(ind,:),1200));
         disp([Names{i} '   ' num2str(100/(1+2*r))]);
     end
 %     r=sum(autocorr(Ress{k}.out_Hs,1200));

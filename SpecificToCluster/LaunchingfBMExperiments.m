@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 1000;
+loop = 500;
 
 if DataSet == 1
     load([SavePath '/DataSet1.mat'])
@@ -31,11 +31,11 @@ switch ind
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 1;
         if DataSet == 1
-            Par.hZ = 1;
-            Par.hP = 0.11;
+            Par.hZ=0.6;
+            Par.hP=0.025;
         else
-            Par.hZ = 0.1;
-            Par.hP = 0.04;
+            Par.hZ=0.1;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -44,11 +44,11 @@ switch ind
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
         if DataSet == 1
-            Par.hZ = 1;
-            Par.hP = 0.11;
+            Par.hZ=0.6;
+            Par.hP=0.025;
         else
-            Par.hZ = 0.1;
-            Par.hP = 0.04;
+            Par.hZ=0.1;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -57,11 +57,11 @@ switch ind
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
         if DataSet == 1
-            Par.hZ = 1;
-            Par.hP = 0.11;
+            Par.hZ=0.6;
+            Par.hP=0.025;
         else
-            Par.hZ = 0.1;
-            Par.hP = 0.04;
+            Par.hZ=0.1;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -70,9 +70,9 @@ switch ind
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
         if DataSet == 1
-            Par.h = 0.1;
+            Par.h = 0.025;
         else
-            Par.h = 0.035;
+            Par.h = 0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -81,9 +81,9 @@ switch ind
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
         if DataSet == 1
-            Par.h = 0.1;
+            Par.h = 0.025;
         else
-            Par.h = 0.035;
+            Par.h = 0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -92,9 +92,9 @@ switch ind
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
         if DataSet == 1
-            Par.h = 0.1;
+            Par.h = 0.025;
         else
-            Par.h = 0.035;
+            Par.h = 0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
