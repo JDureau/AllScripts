@@ -1,6 +1,7 @@
 function [] = LaunchingfBMExperiments(ind,DataSet)
 
 ind = ind+1;
+DataSet = DataSet + 2;
 
 s = RandStream('mcg16807','Seed',ind);
 RandStream.setDefaultStream(s)
@@ -11,12 +12,12 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 20000;
+loop = 500;
 
-if DataSet == 1
-    load([SavePath '/DataSet1.mat'])
+if DataSet == 3
+    load([SavePath '/DataSet3.mat'])
 else
-    load([SavePath '/DataSet2.mat'])
+    load([SavePath '/DataSet4.mat'])
 end
 
 Vol = @ClassicVol; % how the volatility X plays on the price
@@ -30,12 +31,12 @@ switch ind
     case 1
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 1;
-        if DataSet == 1
-            Par.hZ=0.65;
-            Par.hP=0.03;
+        if DataSet == 3
+            Par.hZ=0.6;
+            Par.hP=0.025;
         else
-            Par.hZ=0.11;
-            Par.hP=0.03;
+            Par.hZ=0.18;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -43,12 +44,12 @@ switch ind
     case 2
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
-        if DataSet == 1
+        if DataSet == 3
             Par.hZ=0.6;
             Par.hP=0.025;
         else
-            Par.hZ=0.11;
-            Par.hP=0.03;
+            Par.hZ=0.18;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -56,12 +57,12 @@ switch ind
     case 3
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
-        if DataSet == 1
+        if DataSet == 3
             Par.hZ=0.6;
             Par.hP=0.025;
         else
-            Par.hZ=0.11;
-            Par.hP=0.03;
+            Par.hZ=0.18;
+            Par.hP=0.025;
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -69,7 +70,7 @@ switch ind
     case 4
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
-        if DataSet == 1
+        if DataSet == 3
             Par.h = 0.025;
         else
             Par.h = 0.025;
@@ -80,7 +81,7 @@ switch ind
     case 5
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
-        if DataSet == 1
+        if DataSet == 3
             Par.h = 0.025;
         else
             Par.h = 0.025;
@@ -91,7 +92,7 @@ switch ind
     case 6
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
-        if DataSet == 1
+        if DataSet == 3
             Par.h = 0.025;
         else
             Par.h = 0.025;
@@ -100,7 +101,7 @@ switch ind
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)],'Res')
     case 7
-        if DataSet == 1
+        if DataSet == 3
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
             Par.G = Data.Cov^(-1);
