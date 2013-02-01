@@ -428,7 +428,7 @@ Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
     Par.h=0.025;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.35;%0.08;
+    Par.hZ=0.6;%0.08;
     Par.hP=0.025;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
