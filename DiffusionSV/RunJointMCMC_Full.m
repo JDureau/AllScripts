@@ -27,7 +27,6 @@ elseif strcmp(Par.theta_sampler,'Blocks')
 end
   
 try
-    die
     M = Data.Cov;
     Mm1 = M^(-1);
     chM = chol(M);

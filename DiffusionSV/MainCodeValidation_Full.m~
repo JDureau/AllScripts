@@ -420,7 +420,7 @@ else
     Par.nsteps = 10;
 end
 
-theta_sampler='GibbsHMC'
+theta_sampler='JointHMC'
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -428,8 +428,8 @@ Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
     Par.h=0.025;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.6;%0.08;
-    Par.hP=0.025;
+    Par.hZ=1;%0.08;
+    Par.hP=0.11;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
     Par.hZ = 0.1;
@@ -450,7 +450,10 @@ load([SavePath '/Test.mat'])
 save([SavePath '/Test.mat'],'Data')
 
 
-
+load([SavePath '/D' num2str(3) '_Exp' num2str(6)])
+PlotfBMoutput(Res)
+Cov = cov(Res.TransfThetas');
+Data = Res.Data;
 
 
 % Data = SimDatafBM_Full(N,step,Vol,Par);
@@ -458,9 +461,10 @@ Par = Data.ParTrue;
 Par.Epsil = 0.1;
 Par.MCMCType = 'Rand';
 Par.G = eye(length(Par.Names.Estimated));
+% Par.G = Cov^(-1);
 Par.ModelType='SMC';
 Par.NbVariables = 3;
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Par.NoPaths = 0;
 Par.PathsToKeep = [1];
 Par.NbParsEstimated  =length(Par.Names.Estimated);
@@ -468,14 +472,14 @@ Par.ComputationTStep = Data.step;
 Par.Vol = Vol;
 Par.Problem = 'vol';
 Data.ObservedVariables = 1;
-Par.AdaptC = 0.98;
+Par.AdaptC = 0.999;
 Par.GMeth =  'cst given';
 Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
 fullvolModel.InitializeParameters = @fullvolInitialize;
 fullvolModel.SMC_projection = @fullvol_SMC_projection;
-fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
+fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),sqrt(Variables(:,3)))';
 TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
-Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 200);
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 20000);
 PlotfBMpmcmc(Res)
 
 Par.G = cov(Res.TransfThetas')^(-1);
@@ -486,7 +490,7 @@ PlotfBMpmcmc(Res)
 
 Data.Cov = cov(Res.TransfThetas')^(-1);
 
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Res = EstimationSMCsmoothGen(Data, fullvolModel, Par);
 Res.LogLik
 
@@ -562,12 +566,18 @@ clf
 subplot(1,3,1)
 plot(Par.sigma_X.Value*cumsum(Bh2),'k')
 title('H=0.25','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 subplot(1,3,2)
 plot(Par.sigma_X.Value*cumsum(Bh1),'k')
 title('H=0.5','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 subplot(1,3,3)
 plot(Par.sigma_X.Value*cumsum(Bh3),'k')
 title('H=0.75','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 
 
 

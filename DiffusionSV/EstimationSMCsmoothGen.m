@@ -148,14 +148,20 @@ for IndTime = 2:length(ObservationInstants)
         coeff = 1;
     end
     
-
+    
     if 0%and(strcmp(Parameters.Problem,'ImperialHIV2'),length(Data.ObservedVariables{IndTime}) == 2)
         Weigths = eval(Model.LikFunction1);
         Weigths = Weigths.*eval(Model.LikFunction2);
     else
         Weigths = eval(Model.LikFunction);
     end
-   
+%     if IndTime == 2
+%         disp(IndTime)
+%         disp(Data.Y(IndTime)-Data.Y(IndTime-1))
+%         disp(mean(Variables(:,2)))
+%         disp(mean(Weigths))
+%    end
+    
     
     Liks(IndTime) = (mean(Weigths));
     LogLik = LogLik + max(-700,log(mean(Weigths)));

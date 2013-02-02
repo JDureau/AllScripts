@@ -450,17 +450,21 @@ load([SavePath '/Test.mat'])
 save([SavePath '/Test.mat'],'Data')
 
 
-
+load([SavePath '/D' num2str(3) '_Exp' num2str(6)])
+PlotfBMoutput(Res)
+Cov = cov(Res.TransfThetas');
+Data = Res.Data;
 
 
 % Data = SimDatafBM_Full(N,step,Vol,Par);
 Par = Data.ParTrue;
-Par.Epsil = 0.1;
+Par.Epsil = 1;
 Par.MCMCType = 'Rand';
-Par.G = eye(length(Par.Names.Estimated));
+% Par.G = eye(length(Par.Names.Estimated));
+Par.G = Cov^(-1);
 Par.ModelType='SMC';
 Par.NbVariables = 3;
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Par.NoPaths = 0;
 Par.PathsToKeep = [1];
 Par.NbParsEstimated  =length(Par.Names.Estimated);
@@ -473,7 +477,7 @@ Par.GMeth =  'cst given';
 Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
 fullvolModel.InitializeParameters = @fullvolInitialize;
 fullvolModel.SMC_projection = @fullvol_SMC_projection;
-fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
+fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),sqrt(Variables(:,3)))';
 TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
 Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 200);
 PlotfBMpmcmc(Res)
@@ -486,7 +490,7 @@ PlotfBMpmcmc(Res)
 
 Data.Cov = cov(Res.TransfThetas')^(-1);
 
-Par.NbParticules = 1000;
+Par.NbParticules = 100;
 Res = EstimationSMCsmoothGen(Data, fullvolModel, Par);
 Res.LogLik
 
