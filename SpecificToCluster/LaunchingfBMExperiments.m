@@ -3,7 +3,7 @@ function [] = LaunchingfBMExperiments(ind,DataSet)
 ind = ind+1;
 DataSet = DataSet + 2;
 
-s = RandStream('mcg16807','Seed',ind+2);
+s = RandStream('mcg16807','Seed',ind+4);
 RandStream.setDefaultStream(s)
 
 
@@ -40,7 +40,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 2
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
@@ -53,7 +53,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 3
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
@@ -66,7 +66,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 4
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
@@ -77,7 +77,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 5
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
@@ -88,7 +88,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 6
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
@@ -99,7 +99,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp3' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
     case 7
         if DataSet == 3
             Par.Epsil = 1;
@@ -123,7 +123,7 @@ switch ind
             fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
             TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
             Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, loop);
-            save([SavePath '/D' num2str(DataSet) '_Exp2' num2str(ind)],'Res')
+            save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
         end
 end
     
