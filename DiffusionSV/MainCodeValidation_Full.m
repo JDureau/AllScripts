@@ -562,12 +562,18 @@ clf
 subplot(1,3,1)
 plot(Par.sigma_X.Value*cumsum(Bh2),'k')
 title('H=0.25','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 subplot(1,3,2)
 plot(Par.sigma_X.Value*cumsum(Bh1),'k')
 title('H=0.5','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 subplot(1,3,3)
 plot(Par.sigma_X.Value*cumsum(Bh3),'k')
 title('H=0.75','FontSize',20)
+xlabel('time','FontSize',16)
+ylabel('B^H_t','FontSize',16)
 
 
 
