@@ -458,10 +458,10 @@ Data = Res.Data;
 
 % Data = SimDatafBM_Full(N,step,Vol,Par);
 Par = Data.ParTrue;
-Par.Epsil = 0.1;
+Par.Epsil = 1;
 Par.MCMCType = 'Rand';
-Par.G = eye(length(Par.Names.Estimated));
-% Par.G = Cov^(-1);
+% Par.G = eye(length(Par.Names.Estimated));
+Par.G = Cov^(-1);
 Par.ModelType='SMC';
 Par.NbVariables = 3;
 Par.NbParticules = 100;
@@ -524,10 +524,10 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet4.mat'],'Data')
+save([SavePath '/DataSet3.mat'],'Data')
 
 
-load([SavePath '/DataSet3.mat'])
+load([SavePath '/DataSet4.mat'])
 
 
 

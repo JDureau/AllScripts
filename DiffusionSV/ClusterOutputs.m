@@ -4,7 +4,7 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 
 SimSeries = 'TestingHidentifiability';
 
-DataSet = 1;
+DataSet = 4;
 
 
 hs = [];
@@ -21,7 +21,7 @@ for ind = 1:6
 %     plot(Res.Data.Y)
 %     hold on
     PlotfBMoutput(Res)
-%     disp(length(unique(Res.out_Ls))/150);
+    disp(length(unique(Res.out_Ls))/500);
     pause()
 end
 % hold off
@@ -33,7 +33,7 @@ load([SavePath '/D1_SavingPMCMC'])
 
 ESSs = {};
 
-for k = 1:7
+for k = 1:6
     k
     Res = Ress{k};
 %     Ress{k}.h
@@ -56,7 +56,7 @@ for k = 1:7
     Names = Res.Par.Names.Estimated;
     for i = 1:length(Names)
         ind = Res.Par.(Names{i}).Index;
-        r=sum(autocorr(Res.Thetas(ind,:),1200));
+        r=sum(autocorr(Res.Thetas(ind,:),500));
         disp([Names{i} '   ' num2str(100/(1+2*r))]);
     end
 %     r=sum(autocorr(Ress{k}.out_Hs,1200));

@@ -472,14 +472,14 @@ Par.ComputationTStep = Data.step;
 Par.Vol = Vol;
 Par.Problem = 'vol';
 Data.ObservedVariables = 1;
-Par.AdaptC = 0.98;
+Par.AdaptC = 0.999;
 Par.GMeth =  'cst given';
 Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
 fullvolModel.InitializeParameters = @fullvolInitialize;
 fullvolModel.SMC_projection = @fullvol_SMC_projection;
 fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),sqrt(Variables(:,3)))';
 TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
-Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 200);
+Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, 20000);
 PlotfBMpmcmc(Res)
 
 Par.G = cov(Res.TransfThetas')^(-1);

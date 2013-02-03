@@ -1,4 +1,4 @@
-function [] = LaunchingfBMExperiments(ind,DataSet)
+function [] = LaunchingfBMExperiments(ind,DataSet,OptionCov,OptionS,indExp)
 
 ind = ind+1;
 DataSet = DataSet + 2;
@@ -12,7 +12,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 20000;
+loop = 200;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])
@@ -25,6 +25,17 @@ VolDer = @DerClassicVol; % its derivative
 
 
 Par = Data.ParTrue;
+
+if OptionS
+    Par.H.Estimated = 0;
+    Par = DefineIndexes(Par);
+    Par = NoTransfToTransf(Par);
+end
+if not(OptionCov)
+    Data.Cov = eye(length(Par.Names.Estimated));
+    Data.CovS = eye(length(Par.Names.Estimated));
+end
+
 
 switch ind
 
@@ -40,7 +51,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 2
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
@@ -53,7 +64,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 3
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
@@ -66,7 +77,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 4
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
@@ -77,7 +88,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 5
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
@@ -88,7 +99,7 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 6
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
@@ -99,12 +110,12 @@ switch ind
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
-        save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+        save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 7
         if DataSet == 3
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
-            Par.G = Data.Cov^(-1);
+            Par.G = Data.CovS^(-1);
             Par.ModelType='SMC';
             Par.NbVariables = 3;
             Par.NbParticules = 100;
@@ -123,7 +134,7 @@ switch ind
             fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
             TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
             Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, loop);
-            save([SavePath '/D' num2str(DataSet) '_Exp4' num2str(ind)],'Res')
+            save([SavePath '/D' num2str(DataSet) '_Exp' num_str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
         end
 end
     
