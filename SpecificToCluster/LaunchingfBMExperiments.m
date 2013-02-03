@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 200;
+loop = 2000;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])
@@ -115,7 +115,7 @@ switch ind
         if DataSet == 3
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
-            Par.G = Data.CovS^(-1);
+            Par.G = Data.Cov^(-1);
             Par.ModelType='SMC';
             Par.NbVariables = 3;
             Par.NbParticules = 100;
