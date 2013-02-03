@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 2000;
+loop = 1000;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])
@@ -42,12 +42,22 @@ switch ind
     case 1
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 1;
-        if DataSet == 3
-            Par.hZ=0.6;
-            Par.hP=0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.025;
+            else
+                Par.hZ=0.18;
+                Par.hP=0.025;%
+            end
         else
-            Par.hZ=0.18;
-            Par.hP=0.025;
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.18;
+            else
+                Par.hZ=0.2;
+                Par.hP=0.12;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -55,12 +65,22 @@ switch ind
     case 2
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 10;
-        if DataSet == 3
-            Par.hZ=0.6;
-            Par.hP=0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.025;
+            else
+                Par.hZ=0.18;
+                Par.hP=0.025;%
+            end
         else
-            Par.hZ=0.18;
-            Par.hP=0.025;
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.18;
+            else
+                Par.hZ=0.2;
+                Par.hP=0.12;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -68,12 +88,22 @@ switch ind
     case 3
         Par.theta_sampler = 'GibbsHMC';
         Par.nsteps = 20;
-        if DataSet == 3
-            Par.hZ=0.6;
-            Par.hP=0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.025;
+            else
+                Par.hZ=0.18;
+                Par.hP=0.025;%
+            end
         else
-            Par.hZ=0.18;
-            Par.hP=0.025;
+            if DataSet == 3
+                Par.hZ=0.6;
+                Par.hP=0.18;
+            else
+                Par.hZ=0.2;
+                Par.hP=0.12;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -81,10 +111,18 @@ switch ind
     case 4
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 1;
-        if DataSet == 3
-            Par.h = 0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.h = 0.025;
+            else
+                Par.h = 0.025;
+            end
         else
-            Par.h = 0.025;
+            if DataSet == 3
+                Par.h=0.18;
+            else
+                Par.h=0.09;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -92,10 +130,18 @@ switch ind
     case 5
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 10;
-        if DataSet == 3
-            Par.h = 0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.h = 0.025;
+            else
+                Par.h = 0.025;
+            end
         else
-            Par.h = 0.025;
+            if DataSet == 3
+                Par.h=0.18;
+            else
+                Par.h=0.09;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
@@ -103,19 +149,29 @@ switch ind
     case 6
         Par.theta_sampler = 'JointHMC';
         Par.nsteps = 20;
-        if DataSet == 3
-            Par.h = 0.025;
+        if not(OptionCov)
+            if DataSet == 3
+                Par.h = 0.025;
+            else
+                Par.h = 0.025;
+            end
         else
-            Par.h = 0.025;
+            if DataSet == 3
+                Par.h=0.18;
+            else
+                Par.h=0.09;%
+            end
         end
         Par.loop = loop;
         Res = RunJointMCMC_Full(Data,Par);
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 7
         if DataSet == 3
+            Par = Data.ParTrue;
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
-            Par.G = Data.Cov^(-1);
+            % Par.G = eye(length(Par.Names.Estimated));
+            Par.G = Cov^(-1);
             Par.ModelType='SMC';
             Par.NbVariables = 3;
             Par.NbParticules = 100;
@@ -131,7 +187,7 @@ switch ind
             Data.NbComputingSteps = [0 Data.obsstep*ones(1,Data.nobs)] ;
             fullvolModel.InitializeParameters = @fullvolInitialize;
             fullvolModel.SMC_projection = @fullvol_SMC_projection;
-            fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),Variables(:,3))';
+            fullvolModel.LikFunction = 'normpdf(Data.Y(IndTime)-Data.Y(IndTime-1),Variables(:,2),sqrt(Variables(:,3)))';
             TempPar = ProposeInitialParameter(Data, fullvolModel, Par);
             Res = RunEstimationMethod(Data, fullvolModel, Par, TempPar, loop);
             save([SavePath '/D' num2str(DataSet) '_Exp' num2str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')

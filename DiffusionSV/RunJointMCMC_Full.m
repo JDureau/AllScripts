@@ -433,7 +433,7 @@ for iter=1:loop %mcmc loop
         
         
         % Update Par : HMC / MALA
-        Vp=(randn(1,length(Par.Names.Estimated)))';
+        Vp=chM*(randn(1,length(Par.Names.Estimated)))';
         Vpstar = Vp;
         Pstar = zeros(length(Par.Names.Estimated),1);
         Names = Par.Names.Estimated;
@@ -458,7 +458,7 @@ for iter=1:loop %mcmc loop
                 'stop';
             end        
             Grad = -ComputeScore_Full(Z,Y,Vol,VolDer,ParStar);
-            Vpstar_hd2 = Vpstar  - hP/2 *Grad;
+            Vpstar_hd2 = Vpstar  - hP/2*M *Grad;
             Pstar_h = Pstar  + hP*Vpstar_hd2;
             ParStar_h = ParStar;
             for k = 1:length(Names)
@@ -474,7 +474,7 @@ for iter=1:loop %mcmc loop
             end
             
             Grad= -ComputeScore_Full(Z,Y,Vol,VolDer,ParStar_h); % gradient
-            Vpstar_h = Vpstar_hd2 - hP/2*Grad; % again prior gradient in Grad;
+            Vpstar_h = Vpstar_hd2 - hP/2*M*Grad; % again prior gradient in Grad;
             Pstar = Pstar_h;
             Vpstar = Vpstar_h;
             ParStar = ParStar_h;
@@ -484,7 +484,7 @@ for iter=1:loop %mcmc loop
         LogLikStar = ComputeLogLikZ_Full(Z,Y,Vol,ParStar);
 %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = LogLikStar  - LogLik  - 0.5*(Vpstar')*Vpstar +0.5*(Vp')*Vp ;%- 0.5*(Pstar')*Pstar +0.5*(P')*P;
+        alpha = LogLikStar  - LogLik  - 0.5*(Vpstar')*Mm1*Vpstar +0.5*(Vp')*Mm1*Vp ;%- 0.5*(Pstar')*Pstar +0.5*(P')*P;
         if (not(isreal(alpha)))
             disp('nan')
         end
