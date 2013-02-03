@@ -2,7 +2,7 @@ function [] = LaunchingfBMExperiments(ind,DataSet,OptionCov,OptionS,indExp)
 
 ind = ind+1;
 
-s = RandStream('mcg16807','Seed',ind+4);
+s = RandStream('mcg16807','Seed',indExp);
 RandStream.setDefaultStream(s)
 
 
@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 1000;
+loop = 20000;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])

@@ -4,15 +4,18 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 
 SimSeries = 'TestingHidentifiability';
 
-DataSet = 4;
+DataSet = 3;
 
+indExp = 1;
+OptionS = 0;
+OptionCov = 1;
 
 hs = [];
 clf
 Ress = {};
 for ind = 1:6
     ind
-    load([SavePath '/D' num2str(DataSet) '_Exp' num2str(ind)])
+        load([SavePath '/D' num2str(DataSet) '_Exp' num2str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)])
     Ress{ind} = Res;
 %     hs(ind,:) = Res.Thetas(1,:);
 %     [fi,xi] = ksdensity(Res.Thetas(1,:));
@@ -21,7 +24,7 @@ for ind = 1:6
 %     plot(Res.Data.Y)
 %     hold on
     PlotfBMoutput(Res)
-    disp(length(unique(Res.out_Ls))/500);
+    disp(length(unique(Res.out_Ls))/1000);
     pause()
 end
 % hold off
