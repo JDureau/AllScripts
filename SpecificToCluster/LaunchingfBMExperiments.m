@@ -28,7 +28,7 @@ Par = Data.ParTrue;
 
 if not(OptionCov)
     Data.Cov = eye(length(Par.Names.Estimated));
-    Data.CovS = eye(length(Par.Names.Estimated));
+    Data.CovS = eye(length(Par.Names.Estimated)-1);
 end
 if OptionS
     Par.H.Estimated = 0;
