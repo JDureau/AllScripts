@@ -25,16 +25,17 @@ VolDer = @DerClassicVol; % its derivative
 
 Par = Data.ParTrue;
 
-if OptionS
-    Par.H.Estimated = 0;
-    Par = DefineIndexes(Par);
-    Par = NoTransfToTransf(Par);
-end
+
 if not(OptionCov)
     Data.Cov = eye(length(Par.Names.Estimated));
     Data.CovS = eye(length(Par.Names.Estimated));
 end
-
+if OptionS
+    Par.H.Estimated = 0;
+    Par = DefineIndexes(Par);
+    Par = NoTransfToTransf(Par);
+    Data.Cov = CovS;
+end
 
 switch ind
 
