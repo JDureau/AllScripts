@@ -34,7 +34,7 @@ if OptionS
     Par.H.Estimated = 0;
     Par = DefineIndexes(Par);
     Par = NoTransfToTransf(Par);
-    Data.Cov = CovS;
+    Data.Cov = Data.CovS;
 end
 
 switch ind
