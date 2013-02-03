@@ -426,10 +426,10 @@ Par = NoTransfToTransf(Par);
 
 Par.theta_sampler = theta_sampler;
 if strcmp(theta_sampler,'JointHMC')
-    Par.h=0.18;
+    Par.h=0.025;
 elseif strcmp(theta_sampler,'GibbsHMC')
-    Par.hZ=0.6;
-    Par.hP=0.18;
+    Par.hZ=1;%0.08;
+    Par.hP=0.11;
 elseif strcmp(theta_sampler,'GibbsRW')
     Par.hH = 0.5;
     Par.hZ = 0.1;
@@ -524,7 +524,7 @@ xlabel('Time','FontSize',12)
 
 
 Data.ParTrue = Par;
-save([SavePath '/DataSet4.mat'],'Data')
+save([SavePath '/DataSet3.mat'],'Data')
 
 
 load([SavePath '/DataSet4.mat'])

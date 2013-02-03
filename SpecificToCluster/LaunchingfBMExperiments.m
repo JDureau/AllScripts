@@ -171,7 +171,7 @@ switch ind
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
             % Par.G = eye(length(Par.Names.Estimated));
-            Par.G = Cov^(-1);
+            Par.G = Data.Cov^(-1);
             Par.ModelType='SMC';
             Par.NbVariables = 3;
             Par.NbParticules = 100;
