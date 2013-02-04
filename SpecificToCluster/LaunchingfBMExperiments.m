@@ -2,7 +2,7 @@ function [] = LaunchingfBMExperiments(ind,DataSet,OptionCov,OptionS,indExp)
 
 ind = ind+1;
 
-s = RandStream('mcg16807','Seed',indExp);
+s = RandStream('mcg16807','Seed',indExp+1);
 RandStream.setDefaultStream(s)
 
 
