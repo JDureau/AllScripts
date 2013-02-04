@@ -167,7 +167,7 @@ switch ind
         save([SavePath '/D' num2str(DataSet) '_Exp' num2str(indExp) '_' num2str(ind) '_' num2str(OptionS) '_' num2str(OptionCov)],'Res')
     case 7
         if DataSet == 3
-            Par = Data.ParTrue;
+%             Par = Data.ParTrue;
             Par.Epsil = 1;
             Par.MCMCType = 'Rand';
             % Par.G = eye(length(Par.Names.Estimated));
