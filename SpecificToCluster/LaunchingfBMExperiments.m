@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 20000;
+loop = 40000;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])
@@ -174,7 +174,7 @@ switch ind
             Par.G = Data.Cov^(-1);
             Par.ModelType='SMC';
             Par.NbVariables = 3;
-            Par.NbParticules = 100;
+            Par.NbParticules = 200;
             Par.NoPaths = 0;
             Par.PathsToKeep = [1];
             Par.NbParsEstimated  =length(Par.Names.Estimated);
