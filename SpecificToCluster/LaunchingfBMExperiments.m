@@ -11,7 +11,7 @@ addpath([pwd '/DiffusionSV'])
 
 SavePath = '/users/ecologie/dureau/src/AllData/fBM/';
 
-loop = 40000;
+loop = 20000;
 
 if DataSet == 3
     load([SavePath '/DataSet3.mat'])
@@ -32,7 +32,8 @@ if not(OptionCov)
 end
 if OptionS
     Par.H.Estimated = 0;
-    sa
+    Par = DefineIndexes(Par);
+    Par = NoTransfToTransf(Par);
     Data.Cov = Data.CovS;
 end
 
