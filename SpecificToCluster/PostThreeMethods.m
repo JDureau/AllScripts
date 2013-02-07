@@ -81,7 +81,7 @@ Pars97p5 = [];
 
 for i = 1:3%100
 
-try   
+if 1   
    die = 0;
        try
        if Constr
