@@ -5,6 +5,7 @@ VolDer = @DerClassicVol; % its derivative
 
 Par.GradCorr = 1;
 Par.Prior = 1;
+Par.nobs = Data.nobs;
 
 Accepted = [];
 AcceptedZ = [];
@@ -78,6 +79,7 @@ n1 = length(obsstep:obsstep:(N-1));
 out_Ls = zeros(loop,1); % Logliks
 out_Lposts = zeros(loop,1); % Logliks
 out_Zs = zeros(loop,n2);
+out_Zstart = [];
 out_Bhs = zeros(loop,n1);
 out_Xs = zeros(loop,n1);
 out_Lpriorthetas= zeros(loop,1);
@@ -768,8 +770,10 @@ for iter=1:loop %mcmc loop
     out_Ls(iter) = LogLik ;%+ LogPrior;
     out_Lposts(iter) = LogPost ;
     out_Zs(iter,:) = Z(obsstep:obsstep:2*(N-1));
+    out_Zstart(iter,:) = Z(1:10*obsstep);
     out_Bhs(iter,:) = Bh(obsstep:obsstep:N-1);
     out_Xs(iter,:) = X(obsstep:obsstep:N-1);
+    
     try
         out_LogLikGain(iter,:) = LogLikGain ;
         out_ZpriorGain(iter,:) = ZpriorGain ;
@@ -794,6 +798,7 @@ Res.out_Lposts = out_Lposts;
 Res.out_Lpriorthetas = out_Lpriorthetas;
 Res.out_LpriorZ = out_LpriorZ;
 Res.out_Zs = out_Zs;
+Res.out_Zstart = out_Zstart;
 Res.out_Xs = out_Xs;
 Res.out_LogLikGain = out_LogLikGain;
 Res.out_ZpriorGain = out_ZpriorGain;

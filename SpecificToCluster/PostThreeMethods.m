@@ -48,6 +48,7 @@ end
 
 
 ampls = [];
+partamplsFirstObs = [];
 partampls2003 = [];
 partampls1995 = [];
 asympts = [];
@@ -299,6 +300,12 @@ try
     ampls(5,cpt) = max(FtSigm)-min(FtSigm);
     ampls(6,cpt) = max(FtSigmSto)-min(FtSigmSto);
     ampls(4,cpt) = max(FtTrue)-min(FtTrue);
+    partamplsFirstObs(1,cpt) = FtDet(472);
+    partamplsFirstObs(2,cpt) = FtAdd(472);
+    partamplsFirstObs(3,cpt) = FtBer(472);
+    partamplsFirstObs(4,cpt) = FtTrue(472);
+    partamplsFirstObs(5,cpt) = FtSigm(472);
+    partamplsFirstObs(6,cpt) = FtSigmSto(472);
     partampls2003(1,cpt) = FtDet(584)-FtDet(end-168);
     partampls2003(2,cpt) = FtAdd(584)-FtAdd(end-168);
     partampls2003(3,cpt) = FtBer(584)-FtBer(end-168);
@@ -472,6 +479,7 @@ Res.baselines = baselines;
 Res.asympts = asympts;
 Res.partampls1995 = partampls1995;
 Res.partampls2003 = partampls2003;
+Res.partamplsFirstObs = partamplsFirstObs;
 %Res.amplsALL = amplsALL;
 %Res.baselinesALL = baselinesALL;
 %Res.asymptsALL = asymptsALL;

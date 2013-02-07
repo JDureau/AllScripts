@@ -28,4 +28,9 @@ for i = 1:length(Names)
     elseif strcmp(Par.(Names{i}).TransfType, 'Log')
         Par.(Names{i}).Prior = @NormalLogPrior;        
     end
+    if strcmp(Names{i}, 'rho')
+        Par.(Names{i}).Prior = @RhoPrior;
+        Par.(Names{i}).DerPrior = @DerRhoPrior;
+        Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
+    end
 end
