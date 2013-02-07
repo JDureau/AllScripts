@@ -79,7 +79,7 @@ ParsMeds = [];
 Pars2p5 = [];
 Pars97p5 = [];
 
-for i = 1:100
+for i = 1:3%100
 
 try   
    die = 0;
