@@ -212,13 +212,13 @@ if 1
           vect(j) = length(v)/(1+2*sum(tmp(2:end)));
         end
 	NbSamples(cpt+1,5) = round(size(ResSigm,2)/5);
-    vect = [];
-        Names = ResSigmSto.Parameters.Names.Estimated;
-        for j = 1:length(Names)
-          v = ResSigm.StoThetas(ResSigmSto.Parameters.(Names{j}).Index,:);
-          tmp = AutoCorrelation(v,100);
-          vect(j) = length(v)/(1+2*sum(tmp(2:end)));
-        end
+%     vect = [];
+%         Names = ResSigmSto.Parameters.Names.Estimated;
+%         for j = 1:length(Names)
+%           v = ResSigm.StoThetas(ResSigmSto.Parameters.(Names{j}).Index,:);
+%           tmp = AutoCorrelation(v,100);
+%           vect(j) = length(v)/(1+2*sum(tmp(2:end)));
+%         end
 	NbSamples(cpt+1,6) = round(size(ResSigm,2)/5);
     
     
