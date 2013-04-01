@@ -36,7 +36,7 @@ plot(tis,betas)
 ylim([0 1])
 
 
-SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 cd('/Users/dureaujoseph/AllScripts/')
 addpath([pwd '/General Tools'])
@@ -45,7 +45,7 @@ addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
 
-SavePath = '/Users/dureaujoseph/Documents/Taf/These/Matlab Scripts/AllData/Avahan';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 load([SavePath '/ParametersMysore.mat']);
 Parameters.Problem = 'ImperialHIV';

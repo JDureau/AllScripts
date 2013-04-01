@@ -17,18 +17,35 @@ if 1%try
         Parameters.ComputationTStep = 0.5;
         Parameters.TypeWork = 'Normal';
 
-        ObsVars = Parameters.ObsVars;
-        ObsMin = Parameters.ObsMin;
-        ObsMax = Parameters.ObsMax;
-        ObsYears = Parameters.ObsYears;
+        
+        tmp = [];
+        for i = 1:length(Parameters.ObsVars)
+            tmp2 = Parameters.ObsVars{i};
+            tmp(i) = tmp2(1);
+        end
+        indsclients = find(tmp == 8);
+        indsFSWs    = find(tmp == 7);
+        if Parameters.TakeClients                      
+            inds = sort([indsclients(1:min(length(indsclients),Parameters.NbRounds)) indsFSWs(1:min(length(indsFSWs),Parameters.NbRounds))]);
+        else
+            inds = indsFSWs(1:min(length(indsFSWs),Parameters.NbRounds));
+        end
+        inds
+
+        Obs = Parameters.Obs(inds);
+        ObsVars = Parameters.ObsVars(inds);
+        ObsYears = Parameters.ObsYears(inds);
         
         Data.Observations = zeros(10,length(ObsVars)+1);
         for i = 1:length(ObsVars)
             for j = 1:length(ObsVars{i})
-                Data.Observations(ObsVars{i}(j),1+i) = (ObsMin{i}(j)+ObsMax{i}(j))/2*100;
-                Data.ObsSigmas(i+1) = ((ObsMax{i}(j)-ObsMin{i}(j))*100/4);
+                Data.Observations(ObsVars{i}(j),1+i) = (Obs{i}(j))*100;
             end
         end
+        if and(Parameters.NbRounds == 3,length(Parameters.ObsVars)<5)
+            die
+        end
+        
         Instants = round((ObsYears-1985)*12);
         Data.Instants = round([0 Instants]/(Parameters.ComputationTStep));
         Data.ObservedVariables = [ 0 ObsVars];

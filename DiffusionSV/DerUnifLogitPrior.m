@@ -4,7 +4,7 @@ x2 = Parameters.(Name).MaxLim;
 
 % prior = 1/(x2-x1);
 
-delta = 0.10*(x2-x1);
+delta = 0.00001*(x2-x1);
 
 
 alpha = 1/(x2-x1-2/3*delta);

@@ -1,4 +1,4 @@
-function LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par)
+function [LogLik LogTerm1 LogTerm2] = ComputeLogLikZ_Full(Z,Y,Vol,Par)
 
 
 
@@ -17,7 +17,7 @@ kappa = Par.kappa.Value;
 
 N = length(Z)/2;
 nobs = length(Y);
-step = (nobs-1)/N;
+step = (nobs-1)/N/253;
 npoints = N/(nobs-1);
 
 Bh = Z_to_Bh(Z,N,step,Par);
@@ -38,6 +38,9 @@ LogLik = 0;
 % LogLik = log(normpdf(Y(2), mean ,sqrt(1-rho^2)*sqrt(sum(Vol(X(1:npoints-1)).^2)*step)));   
 % ests = zeros(nobs,1);
 % ests(2) = sqrt(sum(Vol(X(1:npoints-1)).^2)*step);
+LogTerm1 = 0;
+LogTerm2 = 0;
+killit = 0;
 for i = 2:nobs
     mean = Y(i-1);
     mean = mean + sum((mu_Y-Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step);
@@ -45,6 +48,17 @@ for i = 2:nobs
     LogLik = LogLik + log(normpdf(Y(i),mean,sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));   
     %     ests(i) = Y(i-1) + sqrt(sum(Vol(X((i-2)*npoints:(i-1)*npoints-1)).^2)*step);
     vals(i) = LogLik;
+    if sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step) < 0.001
+        killit = 1;
+    end
+%     disp(sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step))
+    LogTerm1 = LogTerm1 - log(max(0.000000001,sqrt(2*pi)*sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));
+    LogTerm2 = LogTerm2 - (Y(i)-mean)^2/(2*(1-rho^2)*(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step));
+end
+if killit
+    LogLik = -Inf;
+else
+    LogLik = LogTerm1 + LogTerm2;
 end
 % Names = Par.Names.Estimated;
 % if Par.GradCorr

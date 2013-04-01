@@ -6,7 +6,7 @@ function Y = SampleObs_Full(X,B,step,sigma,Par)
 
 
 N = length(X);
-nobs = N*step+1;
+nobs = N*(step*253)+1;
 npoints = N/(nobs-1);
 rho = Par.rho.Value;
 mu_Y = Par.mu_Y.Value;

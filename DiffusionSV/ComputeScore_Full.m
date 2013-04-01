@@ -13,10 +13,11 @@ mu_Y = Par.mu_Y.Value;
 rho = Par.rho.Value;
 kappa = Par.kappa.Value;
 mu_X = Par.mu_X.Value;
+tau = Par.tau.Value;
 
 N = length(Z)/2;
 nobs = length(Y);
-step = (nobs-1)/N;
+step = (nobs-1)/N/253;
 npoints = N/(nobs-1);
 
 
@@ -82,7 +83,7 @@ currentk=nobs-1;
 
 for k = 1:nobs-1
     denoms(k) = (1-rho^2) *sum(Vols_s((k-1)*npoints+1:k*npoints).^2)*step;
-    noms(k)    = (Y(k+1) - Y(k-1+1) - sum(mu_Y - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
+    noms(k)   = (Y(k+1) - Y(k-1+1) - sum(mu_Y - Vols_s((k-1)*npoints+1:k*npoints).^2/2)*step - rho* sum(Vols_s((k-1)*npoints+1:k*npoints)  .* Bh((k-1)*npoints+1:k*npoints)));
 end
 
 % denoms(currentk) = (1-rho^2) *sum(Vols_s((currentk-1)*npoints+1:currentk*npoints).^2)*step;
@@ -252,7 +253,7 @@ if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHM
 
     % dL/dmu
     if Par.mu_Y.Estimated
-        tmp = sum(noms(1:nobs-1)./denoms(1:nobs-1));
+        tmp = sum(noms(1:nobs-1)./denoms(1:nobs-1))/253;
         if strcmp(Par.theta_sampler,'JointHMC')
             Score(length(Z)+Par.mu_Y.Index) = tmp;
         elseif strcmp(Par.theta_sampler,'GibbsHMC')
@@ -278,6 +279,7 @@ end
 
 
 
+
 if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHMC'),Par.Zfixed))
     Names = Par.Names.Estimated; % ATTENTION: this is only for full update. Needs to be adapted for gibbs
     
@@ -288,12 +290,35 @@ if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHM
         elseif strcmp(Par.theta_sampler,'GibbsHMC')
             ind = Par.(Names{i}).Index;
         end
-        temp = Par.(Names{i}).Prior(Names{i},Par);
+        temp = max(10^(-100),Par.(Names{i}).Prior(Names{i},Par));
         tempDer = Par.(Names{i}).DerPrior(Names{i},Par);
-        Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par))  + (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp) + Par.(Names{i}).CorrDer(Names{i},Par)/Par.(Names{i}).Corr(Names{i},Par);
+%         Score(ind)*(Par.(Names{i}).Corr(Names{i},Par))  + (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp) + Par.(Names{i}).CorrDer(Names{i},Par)/Par.(Names{i}).Corr(Names{i},Par)
+        if Par.(Names{i}).CorrDer(Names{i},Par) == 0
+            Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par))  + (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp);
+        else
+            Score(ind) = Score(ind)*(Par.(Names{i}).Corr(Names{i},Par))  + (tempDer*Par.(Names{i}).Corr(Names{i},Par))/(temp) + Par.(Names{i}).CorrDer(Names{i},Par)/Par.(Names{i}).Corr(Names{i},Par);
+        end
     end
 end
+if sum(isnan(Score))
+    'stop'
+end
 
-
-    
+% SavePar = Par;
+% for k = 1:length(Par.Names.Estimated)
+%             
+%     ScoreAnalytic = Score;
+%     LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+%     LogPrior1 = ComputeLogPriorZ_Full(Par);
+%     epsil = 0.00000000000000001;    
+%     Par2 = Par;
+%     Par2.(Par.Names.Estimated{k}).TransfValue = Par.(Par.Names.Estimated{k}).TransfValue + epsil;
+%     Par2 = TransfToNoTransf(Par2);
+%     LogLik2 = ComputeLogLikZ_Full(Z,Y,Vol,Par2);
+%     LogPrior2 = ComputeLogPriorZ_Full(Par2);
+%     ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
+%     disp(['-inside- ratio between the two gradient estimates: ' num2str(ScoreAnalytic(length(Z)+Par.(Names{k}).Index)/ScoreNumerical,10)]);    
+% end
+% Par = SavePar;
+%     
     

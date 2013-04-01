@@ -7,6 +7,18 @@ Par.GradCorr = 1;
 Par.Prior = 1;
 Par.nobs = Data.nobs;
 
+try
+    Par.ZAlwaysfixed = Par.Zfixed;
+catch
+    Par.ZAlwaysfixed=0;
+end
+
+try
+    Par.NbZpar;
+catch
+    Par.NbZpar = 0;
+end
+
 Accepted = [];
 AcceptedZ = [];
 AcceptedPar = [];
@@ -28,15 +40,15 @@ elseif strcmp(Par.theta_sampler,'Blocks')
 end
   
 try
-    M = Data.Cov;
+    M = Data.Cov^(-1);
     Mm1 = M^(-1);
-    chM = chol(M);
+    chMm1 = chol(Mm1);
 catch
-    M = eye(length(Par.Names.Estimated));
+    M = eye(length(Par.Names.Estimated)+Par.NbZpar);
     Mm1 = M;
-    chM = M;
+    chMm1 = M;
 end
-M
+
 
 
 TellParValues(Par)
@@ -51,10 +63,10 @@ Y = Data.Y;
 nobs = length(Y);
 npoints = N/(nobs-1);
 
-try
-    Names = Par.Names.Estimated;
+Names = Par.Names.Estimated;
+if 0%try
     for i = 1:length(Names)
-        Par.(Names{i}).TransfValue = (1+0.00000000001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+        Par.(Names{i}).TransfValue = (1+0.0000001*randn)*Data.ParTrue.(Names{i}).TransfValue;
     end
     Par = TransfToNoTransf(Par);
 end
@@ -67,7 +79,7 @@ Z = Data.Z; % initialise Z with true path
 step = Data.step;
 nobs = Data.nobs;
 
-LogLik = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+[LogLik LogTerm1 LogTerm2] = ComputeLogLikZ_Full(Z,Y,Vol,Par);
 LogPost = LogLik;
 LogPriorTheta = ComputeLogPriorZ_Full(Par);
 LogPriorZ = - 0.5*(Z')*Z;
@@ -76,6 +88,8 @@ LogPriorZ = - 0.5*(Z')*Z;
 n2 = length(obsstep:obsstep:2*(N-1));
 n1 = length(obsstep:obsstep:(N-1));
 
+out_LT1s = zeros(loop,1); 
+out_LT2s = zeros(loop,1); 
 out_Ls = zeros(loop,1); % Logliks
 out_Lposts = zeros(loop,1); % Logliks
 out_Zs = zeros(loop,n2);
@@ -98,193 +112,41 @@ for iter=1:loop %mcmc loop
 
     
 
-    if strcmp(Par.theta_sampler,'JointHMC2')
-        % Update Ze : HMC / MALA
-        Ve=(randn(1,2*(N)+length(Par.Names.Estimated)))';
-        Vestar = Ve;
-        Zestar = Z;
-        Names = Par.Names.Estimated;
-        for i = 1:length(Names)
-            Zestar(length(Z) + Par.(Names{i}).Index) = Par.(Names{i}).TransfValue;
-        end
-        Ze = Zestar;
-        ParStar = Par;
-
-        for i = 1:nsteps
-            
-            Zstar = Zestar(1:end-length(Names));
-            for k = 1:length(Names)
-                ParStar.(Names{k}).TransfValue = Zestar(length(Zstar) + ParStar.(Names{k}).Index);
-            end
-            try
-                ParStar = TransfToNoTransf(ParStar);
-            catch
-                'stop';
-            end        
-            Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,ParStar);
-            Zestar_h = 4/(4+h^2)*(Zestar + h*Vestar - h^2/4*Zestar - h^2/2*Grad);
-            Vestar_hd2 =  Vestar - h/2 * (Zestar + Zestar_h)/2 - h/2 *Grad;
-            
-            ParStar_h = ParStar;
-            Zstar_h = Zestar_h(1:end-length(Names));
-            for k = 1:length(Names)
-                ParStar_h.(Names{k}).TransfValue = Zestar_h(length(Zstar) + ParStar.(Names{k}).Index);
-                if isnan(ParStar_h.(Names{k}).TransfValue)
-                    'stop';
-                end
-            end
-            try
-                ParStar_h = TransfToNoTransf(ParStar_h);
-            catch
-                'stop';
-            end
-            
-            Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,ParStar_h); % gradient
-            Vestar_h = Vestar_hd2 - h/2*(Zestar + Zestar_h)/2 - h/2 * Grad;
-            Zestar = Zestar_h;
-            Vestar = Vestar_h;
-            Zstar = Zstar_h;
-            ParStar = ParStar_h;
-
-        end
-
-        % Accept / reject Z
-        LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
-%         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
-
-        alpha = LogLikStar  - LogLik   - 0.5*(Zestar')*Zestar + 0.5*(Ze')*Ze - 0.5*(Vestar')*Vestar +0.5*(Ve')*Ve;
-        if isnan(alpha)
-            disp('nan')
-        end
-        alpha
-%         if Par.GradCorr
-%             for k = 1:length(Names)
-%                 alpha = alpha + log(Par.(Names{k}).Prior(Names{k},ParStar)) - log(Par.(Names{k}).Prior(Names{k},Par));
-%             end
-%         end
-        
-        if ( alpha >= log(rand) )
-           Z = Zstar;
-           Ve = Vestar;
-           LogLikGain = LogLikStar - LogLik;
-           ZpriorGain = - 0.5*(Zestar')*Zestar + 0.5*(Ze')*Ze;
-           LogLik = LogLikStar;
-%            LogPrior = LogPriorStar;
-           Par = ParStar;
-           Accepted(iter) = 1;
-        else
-           Accepted(iter) = 0;
-        end
-
-
-        disp(['Acc= ' num2str(mean(Accepted)) '   h=' num2str(h)])
-%         h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
-% 
-
-    elseif strcmp(Par.theta_sampler,'JointHMC2')
-        % Advanced, uniform on theta
-        
-        % Update Ze : HMC / MALA
-        Ve=(randn(1,2*(N)+length(Par.Names.Estimated)))';
-        Vestar = Ve;
-        Zestar = Z;
-        Names = Par.Names.Estimated;
-        for i = 1:length(Names)
-            Zestar(length(Z) + Par.(Names{i}).Index,1) = Par.(Names{i}).TransfValue;
-        end
-        Ze = Zestar;
-        ParStar = Par;
-        Zestar_h = Ze;
-        Vestar_hd2 = Ve;
-        Vestar_h = Ve;
-        
-        for i = 1:nsteps
-            
-            Zstar = Zestar(1:end-length(Names));
-            for k = 1:length(Names)
-                ParStar.(Names{k}).TransfValue = Zestar(length(Zstar) + ParStar.(Names{k}).Index);
-            end
-            try
-                ParStar = TransfToNoTransf(ParStar);
-            catch
-                'stop';
-            end        
-            Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,ParStar);
-            Zestar_h(1:2*N,1) = 4/(4+h^2)*(Zestar(1:2*N) + h*Vestar(1:2*N) - h^2/4*Zestar(1:2*N) - h^2/2*Grad(1:2*N));
-            Vestar_hd2(1:2*N) =  Vestar(1:2*N) - h/2 * (Zestar(1:2*N) + Zestar_h(1:2*N))/2 - h/2 *Grad(1:2*N);
-            Zestar_h(2*N+1:end,1) = 400/(400+h^2)*(Zestar(2*N+1:end) + h*Vestar(2*N+1:end) - h^2/400*Zestar(2*N+1:end) - h^2/2*Grad(2*N+1:end));
-            Vestar_hd2(2*N+1:end) =  Vestar(2*N+1:end) - h/200 * (Zestar(2*N+1:end) + Zestar_h(2*N+1:end))/2 - h/2 *Grad(2*N+1:end);
-            
-            
-            ParStar_h = ParStar;
-            Zstar_h = Zestar_h(1:end-length(Names));
-            for k = 1:length(Names)
-                ParStar_h.(Names{k}).TransfValue = Zestar_h(length(Zstar) + ParStar.(Names{k}).Index);
-                if isnan(ParStar_h.(Names{k}).TransfValue)
-                    'stop';
-                end
-            end
-            try
-                ParStar_h = TransfToNoTransf(ParStar_h);
-            catch
-                'stop';
-            end
-            
-            Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,ParStar_h); % gradient
-            Vestar_h(1:2*N) = Vestar_hd2(1:2*N) - h/2*(Zestar(1:2*N) + Zestar_h(1:2*N))/2 - h/2 * Grad(1:2*N);
-            Vestar_h(2*N+1:end) = Vestar_hd2(2*N+1:end) - h/200*(Zestar(2*N+1:end) + Zestar_h(2*N+1:end))/2 - h/2 * Grad(2*N+1:end);
-            Zestar = Zestar_h;
-            Vestar = Vestar_h;
-            Zstar = Zstar_h;
-            ParStar = ParStar_h;
-
-        end
-
-        % Accept / reject Z
-        LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
-%         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
-
-        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vestar')*Vestar +0.5*(Ve')*Ve - 0.005*(Zestar(2*N+1:end)')*Zestar(2*N+1:end) + 0.005*(Ze(2*N+1:end)')*Ze(2*N+1:end);
-        if isnan(alpha)
-            disp('nan')
-        end
-        alpha
-%         if Par.GradCorr
-%             for k = 1:length(Names)
-%                 alpha = alpha + log(Par.(Names{k}).Prior(Names{k},ParStar)) - log(Par.(Names{k}).Prior(Names{k},Par));
-%             end
-%         end
-        
-        if ( alpha >= log(rand) )
-           Z = Zstar;
-           Ve = Vestar;
-           LogLik = LogLikStar;
-%            LogPrior = LogPriorStar;
-           Par = ParStar;
-           Accepted(iter) = 1;
-        else
-           Accepted(iter) = 0;
-        end
-
-
-        disp(['Acc= ' num2str(mean(Accepted)) '   h=' num2str(h)])
-%         h = exp(log(h) + 0.98^iter*(mean(Accepted)-0.7));
-% 
-
-
-    elseif strcmp(Par.theta_sampler,'JointHMC')
+    if strcmp(Par.theta_sampler,'JointHMC')
         
         % advanced on Z, normal on theta
         
-        if rand<0.05
-            h = Par.h/2;
-        else
-            h = Par.h;
-        end
+%         if rand<0.05
+%             h = Par.h/2;
+%         else
+%             h = Par.h;
+%         end
         
         % Update Ze : HMC / MALA
         Vz=(randn(1,2*(N)))';
-        Vp=chM*(randn(1,length(Par.Names.Estimated)))';
+        
+        if Par.RManif
+            GradSamples = zeros(length(Par.Names.Estimated)+Par.NbZpar,(length(Par.Names.Estimated)+Par.NbZpar)^2);
+            ParSample = Par;
+            myeps = 0.001;
+            Zsample = Z;
+            for i = 1:(length(Par.Names.Estimated)+Par.NbZpar)^2
+                for k = 1:length(Names)
+                    ParSample.(Names{k}).TransfValue = Par.(Names{k}).TransfValue + myeps*(rand-0.5);
+                end
+                for k = length(Names)+1:length(Names)+Par.NbZpar
+                    Zsample(k-length(Names)) = Z(k-length(Names)) + myeps*(rand-0.5);
+                end
+                ParSample = TransfToNoTransf(ParSample);
+                tmp = -ComputeScore_Full(Z,Y,Vol,VolDer,ParSample);
+                GradSamples(:,i) = [tmp(length(Z)+1:end); tmp(1:Par.NbZpar)];
+            end
+            M = (myeps^(-2)*cov(GradSamples'));
+            Mm1 = M^(-1);
+            chMm1 = chol(Mm1);
+        end
+        
+        Vp=chMm1*(randn(1,length(Par.Names.Estimated)+Par.NbZpar))';
         Vzstar = Vz;
         Vpstar = Vp;
         Zstar = Z;
@@ -292,6 +154,9 @@ for iter=1:loop %mcmc loop
         Names = Par.Names.Estimated;
         for i = 1:length(Names)
             Pstar(Par.(Names{i}).Index) = Par.(Names{i}).TransfValue;
+        end
+        for i = length(Names)+1:length(Names)+Par.NbZpar
+            Pstar(i) = Z(i-length(Names));
         end
         P = Pstar;
         ParStar = Par;
@@ -303,7 +168,11 @@ for iter=1:loop %mcmc loop
         for i = 1:nsteps
             
             for k = 1:length(Names)
+%                 ParStar.(Names{k}).TransfValue = Pstar(ParStar.(Names{k);
                 ParStar.(Names{k}).TransfValue = Pstar(ParStar.(Names{k}).Index);
+            end
+            for k = 1:Par.NbZpar
+                Zstar(k) = Pstar(length(Names)+k);
             end
             try
                 ParStar = TransfToNoTransf(ParStar);
@@ -314,14 +183,18 @@ for iter=1:loop %mcmc loop
             Zstar_h = 4/(4+h^2)*(Zstar + h*Vzstar - h^2/4*Zstar - h^2/2*Grad(1:length(Zstar)));
             Vzstar_hd2 =  Vzstar - h/2 * (Zstar + Zstar_h)/2 - h/2 *Grad(1:length(Zstar));
             
-            Vpstar_hd2 = Vpstar  - h/2*M*Grad(length(Zstar)+1:end); % the -h/2 Pstar corresponding to the gradient of the prior is included in Grad
+            Vpstar_hd2 = Vpstar  - h/2 * Mm1* [Grad(length(Zstar)+1:end); Grad(1:Par.NbZpar)]; % the -h/2 Pstar corresponding to the gradient of the prior is included in Grad
             Pstar_h = Pstar + h*Vpstar_hd2;
             ParStar_h = ParStar;
             for k = 1:length(Names)
+%                 ParStar_h.(Names{k}).TransfValue = Pstar_h(k);
                 ParStar_h.(Names{k}).TransfValue = Pstar_h(ParStar.(Names{k}).Index);
                 if isnan(ParStar_h.(Names{k}).TransfValue)
                     'stop';
                 end
+            end
+            for k = 1:Par.NbZpar
+                Zstar_h(k) = Pstar(length(Names)+k);
             end
             try
                 ParStar_h = TransfToNoTransf(ParStar_h);
@@ -330,7 +203,7 @@ for iter=1:loop %mcmc loop
             end
             
             Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,ParStar_h); % gradient
-            Vpstar_h = Vpstar_hd2 - h/2*M*Grad(length(Zstar)+1:end); % again prior gradient in Grad;
+            Vpstar_h = Vpstar_hd2 - h/2*Mm1*[Grad(length(Zstar)+1:end); Grad(1:Par.NbZpar)]; % again prior gradient in Grad;
             Vzstar_h = Vzstar_hd2 - h/2*(Zstar + Zstar_h)/2 - h/2 * Grad(1:length(Zstar));
             Zstar = Zstar_h;
             Vzstar = Vzstar_h;
@@ -340,26 +213,40 @@ for iter=1:loop %mcmc loop
 
         end
 
+       
         % Accept / reject Z
-        LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
+        [LogLikStar LogTerm1Star LogTerm2Star] = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
 %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar')*Vzstar +0.5*(Vz')*Vz - 0.5*(Vpstar')*Mm1*Vpstar +0.5*(Vp')*Mm1*Vp ;
+        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar(Par.NbZpar+1:end)')*Vzstar(Par.NbZpar+1:end) +0.5*(Vz(Par.NbZpar+1:end)')*Vz(Par.NbZpar+1:end) - 0.5*(Vpstar')*M*Vpstar +0.5*(Vp')*M*Vp ;
 %         alpha =  - 0.5*(Vpstar')*Vpstar +0.5*(Vp')*Vp ;
+ 
+        
+        if isnan(alpha)
+            'stop';
+        end
+    
         if (not(isreal(alpha)))
             disp('nan')
         end
         LogPriorStar = ComputeLogPriorZ_Full(ParStar);
         LogPrior     = ComputeLogPriorZ_Full(Par);
-                
-        alpha = alpha + LogPriorStar - LogPrior;
+             
         
+        alpha = alpha + LogPriorStar - LogPrior;
+       alpha    
            
         if ( alpha >= log(rand) )
+            
+           if  LogLikStar  - LogLik <-100
+               'stop'
+           end
            Z = Zstar;
            Vz = Vzstar;
            Vp = Vpstar;
            LogLik = LogLikStar;
+           LogTerm1 = LogTerm1Star;
+           LogTerm2 = LogTerm2Star;
            LogPriorTheta = LogPriorStar;
            LogPriorZ = - 0.5*(Z')*Z;
 %            LogPrior = LogPriorStar;
@@ -390,44 +277,46 @@ for iter=1:loop %mcmc loop
             hP = Par.hP;
         end
     
-        % Update Z : HMC / MALA
-        Vz=(randn(1,2*(N)))';
-        Vzstar = Vz;
-        Zstar = Z;
-        Par.Zfixed = 0;
-        Par.thetafixed = 1;
+        if not(Par.ZAlwaysfixed)
+            % Update Z : HMC / MALA
+            Vz=(randn(1,2*(N)))';
+            Vzstar = Vz;
+            Zstar = Z;
+            Par.Zfixed = 0;
+            Par.thetafixed = 1;
 
-        for i = 1:nsteps
-            
-            Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,Par);
-            Zstar_h = 4/(4+hZ^2)*(Zstar + hZ*Vzstar - hZ^2/4*Zstar - hZ^2/2*Grad(1:length(Zstar)));
-            Vzstar_hd2 =  Vzstar - hZ/2 * (Zstar + Zstar_h)/2 - hZ/2 *Grad(1:length(Zstar));
-            Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,Par); % gradient
-            Vzstar_h = Vzstar_hd2 - hZ/2*(Zstar + Zstar_h)/2 - hZ/2 * Grad(1:length(Zstar));
-            Zstar = Zstar_h;
-            Vzstar = Vzstar_h;
-          
-        end
+            for i = 1:nsteps
 
-        % Accept / reject Z
-        LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,Par);
-%         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
+                Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,Par);
+                Zstar_h = 4/(4+hZ^2)*(Zstar + hZ*Vzstar - hZ^2/4*Zstar - hZ^2/2*Grad(1:length(Zstar)));
+                Vzstar_hd2 =  Vzstar - hZ/2 * (Zstar + Zstar_h)/2 - hZ/2 *Grad(1:length(Zstar));
+                Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,Par); % gradient
+                Vzstar_h = Vzstar_hd2 - hZ/2*(Zstar + Zstar_h)/2 - hZ/2 * Grad(1:length(Zstar));
+                Zstar = Zstar_h;
+                Vzstar = Vzstar_h;
 
-        alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar')*Vzstar +0.5*(Vz')*Vz ;
-        if (not(isreal(alpha)))
-            disp('nan')
-        end
+            end
 
-        
-        if ( alpha >= log(rand) )
-           Z = Zstar;
-           Vz = Vzstar;
-           LogLik = LogLikStar;
-           LogPriorZ = - 0.5*(Z')*Z;
-%            LogPrior = LogPriorStar;
-           AcceptedZ(iter) = 1;
-        else
-           AcceptedZ(iter) = 0;
+            % Accept / reject Z
+            LogLikStar = ComputeLogLikZ_Full(Zstar,Y,Vol,Par);
+    %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
+
+            alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar')*Vzstar +0.5*(Vz')*Vz ;
+            if (not(isreal(alpha)))
+                disp('nan')
+            end
+
+
+            if ( alpha >= log(rand) )
+               Z = Zstar;
+               Vz = Vzstar;
+               LogLik = LogLikStar;
+               LogPriorZ = - 0.5*(Z')*Z;
+    %            LogPrior = LogPriorStar;
+               AcceptedZ(iter) = 1;
+            else
+               AcceptedZ(iter) = 0;
+            end
         end
         
         
@@ -435,7 +324,7 @@ for iter=1:loop %mcmc loop
         
         
         % Update Par : HMC / MALA
-        Vp=chM*(randn(1,length(Par.Names.Estimated)))';
+        Vp=chMm1*(randn(1,length(Par.Names.Estimated)))';
         Vpstar = Vp;
         Pstar = zeros(length(Par.Names.Estimated),1);
         Names = Par.Names.Estimated;
@@ -460,7 +349,7 @@ for iter=1:loop %mcmc loop
                 'stop';
             end        
             Grad = -ComputeScore_Full(Z,Y,Vol,VolDer,ParStar);
-            Vpstar_hd2 = Vpstar  - hP/2*M *Grad;
+            Vpstar_hd2 = Vpstar  - hP/2*Mm1 *Grad;
             Pstar_h = Pstar  + hP*Vpstar_hd2;
             ParStar_h = ParStar;
             for k = 1:length(Names)
@@ -476,7 +365,7 @@ for iter=1:loop %mcmc loop
             end
             
             Grad= -ComputeScore_Full(Z,Y,Vol,VolDer,ParStar_h); % gradient
-            Vpstar_h = Vpstar_hd2 - hP/2*M*Grad; % again prior gradient in Grad;
+            Vpstar_h = Vpstar_hd2 - hP/2*Mm1*Grad; % again prior gradient in Grad;
             Pstar = Pstar_h;
             Vpstar = Vpstar_h;
             ParStar = ParStar_h;
@@ -486,7 +375,7 @@ for iter=1:loop %mcmc loop
         LogLikStar = ComputeLogLikZ_Full(Z,Y,Vol,ParStar);
 %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
-        alpha = LogLikStar  - LogLik  - 0.5*(Vpstar')*Mm1*Vpstar +0.5*(Vp')*Mm1*Vp ;%- 0.5*(Pstar')*Pstar +0.5*(P')*P;
+        alpha = LogLikStar  - LogLik  - 0.5*(Vpstar')*M*Vpstar +0.5*(Vp')*M*Vp ;%- 0.5*(Pstar')*Pstar +0.5*(P')*P;
         if (not(isreal(alpha)))
             disp('nan')
         end
@@ -764,15 +653,21 @@ for iter=1:loop %mcmc loop
         Thetas(Par.(Names{k}).Index,iter) = Par.(Names{k}).Value;
         TransfThetas(Par.(Names{k}).Index,iter) = Par.(Names{k}).TransfValue;
     end
-    
+    for k = length(Names)+1:length(Names)+Par.NbZpar
+        TransfThetas(k,iter) = Z(k);
+    end
     out_Lpriorthetas(iter) = LogPriorTheta;
     out_LpriorZ(iter) = LogPriorZ;
     out_Ls(iter) = LogLik ;%+ LogPrior;
+    out_LT1s(iter) = LogTerm1;
+    out_LT2s(iter) = LogTerm2;
     out_Lposts(iter) = LogPost ;
     out_Zs(iter,:) = Z(obsstep:obsstep:2*(N-1));
-    out_Zstart(iter,:) = Z(1:10*obsstep);
-    out_Bhs(iter,:) = Bh(obsstep:obsstep:N-1);
-    out_Xs(iter,:) = X(obsstep:obsstep:N-1);
+    try
+        out_Zstart(iter,:) = Z(1:10*obsstep);
+        out_Bhs(iter,:) = Bh(obsstep:obsstep:N-1);
+        out_Xs(iter,:) = X(obsstep:obsstep:N-1);
+    end
     
     try
         out_LogLikGain(iter,:) = LogLikGain ;
@@ -793,6 +688,8 @@ Res.Ztrue = Data.Z;
 try
     Res.ParTrue = Data.ParTrue;
 end
+Res.out_LT1s = out_LT1s;
+Res.out_LT2s = out_LT2s;
 Res.out_Ls = out_Ls;
 Res.out_Lposts = out_Lposts;
 Res.out_Lpriorthetas = out_Lpriorthetas;

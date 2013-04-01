@@ -4,11 +4,11 @@ SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 
 SimSeries = 'TestingHidentifiability';
 
-DataSet = 4;
+DataSet = 3;
 
 indExp = 1;
-OptionS = 0;
-OptionCov = 1;
+OptionS = 1;
+OptionCov = 0;
 
 hs = [];
 clf
@@ -51,7 +51,7 @@ for k = 1:6
     end
     ESS=zeros(size(paths,2),1);
     for i=1:size(paths,2)
-        r=sum(autocorr(paths(:,i),100));
+        r=sum(autocorr(paths(:,i),300));
         ESS(i)=100/(1+2*r);
     end
     ESSs{k} = ESS;
@@ -62,7 +62,7 @@ for k = 1:6
     Names = Res.Par.Names.Estimated;
     for i = 1:length(Names)
         ind = Res.Par.(Names{i}).Index;
-        r=sum(autocorr(Res.Thetas(ind,:),999));
+        r=sum(autocorr(Res.Thetas(ind,:),500));
         disp([Names{i} '   ' num2str(100/(1+2*r))]);
     end
 %     r=sum(autocorr(Ress{k}.out_Hs,1200));

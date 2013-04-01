@@ -5,7 +5,8 @@ function Data = LoadYahooData(file,step)
 
     nobs = size(tab,1);
     Y = log(tab(:,1));
-    N = (nobs-1)/step;
+%     Y = Y-Y(1);
+    N = (nobs-1)/step/253;
     
     nobs = length(Y);
     obsstep = N/(nobs-1);

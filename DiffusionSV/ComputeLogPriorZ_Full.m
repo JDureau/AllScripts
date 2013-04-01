@@ -14,7 +14,9 @@ if Par.Prior
         for j = 1:length(Names)
             temp = Par.(Names{j}).Prior(Names{j},Par);
 %             disp([Names{j} '   ' num2str(log(temp) + log(Par.(Names{j}).Corr(Names{j},Par)))])
-            LogPrior = LogPrior + log(temp) + log(Par.(Names{j}).Corr(Names{j},Par));
+            if not(strcmp(Par.(Names{j}).TransfType, 'Id'))
+                LogPrior = LogPrior + log(temp) + log(Par.(Names{j}).Corr(Names{j},Par));
+            end
         end
     end
 end

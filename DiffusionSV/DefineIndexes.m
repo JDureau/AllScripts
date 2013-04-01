@@ -17,6 +17,7 @@ Par.Names.Estimated = tmp;
 
 Names = Par.Names.Estimated;
 for i = 1:length(Names)
+    Names{i}
     if strcmp(Par.(Names{i}).TransfType, 'Logit')
 %         if Par.(Names{i}).Max == 10^14
             Par.(Names{i}).Prior = @UnifLogitPrior;
@@ -26,11 +27,26 @@ for i = 1:length(Names)
 %             Par.(Names{i}).Prior = @NormalLogitPrior;
 %         end
     elseif strcmp(Par.(Names{i}).TransfType, 'Log')
-        Par.(Names{i}).Prior = @NormalLogPrior;        
+        Par.(Names{i}).Prior = @NormalLogPrior;    
+        Par.(Names{i}).DerPrior = @DerNormalLogPrior;
+        Par.(Names{i}).CorrFunct = @logCorr;
+        Par.(Names{i}).MinLim = 0;
+        Par.(Names{i}).MaxLim = 0;
+    elseif strcmp(Par.(Names{i}).TransfType, 'Id')
+        Par.(Names{i}).Prior = @NormalLogPrior;    
+        Par.(Names{i}).DerPrior = @DerNormalLogPrior;
+        Par.(Names{i}).CorrFunct = @idCorr;
+        Par.(Names{i}).MinLim = 0;
+        Par.(Names{i}).MaxLim = 0;
     end
-    if strcmp(Names{i}, 'rho')
-        Par.(Names{i}).Prior = @RhoPrior;
-        Par.(Names{i}).DerPrior = @DerRhoPrior;
+%     if strcmp(Names{i}, 'rho')
+%         Par.(Names{i}).Prior = @RhoPrior;
+%         Par.(Names{i}).DerPrior = @DerRhoPrior;
+%         Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
+%     end
+    if strcmp(Names{i}, 'sigma_X')
+        Par.(Names{i}).Prior = @SigmaPrior;
+        Par.(Names{i}).DerPrior = @DerSigmaPrior;
         Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
     end
 end

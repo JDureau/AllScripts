@@ -7,7 +7,7 @@ function Bh = Z_to_Bh(Z,N,step,Par)
 
    H = Par.H.Value;
 
-    if H == 0.5
+    if 0%H == 0.5
     %     Lambda = ComputeLambda(N,step,H)';
         Bh = sqrt(step)*Z(1:N);
     else

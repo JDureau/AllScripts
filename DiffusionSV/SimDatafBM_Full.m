@@ -11,6 +11,7 @@ function Data = SimDatafBM_Full(N,step,Vol,Par)
     nobs = length(Y);
     obsstep = N/(nobs-1);
     
+    
     Data = struct();
     Data.Z = Z;
     Data.X = X;
@@ -22,7 +23,9 @@ function Data = SimDatafBM_Full(N,step,Vol,Par)
     Data.obsstep = obsstep;
     Data.step = step;
     
-    
+    [LogLik LogTerm1] = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+    Data.LogTerm1 = LogTerm1;
+    Data.LogLik = LogLik;
     
     SavePath = '/Users/dureaujoseph/Documents/PhD_Data/fBM/';
 %     save([SavePath data_file],'Data');
