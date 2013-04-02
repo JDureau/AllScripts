@@ -1,4 +1,4 @@
-function Score = ComputeScore_Full(Z,Y,Vol,VolDer,Par)
+function Score = ComputeScore_Full(Z,Obss,Vol,VolDer,Par)
     % Length of Z : 2*(N-1)
     % Length of Bh : N-1
     % Length of X : N-1  
@@ -7,6 +7,8 @@ function Score = ComputeScore_Full(Z,Y,Vol,VolDer,Par)
 
 %% dL/dZ
 
+Y = Obss.Y;
+Yx = Obss.Yx;
 H = Par.H.Value;
 sigma_X = Par.sigma_X.Value;
 mu_Y = Par.mu_Y.Value;
@@ -99,7 +101,9 @@ bmu_X = zeros(1,N);
 bX0 = ones(1,N);
 bZ = zeros(1,N);
 
-bZ(N) = 1;
+if Par.obsx
+    b(N) = - sigma_X * (X(N)-Yx(nobs-1))/tau^2;
+end
 tmp(N) = rho* Vols_s(N) * noms(currentk)/(denoms(currentk));
 nomsfull = zeros(N,1);
 denomsfull = zeros(N,1);
@@ -128,6 +132,10 @@ for j = N-1:-1:1
     b(j) = b(j) + 1/denoms(ks(j)) * ( - sigma_X  * Vols_s_prime(j+1) * Vols_s(j+1) * step + rho* sigma_X * Vols_s_prime(j+1) * Bh(j+1))*noms(ks(j));
     
     b(j) = b(j) + noms(ks(j))^2 * (1-rho^2) * sigma_X  * Vols_s_prime(j+1) * Vols_s(j+1) * step/(denoms(ks(j))^2);
+    
+    if and(Par.obsx,mod(j,npoints)==0)
+        b(j) = b(j) - sigma_X  * (X(j)-Yx(ks(j)-1))/tau^2;
+    end
     
     if ceil((j)/npoints)<ks(j)
         tmp(j) = b(j) + rho* Vols_s(j) * noms(ks(j)-1)/(denoms(ks(j)-1));
@@ -274,6 +282,18 @@ if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHM
         elseif strcmp(Par.theta_sampler,'GibbsHMC')
             Score(Par.rho.Index,1) = tmp;
         end
+    end
+    
+    % dL /dtau
+    if and(Par.tau.Estimated,Par.obsx)
+        tmptau = -(nobs-1)/tau + sum((X(npoints*(1:nobs-1))-Yx).^2)/tau^3;
+        if strcmp(Par.theta_sampler,'JointHMC')
+            Score(length(Z)+Par.tau.Index) = tmptau;
+        elseif strcmp(Par.theta_sampler,'GibbsHMC')
+            Score(Par.tau.Index,1) = tmptau;
+        end
+    elseif and(Par.tau.Estimated,not(Par.obsx))
+        die
     end
 end
 

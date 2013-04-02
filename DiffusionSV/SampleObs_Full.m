@@ -1,4 +1,4 @@
-function Y = SampleObs_Full(X,B,step,sigma,Par)
+function Obss = SampleObs_Full(X,B,step,sigma,Par)
     % Length of Z : 2*(N-1)
     % Length of Bh : N-1
     % Length of X : N  
@@ -18,4 +18,8 @@ for i = 2:nobs
     Y(i) = Y(i)   + sum((mu_Y-sigma(X((i-2)*npoints+1:(i-1)*npoints)).^2/2)*step) ;
     Y(i) = Y(i)   + rho*sum(sigma(X((i-2)*npoints+1:(i-1)*npoints)).*B((i-2)*npoints+1:(i-1)*npoints));
 end
+Yx = X(npoints*(1:nobs-1))+Par.tau.Value*randn(nobs-1,1);
+
+Obss.Y = Y;
+Obss.Yx = Yx;
 

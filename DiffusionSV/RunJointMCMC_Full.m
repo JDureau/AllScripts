@@ -59,6 +59,7 @@ nsteps = Par.nsteps;
 
 obsstep = Data.obsstep;
 N = Data.N;
+Obss = Data.Obss;
 Y = Data.Y;
 nobs = length(Y);
 npoints = N/(nobs-1);
@@ -79,7 +80,7 @@ Z = Data.Z; % initialise Z with true path
 step = Data.step;
 nobs = Data.nobs;
 
-[LogLik LogTerm1 LogTerm2] = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+[LogLik LogTerm1 LogTerm2] = ComputeLogLikZ_Full(Z,Obss,Vol,Par);
 LogPost = LogLik;
 LogPriorTheta = ComputeLogPriorZ_Full(Par);
 LogPriorZ = - 0.5*(Z')*Z;
@@ -179,7 +180,7 @@ for iter=1:loop %mcmc loop
             catch
                 'stop';
             end        
-            Grad = -ComputeScore_Full(Zstar,Y,Vol,VolDer,ParStar);
+            Grad = -ComputeScore_Full(Zstar,Obss,Vol,VolDer,ParStar);
             Zstar_h = 4/(4+h^2)*(Zstar + h*Vzstar - h^2/4*Zstar - h^2/2*Grad(1:length(Zstar)));
             Vzstar_hd2 =  Vzstar - h/2 * (Zstar + Zstar_h)/2 - h/2 *Grad(1:length(Zstar));
             
@@ -202,7 +203,7 @@ for iter=1:loop %mcmc loop
                 'stop';
             end
             
-            Grad= -ComputeScore_Full(Zstar_h,Y,Vol,VolDer,ParStar_h); % gradient
+            Grad= -ComputeScore_Full(Zstar_h,Obss,Vol,VolDer,ParStar_h); % gradient
             Vpstar_h = Vpstar_hd2 - h/2*Mm1*[Grad(length(Zstar)+1:end); Grad(1:Par.NbZpar)]; % again prior gradient in Grad;
             Vzstar_h = Vzstar_hd2 - h/2*(Zstar + Zstar_h)/2 - h/2 * Grad(1:length(Zstar));
             Zstar = Zstar_h;
@@ -215,7 +216,7 @@ for iter=1:loop %mcmc loop
 
        
         % Accept / reject Z
-        [LogLikStar LogTerm1Star LogTerm2Star] = ComputeLogLikZ_Full(Zstar,Y,Vol,ParStar);
+        [LogLikStar LogTerm1Star LogTerm2Star] = ComputeLogLikZ_Full(Zstar,Obss,Vol,ParStar);
 %         LogPriorStar = ComputeLogPriorZ_Full(Zstar,ParStar);
 
         alpha = LogLikStar  - LogLik   - 0.5*(Zstar')*Zstar + 0.5*(Z')*Z - 0.5*(Vzstar(Par.NbZpar+1:end)')*Vzstar(Par.NbZpar+1:end) +0.5*(Vz(Par.NbZpar+1:end)')*Vz(Par.NbZpar+1:end) - 0.5*(Vpstar')*M*Vpstar +0.5*(Vp')*M*Vp ;

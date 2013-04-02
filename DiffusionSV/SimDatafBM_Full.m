@@ -6,16 +6,20 @@ function Data = SimDatafBM_Full(N,step,Vol,Par)
     Z = Sample_Z(N);
     Bh = Z_to_Bh(Z,N,step,Par);
     X = Bh_to_X_Full(Bh,step,Par);
-    Y = SampleObs_Full(X,Bh,step,Vol,Par);
+    Obss = SampleObs_Full(X,Bh,step,Vol,Par);
     
-    nobs = length(Y);
+    nobs = length(Obss.Y);
     obsstep = N/(nobs-1);
     
     
     Data = struct();
     Data.Z = Z;
     Data.X = X;
-    Data.Y = Y;
+    Data.Y = Obss.Y;
+    try
+        Data.Yx = Obss.Yx;
+    end
+    Data.Obss = Obss; 
     Data.N = N;
     Data.step = step;
     Data.ParTrue = Par;
@@ -23,7 +27,7 @@ function Data = SimDatafBM_Full(N,step,Vol,Par)
     Data.obsstep = obsstep;
     Data.step = step;
     
-    [LogLik LogTerm1] = ComputeLogLikZ_Full(Z,Y,Vol,Par);
+    [LogLik LogTerm1] = ComputeLogLikZ_Full(Z,Obss,Vol,Par);
     Data.LogTerm1 = LogTerm1;
     Data.LogLik = LogLik;
     
