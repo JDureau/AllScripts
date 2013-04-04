@@ -45,7 +45,6 @@ ylabel('Volatility')
 
 %% validating score computation with numerical computation
 
-Par.obsx = 1;
 Vol = @ClassicVol; % how the volatility X plays on the price
 VolDer = @DerClassicVol; % its derivative
 nobs = 250;
@@ -124,6 +123,9 @@ Par.kappa.TransfType = 'Logit';
 for k = 1:length(Par.Names.All)
    Par.(Par.Names.All{k}).Estimated = 1;
 end
+
+Par.obsx = 1;
+Par.tau.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -145,11 +147,13 @@ for i = 1:50
     ind = ceil(rand(1,1)*N);
     inds(i) = ind;
     LogLik1 = ComputeLogLikZ_Full(Z,Obss,Vol,Par);
+    [LogLik LogTerm1 LogTerm2 LogTerm31] = ComputeLogLikZ_Full(Z,Obss,Vol,Par);
     LogPrior1 = ComputeLogPriorZ_Full(Par);
     epsil = 0.000001;    
     Z2 = Z;
     Z2(ind) = Z2(ind) + epsil;
     LogLik2 = ComputeLogLikZ_Full(Z2,Obss,Vol,Par);
+    [LogLik LogTerm1 LogTerm2 LogTerm32] = ComputeLogLikZ_Full(Z2,Obss,Vol,Par);
     LogPrior2 = ComputeLogPriorZ_Full(Par);
     ScoreNumerical = (LogLik2 + LogPrior2 - LogLik1 - LogPrior1)/epsil;
     ScoreAnalytic = ComputeScore_Full(Z,Obss,Vol,VolDer,Par);
@@ -185,8 +189,9 @@ Par.theta_sampler='JointHMC';
 Par = NoTransfToTransf(Par);
 
 Par.Names.All = {'tau','H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
+% Par.Names.All = {'H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
-for k = 1:length(Par.Names.All)
+for k = 3:length(Par.Names.All)
     for k2 = 1:length(Par.Names.All)
         Par.(Par.Names.All{k2}).Estimated = 0;
     end
@@ -207,7 +212,7 @@ for k = 1:length(Par.Names.All)
 
         LogLik1 = ComputeLogLikZ_Full(Z,Y,Vol,Par);
         LogPrior1 = ComputeLogPriorZ_Full(Par);
-        epsil = 0.00000001;    
+        epsil = 0.000001;    
         Par2 = Par;
         Par2.(Par.Names.All{k}).TransfValue = Par.(Par.Names.All{k}).TransfValue + epsil;
         Par2 = TransfToNoTransf(Par2);
@@ -235,7 +240,7 @@ end
 
 
 %Create data and likelihood components objects etc
-nobs = 100; % Y(0) = 0 is counted as an observation
+nobs = 250; % Y(0) = 0 is counted as an observation
 step = 0.05/253;
 N = (nobs-1)/step/253;
 Vol = @ClassicVol; % how the volatility X plays on the price
@@ -256,16 +261,16 @@ Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
 
-Par.obsx = 1;
+Par.obsx = 0;
 
 Par.tau.Value = 0.1;
 Par.H.Value = 0.5;
-Par.sigma_X.Value = 2;
+Par.sigma_X.Value = 0.14%2;
 Par.rho.Value = -0.76;
 Par.mu_Y.Value = 0.246;
 Par.mu_X.Value = -3.28;
 Par.X0.Value = -3.28;
-Par.kappa.Value = 4;
+Par.kappa.Value = 0.03;%0.6;
 Par.Names.All = {'tau','H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.tau.Transf = @mylog;
@@ -327,6 +332,7 @@ for k2 = 1:length(Par.Names.All)
 end
 Par.rho.Estimated = 1;
 Par.H.Estimated = 1;
+Par.tau.Estimated = 0;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -344,18 +350,18 @@ Par.theta_sampler='JointHMC'
 
 
 Par.nsteps = 1;
-Par.loop = 5000;
-Par.h = 0.0005;
+Par.loop = 1000;
+Par.h = 0.01;
 Par.NbZpar = 0;
 Par.RManif = 0;
 Res = RunJointMCMC_Full(Data,Par);
-Data.ParTrue = Res.Par;
+Data.ParStart = Res.Par;
 Data.Z = Res.Z;
 Par = Data.ParTrue;
 Par.nsteps = 20;
 Data.Cov = cov(Res.TransfThetas');
 Par.loop = 500;
-Par.h = 0.01;
+Par.h = 0.07;
 Res = RunJointMCMC_Full(Data,Par);
 
 
@@ -396,7 +402,7 @@ PlotfBMoutput(Res)
 Data.Cov = diag(diag(cov(Res.TransfThetas')));
 
 
-save([SavePath '/InvGamma0.3works.mat'],'Res')
+save([SavePath '/testingHMC.mat'],'Res')
 
 
 load([SavePath '/Test.mat'])

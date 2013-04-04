@@ -66,8 +66,14 @@ npoints = N/(nobs-1);
 
 Names = Par.Names.Estimated;
 if 0%try
-    for i = 1:length(Names)
-        Par.(Names{i}).TransfValue = (1+0.0000001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+    try
+        for i = 1:length(Names)
+            Par.(Names{i}).TransfValue = (1+0.0000001*randn)*Data.ParStart.(Names{i}).TransfValue;
+        end
+    catch
+        for i = 1:length(Names)
+            Par.(Names{i}).TransfValue = (1+0.0000001*randn)*Data.ParTrue.(Names{i}).TransfValue;
+        end
     end
     Par = TransfToNoTransf(Par);
 end

@@ -101,9 +101,7 @@ bmu_X = zeros(1,N);
 bX0 = ones(1,N);
 bZ = zeros(1,N);
 
-if Par.obsx
-    b(N) = - sigma_X * (X(N)-Yx(nobs-1))/tau^2;
-end
+
 tmp(N) = rho* Vols_s(N) * noms(currentk)/(denoms(currentk));
 nomsfull = zeros(N,1);
 denomsfull = zeros(N,1);
@@ -133,8 +131,8 @@ for j = N-1:-1:1
     
     b(j) = b(j) + noms(ks(j))^2 * (1-rho^2) * sigma_X  * Vols_s_prime(j+1) * Vols_s(j+1) * step/(denoms(ks(j))^2);
     
-    if and(Par.obsx,mod(j,npoints)==0)
-        b(j) = b(j) - sigma_X  * (X(j)-Yx(ks(j)-1))/tau^2;
+    if and(Par.obsx,mod(j,npoints)==npoints-1)
+        b(j) = b(j) - sigma_X  * (X(j+1)-Yx(ks(j)))/tau^2;
     end
     
     if ceil((j)/npoints)<ks(j)
@@ -147,8 +145,10 @@ end
 Grads = Grads - (1-rho^2) * Vols_s_prime .* Vols_s *step./denomsfull ;
 Grads = Grads + (-Vols_s_prime.* Vols_s *step + rho*Vols_s_prime.*Bh)./denomsfull.*nomsfull;
 Grads = Grads + (nomsfull.^2).*(1-rho^2) .* Vols_s_prime.* Vols_s*step./(denomsfull.^2);
-
-
+inds = npoints*(1:nobs-1); 
+if Par.obsx
+    Grads(inds) = Grads(inds) -  (X(inds)-Yx(ks(inds-1)))/tau^2;
+end
 
 
 
@@ -285,15 +285,17 @@ if or(strcmp(Par.theta_sampler,'JointHMC'),and(strcmp(Par.theta_sampler,'GibbsHM
     end
     
     % dL /dtau
-    if and(Par.tau.Estimated,Par.obsx)
+    if Par.obsx
         tmptau = -(nobs-1)/tau + sum((X(npoints*(1:nobs-1))-Yx).^2)/tau^3;
-        if strcmp(Par.theta_sampler,'JointHMC')
-            Score(length(Z)+Par.tau.Index) = tmptau;
-        elseif strcmp(Par.theta_sampler,'GibbsHMC')
-            Score(Par.tau.Index,1) = tmptau;
+        if Par.tau.Estimated
+            if strcmp(Par.theta_sampler,'JointHMC')
+                Score(length(Z)+Par.tau.Index) = tmptau;
+            elseif strcmp(Par.theta_sampler,'GibbsHMC')
+                Score(Par.tau.Index,1) = tmptau;
+            end
         end
     elseif and(Par.tau.Estimated,not(Par.obsx))
-        die
+%         die
     end
 end
 

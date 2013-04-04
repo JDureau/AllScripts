@@ -1,4 +1,4 @@
-function [LogLik LogTerm1 LogTerm2] = ComputeLogLikZ_Full(Z,Obss,Vol,Par)
+function [LogLik LogTerm1 LogTerm2 LogTerm3] = ComputeLogLikZ_Full(Z,Obss,Vol,Par)
 
 
 
@@ -54,7 +54,7 @@ for i = 2:nobs
         killit = 1;
     end
 %     disp(sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step))
-    LogTerm1 = LogTerm1 - log(max(0.000000001,sqrt(2*pi)*sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));
+    LogTerm1 = LogTerm1 - log(max(0.0000001,sqrt(2*pi)*sqrt(1-rho^2)*sqrt(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step)));
     LogTerm2 = LogTerm2 - (Y(i)-mean)^2/(2*(1-rho^2)*(sum(Vol(X((i-2)*npoints+1:(i-1)*npoints)).^2)*step));
 end
 for i = 1:nobs-1

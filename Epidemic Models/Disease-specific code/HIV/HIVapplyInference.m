@@ -79,7 +79,7 @@ if 1%try
             end
        end
         NbItsPMCMC = 100000;
-        Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '.mat'];
+        Parameters.TempName = ['Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(Parameters.NbRounds) '_' num2str(Parameters.TakeClients) '.mat'];
 
     else
         die

@@ -49,4 +49,9 @@ for i = 1:length(Names)
         Par.(Names{i}).DerPrior = @DerSigmaPrior;
         Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
     end
+    if strcmp(Names{i}, 'kappa')
+        Par.(Names{i}).Prior = @KappaPrior;
+        Par.(Names{i}).DerPrior = @DerKappaPrior;
+        Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
+    end
 end
