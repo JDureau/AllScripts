@@ -42,7 +42,10 @@ if 1%try
                 Data.Observations(ObsVars{i}(j),1+i) = (Obs{i}(j))*100;
             end
         end
-        if and(Parameters.NbRounds == 3,length(Parameters.ObsVars)<5)
+        if and(Parameters.NbRounds == 3,max(length(indsclients),length(indsFSWs))<3)
+            die
+        end
+        if and(Parameters.NbRounds == 2,max(length(indsclients),length(indsFSWs))<2)
             die
         end
         
