@@ -613,7 +613,7 @@ Res = RunEstimationMethod(Data, HIVModel,Parameters,TempPar,NbItsPMCMC);
 Res.Parameters = Parameters;
 
 try
-    save([SavePath Parameters.NameToSave],'Res')
+    save([SavePath Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(Parameters.NbRounds) '_' num2str(Parameters.TakeClients) '.mat'],'Res')
     disp('saved')
 end
 

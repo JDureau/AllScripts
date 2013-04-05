@@ -51,12 +51,12 @@ nobs = 250;
 step = 0.05/253;
 N = nobs/step/253;
 Par.H.Value = 0.6;
-Par.sigma_X.Value = 0.08;
+Par.sigma_X.Value = 2;
 Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
-Par.kappa.Value = 0.027;
+Par.kappa.Value = 4;
 Par.tau.Value = 0.1;
 Par.theta_sampler='JointHMC'; % JointHMC or GibbsRW
 
@@ -177,12 +177,12 @@ Par.obsx = 1;
 
 Par.tau.Value = 0.1;
 Par.H.Value = 0.6;
-Par.sigma_X.Value = 0.08;
+Par.sigma_X.Value = 0.2;
 Par.rho.Value = -0.1;
 Par.mu_Y.Value = -0.0014;
 Par.mu_X.Value = 0.1;
 Par.X0.Value = 0.8;
-Par.kappa.Value = 0.027;
+Par.kappa.Value = 4;
 Par.GradCorr = 1;
 Par.Prior = 1;
 Par.theta_sampler='JointHMC'; 
@@ -261,16 +261,16 @@ Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
 
-Par.obsx = 0;
+Par.obsx = 1;
 
 Par.tau.Value = 0.1;
 Par.H.Value = 0.5;
-Par.sigma_X.Value = 0.14%2;
+Par.sigma_X.Value = 2;
 Par.rho.Value = -0.76;
 Par.mu_Y.Value = 0.246;
 Par.mu_X.Value = -3.28;
 Par.X0.Value = -3.28;
-Par.kappa.Value = 0.03;%0.6;
+Par.kappa.Value = 4;
 Par.Names.All = {'tau','H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.tau.Transf = @mylog;
@@ -332,7 +332,7 @@ for k2 = 1:length(Par.Names.All)
 end
 Par.rho.Estimated = 1;
 Par.H.Estimated = 1;
-Par.tau.Estimated = 0;
+Par.tau.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
@@ -351,17 +351,19 @@ Par.theta_sampler='JointHMC'
 
 Par.nsteps = 1;
 Par.loop = 1000;
-Par.h = 0.01;
+Par.h = 0.001;
 Par.NbZpar = 0;
 Par.RManif = 0;
 Res = RunJointMCMC_Full(Data,Par);
 Data.ParStart = Res.Par;
 Data.Z = Res.Z;
 Par = Data.ParTrue;
+Par.NbZpar = 0;
+Par.RManif = 0;
 Par.nsteps = 20;
 Data.Cov = cov(Res.TransfThetas');
 Par.loop = 500;
-Par.h = 0.07;
+Par.h = 0.02;
 Res = RunJointMCMC_Full(Data,Par);
 
 
