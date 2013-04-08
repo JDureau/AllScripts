@@ -261,16 +261,16 @@ Par.thetafixed = 0;
 Par.Zfixed = 0;
 % PARAMETERS
 
-Par.obsx = 0;
+Par.obsx = 1;
 
-Par.tau.Value = 0.1;
+Par.tau.Value = 0.3;
 Par.H.Value = 0.5;
 Par.sigma_X.Value = 2;
 Par.rho.Value = -0.76;
 Par.mu_Y.Value = 0.246;
 Par.mu_X.Value = -3.28;
 Par.X0.Value = -3.28;
-Par.kappa.Value = 0.6;
+Par.kappa.Value = 4;
 Par.Names.All = {'tau','H','sigma_X','mu_Y','rho','kappa','mu_X','X0'};
 
 Par.tau.Transf = @mylog;
@@ -285,34 +285,26 @@ Par.H.InvTransf = @invlogit;
 Par.H.Corr = @logitCorr;
 Par.H.CorrDer = @logitCorrDer;
 Par.H.TransfType = 'Logit';
-Par.sigma_X.MinLim = 0;
-Par.sigma_X.MaxLim = 20;
-Par.sigma_X.Transf = @logit;
-Par.sigma_X.InvTransf = @invlogit;
-Par.sigma_X.Corr = @logitCorr;
-Par.sigma_X.CorrDer = @logitCorrDer;
-Par.sigma_X.TransfType = 'Logit';
-Par.mu_Y.MinLim = -2;
-Par.mu_Y.MaxLim =  2;
-Par.mu_Y.Transf = @logit;
-Par.mu_Y.InvTransf = @invlogit;
-Par.mu_Y.Corr = @logitCorr;
-Par.mu_Y.CorrDer = @logitCorrDer;
-Par.mu_Y.TransfType = 'Logit';
-Par.mu_X.MinLim = -20;
-Par.mu_X.MaxLim =  20;
-Par.mu_X.Transf = @logit;
-Par.mu_X.InvTransf = @invlogit;
-Par.mu_X.Corr = @logitCorr;
-Par.mu_X.CorrDer = @logitCorrDer;
-Par.mu_X.TransfType = 'Logit';
-Par.X0.MinLim = -20;
-Par.X0.MaxLim =  20;
-Par.X0.Transf = @logit;
-Par.X0.InvTransf = @invlogit;
-Par.X0.Corr = @logitCorr;
-Par.X0.CorrDer = @logitCorrDer;
-Par.X0.TransfType = 'Logit';
+Par.sigma_X.Transf = @mylog;
+Par.sigma_X.InvTransf = @invlog;
+Par.sigma_X.Corr = @logCorr;
+Par.sigma_X.CorrDer = @logCorrDer;
+Par.sigma_X.TransfType = 'Log';
+Par.mu_Y.Transf = @myid;
+Par.mu_Y.InvTransf = @invid;
+Par.mu_Y.Corr = @idCorr;
+Par.mu_Y.CorrDer = @idCorrDer;
+Par.mu_Y.TransfType = 'Id';
+Par.mu_X.Transf = @myid;
+Par.mu_X.InvTransf = @invid;
+Par.mu_X.Corr = @idCorr;
+Par.mu_X.CorrDer = @idCorrDer;
+Par.mu_X.TransfType = 'Id';
+Par.X0.Transf = @myid;
+Par.X0.InvTransf = @invid;
+Par.X0.Corr = @idCorr;
+Par.X0.CorrDer = @idCorrDer;
+Par.X0.TransfType = 'Id';
 Par.rho.MinLim = -1;
 Par.rho.MaxLim = 1;
 Par.rho.Transf = @logit;
@@ -321,7 +313,7 @@ Par.rho.Corr = @logitCorr;
 Par.rho.CorrDer = @logitCorrDer;
 Par.rho.TransfType = 'Logit';
 Par.kappa.MinLim = 0;
-Par.kappa.MaxLim = 20;
+Par.kappa.MaxLim = 200;
 Par.kappa.Transf = @logit;
 Par.kappa.InvTransf = @invlogit;
 Par.kappa.Corr = @logitCorr;
@@ -331,14 +323,16 @@ for k2 = 1:length(Par.Names.All)
     Par.(Par.Names.All{k2}).Estimated = 1;
 end
 Par.rho.Estimated = 1;
-Par.H.Estimated = 1;
-Par.tau.Estimated = 0;
+Par.H.Estimated = 0;
+Par.sigma_X.Estimated = 1;
+Par.tau.Estimated = 1;
 Par = DefineIndexes(Par);
 Par = NoTransfToTransf(Par);
 
 clf
 Data = SimDatafBM_Full(N,step,Vol,Par);
-plot(Data.X)
+plot(exp(Data.Obss.Yx/2))
+
  
 
 if strcmp(Qsampler,'MALA')
@@ -351,17 +345,19 @@ Par.theta_sampler='JointHMC'
 
 Par.nsteps = 1;
 Par.loop = 1000;
-Par.h = 0.01;
+Par.h = 0.005;
 Par.NbZpar = 0;
 Par.RManif = 0;
 Res = RunJointMCMC_Full(Data,Par);
 Data.ParStart = Res.Par;
 Data.Z = Res.Z;
-Par = Data.ParTrue;
+Par = Data.ParStart;
+Par.NbZpar = 0;
+Par.RManif = 0;
 Par.nsteps = 20;
 Data.Cov = cov(Res.TransfThetas');
-Par.loop = 500;
-Par.h = 0.07;
+Par.loop = 30000;
+Par.h = 0.02;
 Res = RunJointMCMC_Full(Data,Par);
 
 

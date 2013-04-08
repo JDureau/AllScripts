@@ -35,6 +35,12 @@ if 1%try
         Obs = Parameters.Obs(inds);
         ObsVars = Parameters.ObsVars(inds);
         ObsYears = Parameters.ObsYears(inds);
+        NbSamples = Parameters.NbSamples(inds);
+
+        Parameters.Obs = Obs;
+        Parameters.NbSamples = NbSamples;
+        Parameters.ObsVars = ObsVars;
+        Parameters.ObsYears = ObsYears;
         
         Data.Observations = zeros(10,length(ObsVars)+1);
         for i = 1:length(ObsVars)
@@ -78,7 +84,7 @@ if 1%try
         for i = 1:length(ObsVars)
             for j = 1:length(ObsVars{i})
 %             HIVModel.ObservationMeasurementNoise{i+1} = ((Parameters.ObsMax(i)-Parameters.ObsMin(i))*100/4)^2;%(Data.Observations(ObsVars(i),i+1)*(100-Data.Observations(ObsVars(i),i+1))/400);
-                HIVModel.ObservationMeasurementNoise{i+1}(j) = (Parameters.Obs{i}(j)*100*(100-Parameters.Obs{i}(j)*100)/Parameters.NbSamples(i));
+                HIVModel.ObservationMeasurementNoise{i+1}(j) = (Obs{i}(j)*100*(100-Obs{i}(j)*100)/NbSamples(i));
             end
        end
         NbItsPMCMC = 100000;
@@ -414,6 +420,17 @@ end
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if not(AlreadySomething)
+
+    if not(and(TakeClients == 1,NbRounds == 3))
+        tmp = ['/Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(3) '_' num2str(1) '.mat'];
+        load([SavePath tmp]);
+        for i = 1:length(Names);
+            Parameters.(Names{i}).Value = Temp.ParametersKalman.(Names{i}).Value;
+        end
+        Parameters = UpdateParsNoTransfToTransf(Parameters);
+        Parameters.KalCov = Temp.ParametersKalman.KalCov;
+    end
+    
     disp('Quick PMCMC')
     Names = Parameters.Names.Estimated;
     for i = 1:length(Names);

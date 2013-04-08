@@ -344,7 +344,7 @@ if Parameters.PlotIndex == 3
     
     
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.025),quantile(squeeze(Paths(:,ToPlot(1),:)),0.975),[172,215,255]/255)
-    xlim([0 620])
+    xlim([0 660])
     hold on
     ciplot(quantile(squeeze(Paths(:,ToPlot(1),:)),0.25),quantile(squeeze(Paths(:,ToPlot(1),:)),0.75),[100,153,251]/255)
     plot(mean(squeeze(Paths(:,ToPlot(1),:))),'k','LineWidth',2)
@@ -404,7 +404,7 @@ if Parameters.PlotIndex == 3
 
     subplot(4,1,2)
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.025),quantile(squeeze(Paths(:,ToPlot(2),:)),0.975),[172,215,255]/255)
-    xlim([0 620])
+    xlim([0 660])
     hold on
     ciplot(quantile(squeeze(Paths(:,ToPlot(2),:)),0.25),quantile(squeeze(Paths(:,ToPlot(2),:)),0.75),[100,153,251]/255)
     plot(mean(squeeze(Paths(:,ToPlot(2),:))),'k','LineWidth',2)
@@ -525,7 +525,7 @@ end
 
     if size(Paths,2)<20
         ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.025),SmLgth,'loess'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.975),SmLgth,'loess'),[172,215,255]/255)
-        xlim([0 620])
+        xlim([0 660])
         hold on
         ciplot(smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.25),SmLgth,'loess'),smooth(quantile(squeeze(Paths(:,ToPlot(3),:)),0.75),SmLgth,'loess'),[100,153,251]/255)
         plot(smooth(median(squeeze(Paths(:,ToPlot(3),:))),SmLgth,'loess'),'k','LineWidth',2)
@@ -538,7 +538,7 @@ end
 
     else
         ciplot(smooth(quantile(squeeze(Paths),0.025),SmLgth,'loess'),smooth(quantile(squeeze(Paths),0.975),SmLgth,'loess'),[172,215,255]/255)
-        xlim([0 620])
+        xlim([0 660])
         hold on
         ciplot(smooth(quantile(squeeze(Paths),0.25),SmLgth,'loess'),smooth(quantile(squeeze(Paths),0.75),SmLgth,'loess'),[100,153,251]/255)
         plot(smooth(quantile(squeeze(Paths),0.5),SmLgth,'loess'),'k','LineWidth',2)
