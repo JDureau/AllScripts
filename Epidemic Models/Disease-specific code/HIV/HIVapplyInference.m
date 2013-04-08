@@ -419,7 +419,7 @@ end
 % 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if not(AlreadySomething)
+if 1;%not(AlreadySomething)
 
     if not(and(TakeClients == 1,NbRounds == 3))
         tmp = ['/Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(3) '_' num2str(1) '.mat'];
