@@ -419,17 +419,17 @@ end
 % 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if 1;%not(AlreadySomething)
+if not(AlreadySomething)
 
-    if not(and(TakeClients == 1,NbRounds == 3))
-        tmp = ['/Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(3) '_' num2str(1) '.mat'];
-        load([SavePath tmp]);
-        for i = 1:length(Names);
-            Parameters.(Names{i}).Value = Temp.ParametersKalman.(Names{i}).Value;
-        end
-        Parameters = UpdateParsNoTransfToTransf(Parameters);
-        Parameters.KalCov = Temp.ParametersKalman.KalCov;
-    end
+%     if not(and(TakeClients == 1,NbRounds == 3))
+%         tmp = ['/Temp_' Parameters.NameToSave '_' Parameters.DiffusionType '_' num2str(3) '_' num2str(1) '.mat'];
+%         load([SavePath tmp]);
+%         for i = 1:length(Names);
+%             Parameters.(Names{i}).Value = Temp.ParametersKalman.(Names{i}).Value;
+%         end
+%         Parameters = UpdateParsNoTransfToTransf(Parameters);
+%         Parameters.KalCov = Temp.ParametersKalman.KalCov;
+%     end
     
     disp('Quick PMCMC')
     Names = Parameters.Names.Estimated;

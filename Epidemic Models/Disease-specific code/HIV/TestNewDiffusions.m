@@ -1201,7 +1201,7 @@ addpath([pwd '/Toolboxes'])
 addpath([pwd '/Epidemic Models/Generic PMCMC tools'])
 addpath([pwd '/Epidemic Models/Disease-specific code'])
 addpath([pwd '/Epidemic Models/Disease-specific code/HIV'])
-SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/temp/';
+SavePath = '/Users/dureaujoseph/Documents/PhD_Data/Avahan/';
 
 
 DistrictNames = {'Mysore_3rounds','Belgaum_3rounds','Bellary','Yevatmal','EastGodavry','Guntur','Hyderabad','Shimoga','Chennai','Madurai','Salem'};
@@ -1209,16 +1209,16 @@ RealDistrictNames = {'Mysore','Belgaum','Bellary','Yevatmal','East Godavari','Gu
 for i = 1:length(DistrictNames)
     try
         clf
-        load([SavePath '/HIV_' DistrictNames{i} '_pCU.mat'])
+        load([SavePath '/HIV_' DistrictNames{i} '_Add_' num2str(2) '_' num2str(1) '.mat'])
         Res.Parameters.PlotIndex = 3;
         Res.Parameters.TypeWork='Boston Examples';
         PlotResHIV(Res,Res.Parameters)
-        title([RealDistrictNames{i} ' BM plus CU-IBBA'],'FontWeight','bold')
-        load([SavePath '/HIV_' DistrictNames{i} '_Sigm_pCU.mat'])
-        Res.Parameters.PlotIndex = 4;
-        Res.Parameters.TypeWork='Boston Examples';
-        PlotResHIV(Res,Res.Parameters)
-        title([RealDistrictNames{i} ' dSigm'],'FontWeight','bold')
+%         title([RealDistrictNames{i} ' BM plus CU-IBBA'],'FontWeight','bold')
+%         load([SavePath '/HIV_' DistrictNames{i} '_Sigm_pCU.mat'])
+%         Res.Parameters.PlotIndex = 4;
+%         Res.Parameters.TypeWork='Boston Examples';
+%         PlotResHIV(Res,Res.Parameters)
+%         title([RealDistrictNames{i} ' dSigm'],'FontWeight','bold')
 
 %         load([SavePath '/HIV_' DistrictNames{i} '.mat'])
 %         Res.Parameters.PlotIndex = 4;
@@ -1228,7 +1228,7 @@ for i = 1:length(DistrictNames)
         
         DistrictNames{i}
 %         subplot(4,1,4)
-%         hist(Res.Thetas(2,:))
+        hist(Res.Thetas(2,:))
         pause()
     end
 end

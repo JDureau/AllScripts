@@ -1,7 +1,7 @@
 function prior = NormalLogPrior(Name,Parameters,TransfValues,Values)
 
 if nargin == 2
-    if 1%Parameters.(Name).StdPrior>10^10
+    if Parameters.(Name).StdPrior>10^10
         prior = 1;
     else
         prior = normpdf(Parameters.(Name).Value,Parameters.(Name).MeanPrior,Parameters.(Name).StdPrior)/Parameters.(Name).CLim;     

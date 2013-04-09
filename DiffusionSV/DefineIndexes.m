@@ -27,17 +27,32 @@ for i = 1:length(Names)
 %             Par.(Names{i}).Prior = @NormalLogitPrior;
 %         end
     elseif strcmp(Par.(Names{i}).TransfType, 'Log')
+        try
+            Par.(Names{i}).MeanPrior = (Par.(Names{i}).Max+Par.(Names{i}).Min)/2;
+            Par.(Names{i}).StdPrior = (Par.(Names{i}).Max-Par.(Names{i}).Min)/2;
+            Par.(Names{i}).MinLim = 0;
+            Par.(Names{i}).MaxLim = 10^11;
+        catch
+            Par.(Names{i}).MeanPrior = 0;
+            Par.(Names{i}).StdPrior = 10^11;
+            Par.(Names{i}).MinLim = 0;
+            Par.(Names{i}).MaxLim = 10^11;
+        end
         Par.(Names{i}).Prior = @NormalLogPrior;    
         Par.(Names{i}).DerPrior = @DerNormalLogPrior;
         Par.(Names{i}).CorrFunct = @logCorr;
-        Par.(Names{i}).MinLim = 0;
-        Par.(Names{i}).MaxLim = 0;
+        Par.(Names{i}).CLim = max(eps,normcdf(Par.(Names{i}).MaxLim,Par.(Names{i}).MeanPrior,Par.(Names{i}).StdPrior) - normcdf(Par.(Names{i}).MinLim,Par.(Names{i}).MeanPrior,Par.(Names{i}).StdPrior));
+
+        
     elseif strcmp(Par.(Names{i}).TransfType, 'Id')
+        Par.(Names{i}).MeanPrior = 0;
+        Par.(Names{i}).StdPrior = 10^11;
+        Par.(Names{i}).MinLim =-10^11;
+        Par.(Names{i}).MaxLim = 10^11;
         Par.(Names{i}).Prior = @NormalLogPrior;    
         Par.(Names{i}).DerPrior = @DerNormalLogPrior;
         Par.(Names{i}).CorrFunct = @idCorr;
-        Par.(Names{i}).MinLim = 0;
-        Par.(Names{i}).MaxLim = 0;
+
     end
 %     if strcmp(Names{i}, 'rho')
 %         Par.(Names{i}).Prior = @RhoPrior;
@@ -50,8 +65,8 @@ for i = 1:length(Names)
         Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
     end
 %     if strcmp(Names{i}, 'kappa')
-%         Par.(Names{i}).Prior = @SigmaPrior2;
-%         Par.(Names{i}).DerPrior = @DerSigmaPrior2;
+%         Par.(Names{i}).Prior = @KappaPrior;
+%         Par.(Names{i}).DerPrior = @DerKappaPrior;
 %         Par.(Names{i}).CorrFunct = Par.(Names{i}).Corr;
 %     end
 end
